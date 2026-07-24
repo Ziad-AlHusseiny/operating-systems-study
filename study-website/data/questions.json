@@ -1,0 +1,4220 @@
+{
+  "version": 1,
+  "course": "ITS Device Configuration and Management",
+  "sourceEntryCount": 175,
+  "questions": [
+    {
+      "id": "q-001",
+      "type": "true-false-group",
+      "prompt": "You are trying to access a file in a folder that is located on a Windows 10 computer. You are accessing the file over the network from a second computer. You have the following permissions: • NTFS: Full Control • Share: Read Only For each statement, select True or False. Note: You will receive partial credit for each correct selection.",
+      "topic": "Networking",
+      "options": [],
+      "statements": [
+        "You will be able to read the file",
+        "You will be able to delete the file",
+        "You will be able to change the file"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 2,
+          "question": 1
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 7,
+          "question": 1
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 7,
+          "matchScore": 0.882
+        }
+      ]
+    },
+    {
+      "id": "q-002",
+      "type": "mcq",
+      "prompt": "You enroll in a video-editing class. You will be working with video files that exceed 5 GB in size. You purchase a 2 TB USB flash drive to store the files. You need to format the drive so you can connect it to your Windows 10 computer at home. Which file system should you install on the drive?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "FAT",
+        "FAT32",
+        "EXFAT",
+        "CDFS"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 3,
+          "question": 2
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 8,
+          "question": 2
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 8,
+          "matchScore": 0.917
+        }
+      ]
+    },
+    {
+      "id": "q-003",
+      "type": "mcq",
+      "prompt": "you are the system administrator for your organization. you need to ensure that any application requesting an elevation of privilege performs a public key infrastructure check. which User Account Control (IJAC) setting should you enable?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Only elevate UlAccess applications that are installed in secure locations",
+        "Switch to the secure desktop when prompting for elevation",
+        "Only elevate executables that are signed and validated",
+        "Detect application installations and prompt for elevation 320C"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 4,
+          "question": 3
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-004",
+      "type": "mcq",
+      "prompt": "which settings should you customize to configure accessibility features? Select the correct category in the answer area",
+      "topic": "Windows Settings",
+      "options": [
+        "System",
+        "Devices",
+        "Phone",
+        "Network & Internet",
+        "Personalization",
+        "Apps",
+        "Accounts",
+        "Time & Language",
+        "Gaming",
+        "Ease of Access",
+        "Search",
+        "Privacy",
+        "Update & Security"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 9,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 5,
+          "question": 4
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 10,
+          "question": 4
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-5.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 10,
+          "matchScore": 1.0
+        }
+      ]
+    },
+    {
+      "id": "q-005",
+      "type": "mcq",
+      "prompt": "file named AccountReps was created by Sam. You are not an Administrator on the computer where the file is stored, You need to grant Read permission to Amir What should you do?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Have Sam grant you the Modify permission for the file",
+        "Change the file permissions by connecting through a shared folder",
+        "Have Sam grant you the Take Ownership permission for the file",
+        "Turn off User Account Control (UAC)."
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 6,
+          "question": 5
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 11,
+          "question": 5
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 11,
+          "matchScore": 0.9
+        }
+      ]
+    },
+    {
+      "id": "q-006",
+      "type": "mcq",
+      "prompt": "which characteristic of cloud applications allows them to be able to rapidly meet a surge in demand with consistent-results?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Redundancy",
+        "Reliability",
+        "Fault Tolerance",
+        "Scalability"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 7,
+          "question": 6
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 12,
+          "question": 6
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 12,
+          "matchScore": 0.95
+        }
+      ]
+    },
+    {
+      "id": "q-007",
+      "type": "matching",
+      "prompt": "Move each backup type from the list on the left to the correct description on the right Note You will receive partial credit for each correct answer A backup of all data on the drive at a given time Full A backup of all data created or changed since the last backup Incremental A backup of all date created or changed since the last full backup Differential A backup that automatically updates as data changes on the drive Mirror",
+      "topic": "Backup and Recovery",
+      "options": [
+        "Full",
+        "Incremental",
+        "Differential",
+        "Mirror"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "A backup of all data on the drive at a given time"
+        },
+        {
+          "id": "item-2",
+          "text": "A backup of all data created or changed since the last backup"
+        },
+        {
+          "id": "item-3",
+          "text": "A backup of all data created or changed since the last full backup"
+        },
+        {
+          "id": "item-4",
+          "text": "A backup that automatically updates as data changes on the drive"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Full",
+        "item-2": "Incremental",
+        "item-3": "Differential",
+        "item-4": "Mirror"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 8,
+          "question": 7
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 13,
+          "question": 7
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 13,
+          "matchScore": 0.649
+        }
+      ]
+    },
+    {
+      "id": "q-008",
+      "type": "ordering",
+      "prompt": "a user is unable to install an application on a computer that is a member of an active directory domain Your manager suspects that the problem might be caused by a group policy setting applied through one group policy object (GPO)being overwritten by a different GOP In which order are group policies applied? Local group policy Site group policy Domain group policy organization group policy Answer",
+      "topic": "Accounts and Permissions",
+      "options": [],
+      "statements": [],
+      "items": [
+        "Local group policy",
+        "Site group policy",
+        "Domain group policy",
+        "organization group policy"
+      ],
+      "correctAnswer": [
+        "Local group policy",
+        "Site group policy",
+        "Domain group policy",
+        "organization group policy"
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 9,
+          "question": 8
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 14,
+          "question": 8
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 14,
+          "matchScore": 0.635
+        }
+      ]
+    },
+    {
+      "id": "q-009",
+      "type": "mcq",
+      "prompt": "what is the feature Microsoft store",
+      "topic": "Applications and Updates",
+      "options": [
+        "It hosts non-windows apps that users can convert for installation on windows platform",
+        "It provides an online repository from which developers can test and distribute windows 10 app source code",
+        "It allows users to install apps that have been verified to work correctly on windows",
+        "It hosts legacy desktop app that users can download for installation on windows 10 pc"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 10,
+          "question": 9
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 15,
+          "question": 9
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 15,
+          "matchScore": 0.682
+        }
+      ]
+    },
+    {
+      "id": "q-010",
+      "type": "matching",
+      "prompt": "for each port connection type select audio , video or audio and video to indicate the data it transmits Note: you will receive partial credit for each connection type answered correctly",
+      "topic": "General",
+      "options": [
+        "Audio and video",
+        "Video"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "DisplayPort"
+        },
+        {
+          "id": "item-2",
+          "text": "DVI"
+        },
+        {
+          "id": "item-3",
+          "text": "HDMI"
+        },
+        {
+          "id": "item-4",
+          "text": "USB-C"
+        },
+        {
+          "id": "item-5",
+          "text": "VGA"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Audio and video",
+        "item-2": "Video",
+        "item-3": "Audio and video",
+        "item-4": "Audio and video",
+        "item-5": "Video"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 11,
+          "question": 10
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 16,
+          "question": 10
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 16,
+          "matchScore": 0.308
+        }
+      ]
+    },
+    {
+      "id": "q-011",
+      "type": "multi-select",
+      "prompt": "your wireless keyboard is not working you need to troubleshoot the problem which two steps should you take?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "Disable windows firewall",
+        "Confirm the device driver is install",
+        "Restart the wireless network adapter",
+        "Change the keyboard batteries"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 12,
+          "question": 11
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 17,
+          "question": 11
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 17,
+          "matchScore": 0.839
+        }
+      ]
+    },
+    {
+      "id": "q-012",
+      "type": "multi-select",
+      "prompt": "which three tasks can be performed by using the disk management tool in windows 10 Note: you will receive partial credit for each connection type answered correctly",
+      "topic": "Storage and File Systems",
+      "options": [
+        "Create a volume",
+        "Compress the files on a volume",
+        "Format a volume",
+        "Create a restore point E. Initialize a new disk"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        0,
+        2,
+        3
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 13,
+          "question": 12
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 18,
+          "question": 12
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 18,
+          "matchScore": 0.75
+        }
+      ]
+    },
+    {
+      "id": "q-013",
+      "type": "true-false-group",
+      "prompt": "for each statement about configuration user account information in windows 10 , select true or false Note: you will receive partial credit for each connection type answered correctly",
+      "topic": "Accounts and Permissions",
+      "options": [],
+      "statements": [
+        "Each user account must be a Microsoft account",
+        "Creating a user account does not use any local hard drive space",
+        "Any standard user account can be promoted to an administrator account"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 14,
+          "question": 13
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 19,
+          "question": 13
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 55,
+          "question": 49
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 19,
+          "matchScore": 0.719
+        },
+        {
+          "collection": "pretest-70",
+          "page": 55,
+          "matchScore": 0.31
+        }
+      ]
+    },
+    {
+      "id": "q-014",
+      "type": "true-false-group",
+      "prompt": "for each statement about installation windows select true or false Note: you will receive partial credit for each connection type answered correctly",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "An upgrade is faster but a clean install is healthier for the computer",
+        "If the installation fails during a clean install , you can revert to a previous operating",
+        "If the installation fails during upgrade the previous operating System is automatically restored"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 15,
+          "question": 14
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 20,
+          "question": 14
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 20,
+          "matchScore": 0.793
+        }
+      ]
+    },
+    {
+      "id": "q-015",
+      "type": "matching",
+      "prompt": "Your manager wants you to add a computer to the domain_ You have already created the computer account In your Active Directory To determine whether the computer can be added to the domain, you open the System Information window showm Which information in the system information window indicate whether the computer can join a domain Local administrator What account type required to join computer to the domain Local administrator",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Local administrator"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Information indicating whether the computer can join a domain"
+        },
+        {
+          "id": "item-2",
+          "text": "Account type required to join the computer to the domain"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Local administrator",
+        "item-2": "Local administrator"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 16,
+          "question": 15
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 21,
+          "question": 15
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-16.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 21,
+          "matchScore": 0.318
+        }
+      ]
+    },
+    {
+      "id": "q-016",
+      "type": "multi-select",
+      "prompt": "you need to lower the risk of a virus infection that is sent as an attachment through email which two actions should you take",
+      "topic": "Security and Malware",
+      "options": [
+        "Use SSL to access the email service",
+        "Run antivirus on the client",
+        "Open only attachment received from trusted sources",
+        "Turn on the windows firewall"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 17,
+          "question": 16
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 22,
+          "question": 16
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 22,
+          "matchScore": 0.789
+        }
+      ]
+    },
+    {
+      "id": "q-017",
+      "type": "mcq",
+      "prompt": "you are tracking hardware and software inventory on various devices you need to support communication between the devices and the Microsoft Intune administrative console Which device requirement must be met?",
+      "topic": "Cloud Services",
+      "options": [
+        "Devices must enroll in the Intune service",
+        "All devices must be domain members",
+        "All enrolled devices must be in the same device category",
+        "Windows computers must run windows 8.1 or later"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 18,
+          "question": 18
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 23,
+          "question": 17
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 70,
+          "question": 64
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 23,
+          "matchScore": 0.895
+        },
+        {
+          "collection": "pretest-70",
+          "page": 70,
+          "matchScore": 0.578
+        }
+      ]
+    },
+    {
+      "id": "q-018",
+      "type": "matching",
+      "prompt": "you are troubleshooting startup issues on two windows 10 computers all computers have system protection enabled review the advanced options page shown ……. To recover a backup of a userswindows installation and personalized System image recovery …..to recover from a failed device driver update without losing files System restore",
+      "topic": "Backup and Recovery",
+      "options": [
+        "System image recovery",
+        "System restore"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Recover a backup of a Windows installation and personalized files"
+        },
+        {
+          "id": "item-2",
+          "text": "Recover from a failed device driver update without losing files"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "System image recovery",
+        "item-2": "System restore"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 19,
+          "question": 19
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 24,
+          "question": 18
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-19.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 24,
+          "matchScore": 0.41
+        }
+      ]
+    },
+    {
+      "id": "q-019",
+      "type": "mcq",
+      "prompt": "data availability and protections are crucial in your organization you run a full backup of your servers every Sunday at 4.00 AM you need to run additional backups Monday –Saturday Which type of backup in combination with the full backup , allows you to restore all data most quickly?",
+      "topic": "Backup and Recovery",
+      "options": [
+        "Copy",
+        "Deferential",
+        "Incremental",
+        "Incremental forever"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 20,
+          "question": 20
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 25,
+          "question": 19
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 25,
+          "matchScore": 0.865
+        }
+      ]
+    },
+    {
+      "id": "q-020",
+      "type": "matching",
+      "prompt": "Move each connector type from the list on the left to the correct description on the right. The connector can deliver both power and data to a devise USB Type-C The connector is typically found on legacy monitors and computers VGA This connector is used by monitors and computers but not game consoles Display Port The connector is used by televisions , computers game consoles and projectors HDMI",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "USB Type-C",
+        "VGA",
+        "DisplayPort",
+        "HDMI"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Delivers both power and data to a device"
+        },
+        {
+          "id": "item-2",
+          "text": "Typically found on legacy monitors and computers"
+        },
+        {
+          "id": "item-3",
+          "text": "Used by monitors and computers but not game consoles"
+        },
+        {
+          "id": "item-4",
+          "text": "Used by televisions, computers, game consoles, and projectors"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "USB Type-C",
+        "item-2": "VGA",
+        "item-3": "DisplayPort",
+        "item-4": "HDMI"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 21,
+          "question": 21
+        },
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 80,
+          "question": 12
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 26,
+          "question": 20
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 26,
+          "matchScore": 0.816
+        }
+      ]
+    },
+    {
+      "id": "q-021",
+      "type": "multi-select",
+      "prompt": "Which two types of Windows updates might be included in a Quality update Note: You will receive partial credit for each correct answer.",
+      "topic": "Applications and Updates",
+      "options": [
+        "Feature updates",
+        "Critical updates",
+        "Security updates",
+        "Microsoft product updates"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 22,
+          "question": 22
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 27,
+          "question": 21
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 27,
+          "matchScore": 0.941
+        }
+      ]
+    },
+    {
+      "id": "q-022",
+      "type": "matching",
+      "prompt": "You are configuring user accounts in Windows 10. Complete the sentence by selecting the correct option from each drop-down list Note: You will receive partial credit for each correct answer. For each account you must assign a unique….. username The username will appear on the users…….. user name and photo The username will appear on the users…….. Start menu and welcome screen",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "username",
+        "user name and photo",
+        "Start menu and welcome screen"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "For each account you must assign a unique …"
+        },
+        {
+          "id": "item-2",
+          "text": "The username will appear with the user's …"
+        },
+        {
+          "id": "item-3",
+          "text": "The username will appear on the user's …"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "username",
+        "item-2": "user name and photo",
+        "item-3": "Start menu and welcome screen"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 23,
+          "question": 23
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 28,
+          "question": 22
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 29,
+          "question": 23
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 59,
+          "question": 53
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 28,
+          "matchScore": 0.706
+        },
+        {
+          "collection": "pretest-70",
+          "page": 29,
+          "matchScore": 0.788
+        },
+        {
+          "collection": "pretest-70",
+          "page": 59,
+          "matchScore": 0.273
+        }
+      ]
+    },
+    {
+      "id": "q-023",
+      "type": "mcq",
+      "prompt": "Users report that the display cable frequently disconnects itself from their monitor. They would like a display cable with a connector that latches in place. Which type of display connector should you recommend?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "HDMI",
+        "USB-C",
+        "DisplayPort",
+        "Thunderbolt"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 24,
+          "question": 24
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 30,
+          "question": 24
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 30,
+          "matchScore": 0.75
+        }
+      ]
+    },
+    {
+      "id": "q-024",
+      "type": "matching",
+      "prompt": "You are setting up networking for a single-site motel. The motel will have three different types of users: Guest, Employees, and Business Partners You need to maximize security. What is the most-privileged network segment each type of user should have access to? Move each network segment from the list on the left to the correct user group on the right. Note: You will receive partial credit for each correct selection. Network segments G Guests is Public network Private network Employeesis Private network Public network business partnersis Extranet Extranet",
+      "topic": "Networking",
+      "options": [
+        "Public network",
+        "Private network",
+        "Extranet"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Guests"
+        },
+        {
+          "id": "item-2",
+          "text": "Employees"
+        },
+        {
+          "id": "item-3",
+          "text": "Business partners"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Public network",
+        "item-2": "Private network",
+        "item-3": "Extranet"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 25,
+          "question": 25
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 31,
+          "question": 25
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 31,
+          "matchScore": 0.608
+        }
+      ]
+    },
+    {
+      "id": "q-025",
+      "type": "true-false-group",
+      "prompt": "You are installing Windows 10 on a new workstation that doesn't yet have an operating system For each statement about installing Windows, select True or False Note: You will receive partial credit for each correct selection",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "You can add a second keyboard layout during installation.",
+        "You need a Microsoft account to join the computer to a domain.",
+        "You can change the advertising ID privacy setting"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 26,
+          "question": 26
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 32,
+          "question": 26
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 32,
+          "matchScore": 0.912
+        }
+      ]
+    },
+    {
+      "id": "q-026",
+      "type": "mcq",
+      "prompt": "In which Microsoft cloud service can you participate in video conferences?",
+      "topic": "Cloud Services",
+      "options": [
+        "Teams",
+        "Azure",
+        "OneDrive",
+        "Intune"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 27,
+          "question": 27
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 33,
+          "question": 27
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 33,
+          "matchScore": 0.929
+        }
+      ]
+    },
+    {
+      "id": "q-027",
+      "type": "mcq",
+      "prompt": "STEM You recently installed new software. When you start your computer, it displays the message \"Scan drive for errors. In the Properties dialog box shown, where should you go to start the utility that scans your drive?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Disk Cleanup",
+        "The Hardware tab",
+        "The Security tab",
+        "The Tools tab"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 28,
+          "question": 28
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 34,
+          "question": 28
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 34,
+          "matchScore": 0.309
+        }
+      ]
+    },
+    {
+      "id": "q-028",
+      "type": "mcq",
+      "prompt": "Your company is encountering problems with employees not purging deleted email messages from their Deleted Items folders. You need to implement a company-wide solution that meets the following requirements: Email messages remain in the Deleted Items folder no longer than a specified amount of time. Individual users can't change the settings you implement. Which solution meets the requirements?",
+      "topic": "Windows Settings",
+      "options": [
+        "Retention Label",
+        "Acceptable Use Policy",
+        "File Plan",
+        "Retention Policy"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 29,
+          "question": 29
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 35,
+          "question": 29
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 35,
+          "matchScore": 0.78
+        }
+      ]
+    },
+    {
+      "id": "q-029",
+      "type": "mcq",
+      "prompt": "Your company handles sensitive documents that must be saved for a specific period of time and then deleted. The time period varies for different documents. You need to ensure that employees can classify the documents they own to determine how long they are stored. Which solution meets these conditions?",
+      "topic": "General",
+      "options": [
+        "User Account Control",
+        "Document Archive Policy",
+        "Acceptable Use Policy",
+        "Retention Labels"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 30,
+          "question": 30
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 36,
+          "question": 30
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 36,
+          "matchScore": 0.755
+        }
+      ]
+    },
+    {
+      "id": "q-030",
+      "type": "matching",
+      "prompt": "You recently installed Windows 10 on computers for your workgroup. Complete the sentences by selecting the correct option from each drop-down list. Note: You will receive partial credit for each correct selection. the list privileged account type required to turn on built in windows features is Administrator the list privileged account type required to install Microsoft store apps is Standard user the list privileged account type required to install applications in the program files folder is Administrator",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Administrator",
+        "Standard user"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Turn on built-in Windows features"
+        },
+        {
+          "id": "item-2",
+          "text": "Install Microsoft Store apps"
+        },
+        {
+          "id": "item-3",
+          "text": "Install applications in the Program Files folder"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Administrator",
+        "item-2": "Standard user",
+        "item-3": "Administrator"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 31,
+          "question": 31
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 37,
+          "question": 31
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 37,
+          "matchScore": 0.795
+        }
+      ]
+    },
+    {
+      "id": "q-031",
+      "type": "mcq",
+      "prompt": "You connect a smartphone to a Windows 10 laptop by using a USB cable. However, the operating system does not recognize the phone. You need to ensure that the most recent version is installed. Which option should you configure?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "Phone and Modem",
+        "Windows Mobility Center",
+        "System Configuration",
+        "Device Manager"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 32,
+          "question": 32
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 38,
+          "question": 32
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 69,
+          "question": 63
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 38,
+          "matchScore": 0.73
+        },
+        {
+          "collection": "pretest-70",
+          "page": 69,
+          "matchScore": 0.476
+        }
+      ]
+    },
+    {
+      "id": "q-032",
+      "type": "mcq",
+      "prompt": "How do computer worms differ from other types of malware or spyware?",
+      "topic": "Security and Malware",
+      "options": [
+        "They propagate only when the infected files are copied",
+        "They masquerade as valid files or utilities",
+        "They are embedded as macros in data files.",
+        "They can self-replicate"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 33,
+          "question": 33
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 39,
+          "question": 33
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 39,
+          "matchScore": 0.929
+        }
+      ]
+    },
+    {
+      "id": "q-033",
+      "type": "mcq",
+      "prompt": "Which Microsoft service is used to manage laptop computers and mobile devices?",
+      "topic": "General",
+      "options": [
+        "Intune",
+        "Azure",
+        "Teams",
+        "Yammer"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 34,
+          "question": 34
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 40,
+          "question": 34
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 40,
+          "matchScore": 0.933
+        }
+      ]
+    },
+    {
+      "id": "q-034",
+      "type": "mcq",
+      "prompt": "Which type of information about users does biometrics evaluate?",
+      "topic": "Security and Malware",
+      "options": [
+        "The user's location",
+        "Objects a user carries",
+        "Phrases a user has memorized",
+        "The user's physical characteristics"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 35,
+          "question": 35
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 41,
+          "question": 35
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 41,
+          "matchScore": 0.842
+        }
+      ]
+    },
+    {
+      "id": "q-035",
+      "type": "true-false-group",
+      "prompt": "For each statement about Windows 10, select True or False. Note: You will receive partial credit for each correct selection.",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Users can add custom toolbars to the taskbar",
+        "Users can display the taskbar on any side of the screen",
+        "Users can display full screen version of the start menu"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 36,
+          "question": 36
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 42,
+          "question": 36
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 42,
+          "matchScore": 0.952
+        }
+      ]
+    },
+    {
+      "id": "q-036",
+      "type": "multi-select",
+      "prompt": "You need to uninstall a Microsoft Store application Which two methods can you use? Note: You will receive partial credit for each correct answer.",
+      "topic": "Applications and Updates",
+      "options": [
+        "Uninstall the application from the Programs and Features Control Panel applet.",
+        "Delete the folder and files where the application is installed.",
+        "On the Start menu, right-click the application and then click Uninstall.",
+        "Uninstall the application from Settings, Apps, Apps & Features"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        2,
+        3
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 37,
+          "question": 36
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 43,
+          "question": 37
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 43,
+          "matchScore": 0.806
+        }
+      ]
+    },
+    {
+      "id": "q-037",
+      "type": "matching",
+      "prompt": "Complete the sentence by selecting the correct option from each drop-down list. Note: You will receive partial credit for each correct selection. ……. Backup takes the least amount of time to back up data Incremental And the……..amount of time to restore all data Longest",
+      "topic": "Backup and Recovery",
+      "options": [
+        "Incremental",
+        "Longest"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Backup takes the least amount of time to back up data"
+        },
+        {
+          "id": "item-2",
+          "text": "Amount of time to restore all data"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Incremental",
+        "item-2": "Longest"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 38,
+          "question": 37
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 44,
+          "question": 38
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 44,
+          "matchScore": 0.286
+        }
+      ]
+    },
+    {
+      "id": "q-038",
+      "type": "multi-select",
+      "prompt": "What are two ways to lower the risk of a virus or other malware infection?",
+      "topic": "Security and Malware",
+      "options": [
+        "Visit only websites that use the HTTPS protocol",
+        "Stay current with operating system updates",
+        "Enable Windows Defender",
+        "Install a download manager"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 39,
+          "question": 38
+        },
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 68,
+          "question": 67
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 45,
+          "question": 39
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 76,
+          "question": 70
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 45,
+          "matchScore": 0.5
+        },
+        {
+          "collection": "pretest-70",
+          "page": 76,
+          "matchScore": 0.35
+        }
+      ]
+    },
+    {
+      "id": "q-039",
+      "type": "true-false-group",
+      "prompt": "You are configuring the desktop environment for a Windows 10 computer For each configuration option, select Yes if it can be locally configured or No if it cannot Note: You will receive partial credit for each correct selection Note: You will receive partial credit for each correct selection",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Logo on the start button",
+        "Taskbar location",
+        "Display resolution and orientation",
+        "Folders that appear in the star menu"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 40,
+          "question": 39
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 47,
+          "question": 41
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "Yes",
+        "No"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 47,
+          "matchScore": 0.34
+        }
+      ]
+    },
+    {
+      "id": "q-040",
+      "type": "mcq",
+      "prompt": "Which Microsoft product is a collection of integrated services, including virtual machines and remote applications?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Azure",
+        "Yammer",
+        "Office",
+        "SharePoint"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 41,
+          "question": 40
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 48,
+          "question": 42
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "Low OCR match confidence for pre-test question 42 (page 48) matched to bank page 41.",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 48,
+          "matchScore": 0.045
+        }
+      ]
+    },
+    {
+      "id": "q-041",
+      "type": "mcq",
+      "prompt": "To optimize their experience, you need to customize the Windows 10 devices they will be using. Which Windows Setting category should you use to customize the devices? Select the correct category in the answer area.",
+      "topic": "General",
+      "options": [
+        "System",
+        "Devices",
+        "Phone",
+        "Network & Internet",
+        "Personalization",
+        "Apps",
+        "Accounts",
+        "Time & Language",
+        "Gaming",
+        "Ease of Access",
+        "Search",
+        "Privacy",
+        "Update & Security"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 4,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 42,
+          "question": 41
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 49,
+          "question": 43
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-42.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 49,
+          "matchScore": 0.295
+        }
+      ]
+    },
+    {
+      "id": "q-042",
+      "type": "mcq",
+      "prompt": "You manage Windows computers in your university's computer lab. The university's IT team recently implemented an Active Directory environment. You need to join the computers to the new Active Directory domain. Which Control Panel applet should you use to achieve this goal?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Network and Internet",
+        "User Accounts",
+        "Administrative Tools",
+        "System"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 43,
+          "question": 42
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 50,
+          "question": 44
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 50,
+          "matchScore": 0.204
+        }
+      ]
+    },
+    {
+      "id": "q-043",
+      "type": "matching",
+      "prompt": "Valuate the images and complete the statements by selecting the correct options from the drop-down lists The connection in Image 1 is DisplayPort The connection in Image 2 is HDMI The connection in Image 3 is VGA",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "DisplayPort",
+        "HDMI",
+        "VGA"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Image 1"
+        },
+        {
+          "id": "item-2",
+          "text": "Image 2"
+        },
+        {
+          "id": "item-3",
+          "text": "Image 3"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "DisplayPort",
+        "item-2": "HDMI",
+        "item-3": "VGA"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 44,
+          "question": 43
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 51,
+          "question": 45
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-44.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 51,
+          "matchScore": 0.48
+        }
+      ]
+    },
+    {
+      "id": "q-044",
+      "type": "multi-select",
+      "prompt": "You purchase a new laptop computer that has one USB Type-A (USB-A) port and two USB Type-C (USB-C) ports You need to connect the following devices to your computer: USB-C power adapter HDMI-supported video monitor USB-A wireless mouse dongle USB-A wireless headphone dongle USB-A graphics tablet Which two items should you purchase to support your configuration?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "USB-A hub",
+        "USB-A to wireless converter",
+        "USB-C to HDMI converter",
+        "USB-A power adapter"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 45,
+          "question": 44
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 52,
+          "question": 46
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 52,
+          "matchScore": 0.352
+        }
+      ]
+    },
+    {
+      "id": "q-045",
+      "type": "matching",
+      "prompt": "Move each malware type from the list on the left to its description on the right Note: You will receive partial credit for each correct match Tracks a users computer usage spyware Sends copies of itself to other machines worm Spreads when a user runs an executable virus",
+      "topic": "Security and Malware",
+      "options": [
+        "spyware",
+        "worm",
+        "virus"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Tracks a user's computer usage"
+        },
+        {
+          "id": "item-2",
+          "text": "Sends copies of itself to other machines"
+        },
+        {
+          "id": "item-3",
+          "text": "Spreads when a user runs an executable"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "spyware",
+        "item-2": "worm",
+        "item-3": "virus"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 46,
+          "question": 45
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 53,
+          "question": 47
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 53,
+          "matchScore": 0.364
+        }
+      ]
+    },
+    {
+      "id": "q-046",
+      "type": "matching",
+      "prompt": "Move each Microsoft cloud service from the list on the left to the feature it provides on the right. You may use each service once, more than once, or not at all. Note: You will receive partial credit for each correct answer. Microsoft cloud servicesdocument library SharePoint Intune video calls Teams Azure virtual machines Azure Teams SharePoint",
+      "topic": "Cloud Services",
+      "options": [
+        "SharePoint",
+        "Teams",
+        "Azure"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Document library"
+        },
+        {
+          "id": "item-2",
+          "text": "Video calls"
+        },
+        {
+          "id": "item-3",
+          "text": "Virtual machines"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "SharePoint",
+        "item-2": "Teams",
+        "item-3": "Azure"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 47,
+          "question": 46
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 54,
+          "question": 48
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 54,
+          "matchScore": 0.146
+        }
+      ]
+    },
+    {
+      "id": "q-047",
+      "type": "mcq",
+      "prompt": "You are implementing high-security multifactor authentication to comply with network security protocols Employees currently use smart cards to sign in to the network. Which second security factor should you use?",
+      "topic": "Networking",
+      "options": [
+        "A token",
+        "A mobile phone",
+        "Biometric data",
+        "A magnetic stripe card"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 48,
+          "question": 47
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 56,
+          "question": 50
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 56,
+          "matchScore": 0.244
+        }
+      ]
+    },
+    {
+      "id": "q-048",
+      "type": "mcq",
+      "prompt": "You are helping a small business set up its network The network has twelve desktop computers and two servers, all connected to the same network switch. The servers host a web-based inventory application for use only by company employees. A firewall protects the computers and servers from external network threats. Which type of network are you configuring?",
+      "topic": "Networking",
+      "options": [
+        "Virtual private network (VPN)",
+        "Intranet",
+        "Wide area network (WAN)",
+        "Extranet"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 49,
+          "question": 48
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 57,
+          "question": 51
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 57,
+          "matchScore": 0.186
+        }
+      ]
+    },
+    {
+      "id": "q-049",
+      "type": "mcq",
+      "prompt": "You copy a file from one NTFS drive to another. What are the file permissions of the file copy (not the orginal file)?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "The same as the destination folder.",
+        "The combined permissions of the original file and destination folder.",
+        "The most restrictive permissions of the original file and destination folder.",
+        "The same as the original file"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 50,
+          "question": 49
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 58,
+          "question": 52
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 58,
+          "matchScore": 0.419
+        }
+      ]
+    },
+    {
+      "id": "q-050",
+      "type": "matching",
+      "prompt": "You are continuing user accounts in Windows 10. Complete the sentence by selecting the correct option from each drop-down list. Note: You will receive partial credit for each correct answer. For each account, you must assign a unique username The username will appear on the user's Start menu and Welcome screen",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "username",
+        "Start menu and Welcome screen"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "For each account, you must assign a unique …"
+        },
+        {
+          "id": "item-2",
+          "text": "The username will appear on the user's …"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "username",
+        "item-2": "Start menu and Welcome screen"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 51,
+          "question": 50
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-051",
+      "type": "mcq",
+      "prompt": "You have a 3D printer. You store draft files on a Windows computer that is connected to the printer but not to the internet. You need to ensure that the current files are available to any employee who logs on to the device with their local account. What should you do?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Grant the System account Full Control permissions to the folder containing the files.",
+        "Store the files in the Public Documents folder.",
+        "Enable the Guest account on the computer.",
+        "Store the files in your OneDrive folder"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 52,
+          "question": 51
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 60,
+          "question": 54
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 60,
+          "matchScore": 0.35
+        }
+      ]
+    },
+    {
+      "id": "q-052",
+      "type": "true-false-group",
+      "prompt": "For each statement about installing Windows 10, select True or False.",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "More than one English language option is available",
+        "Installation options include USB or network share",
+        "Choosing the Upgrade option overwrites all installed applications and settings"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 53,
+          "question": 52
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 61,
+          "question": 55
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 61,
+          "matchScore": 0.395
+        }
+      ]
+    },
+    {
+      "id": "q-053",
+      "type": "mcq",
+      "prompt": "he laptop computer is running Windows 10. You connect an external monitor to the laptop and configure Windows for a panoramic display that spans both screens. You need to move the system tray from the laptop screen (Screen 1) to the external monitor (Screen 2). Both screens must continue to display data. Which display setting should you select for the external monitor? A: Show only on 2 B: Extend desktop to this display C: Make this my main display D: Custom scaling",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "Show only on 2",
+        "Extend desktop to this display",
+        "Make this my main display",
+        "Custom scaling"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 54,
+          "question": 53
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 62,
+          "question": 56
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 62,
+          "matchScore": 0.304
+        }
+      ]
+    },
+    {
+      "id": "q-054",
+      "type": "matching",
+      "prompt": "You are troubleshooting startup issues for three Windows 10 workgroup computers You need to choose the correct advanced startup option for each computer °Move each appropriate option from the list on the left to the correct location on the night. You may use each option once, more than once, or not at all Note: You will receive partial credit for each correct response …….to load only the drives required for connecting to other computers Safe mode with network …… to load the most recent drives and registry settings that worked successfully Last know good configuration ……to create a file that contains a list of the drives installed during setup Enable boot logging",
+      "topic": "Networking",
+      "options": [
+        "Safe mode with networking",
+        "Last known good configuration",
+        "Enable boot logging"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Load only the drivers required for connecting to other computers"
+        },
+        {
+          "id": "item-2",
+          "text": "Load the most recent drivers and registry settings that worked successfully"
+        },
+        {
+          "id": "item-3",
+          "text": "Create a file containing a list of drivers installed during setup"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Safe mode with networking",
+        "item-2": "Last known good configuration",
+        "item-3": "Enable boot logging"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 55,
+          "question": 54
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 63,
+          "question": 57
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 63,
+          "matchScore": 0.351
+        }
+      ]
+    },
+    {
+      "id": "q-055",
+      "type": "true-false-group",
+      "prompt": "You work in the Eastern time zone (UTC-5). You are installing Windows 10 on a computer for a customer who is in the Mountain time zone (UTC-7) and does not have internet access. You need to configure the installation to meet the following requirements. The computer displays the correct time to the customer. The customer does not have to customize the operating system settings. The customer can sign in to the computer when it is offline. For each action, select Yes if it is part of the correct configuration or No if it is not. lot. You will receive partial credit for each correct selection.",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "Change the default time zone",
+        "Configure the computer to use a local account"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 56,
+          "question": 55
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 64,
+          "question": 58
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "Yes",
+        "No"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 64,
+          "matchScore": 0.406
+        }
+      ]
+    },
+    {
+      "id": "q-056",
+      "type": "mcq",
+      "prompt": "Your friend is bringing over a new gaming console (Xbox Series X or PlayStation 5) Which video cable should you have ready so you can connect the console to a television without using a converter? A- USB-C",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "DVI-DL",
+        "HDMI",
+        "VGA"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 57,
+          "question": 56
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 65,
+          "question": 59
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 65,
+          "matchScore": 0.4
+        }
+      ]
+    },
+    {
+      "id": "q-057",
+      "type": "mcq",
+      "prompt": "The Picture Studio is hosting a photo editing workshop. One workshop attendee has uncorrected vision loss, and another has limited mobility of their hands. To optimize their experience, you need to customize the Windows 10 devices they will be using. Which Windows Setting category should you use to customize the devices? Select the correct category in the answer area",
+      "topic": "General",
+      "options": [
+        "System",
+        "Devices",
+        "Phone",
+        "Network & Internet",
+        "Personalization",
+        "Apps",
+        "Accounts",
+        "Time & Language",
+        "Gaming",
+        "Ease of Access",
+        "Search",
+        "Privacy",
+        "Update & Security"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 9,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 58,
+          "question": 57
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 66,
+          "question": 60
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-58.jpg",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 66,
+          "matchScore": 0.167
+        }
+      ]
+    },
+    {
+      "id": "q-058",
+      "type": "true-false-group",
+      "prompt": "For each statement, select Yes if it should be part of an Acceptable Use Policy (AUP) or No if it should not Note: You will receive partial credit for each correct selection",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Unacceptable use of the company network",
+        "Possible consequences for violating the AUP",
+        "Acceptable and expected use of the company network"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 59,
+          "question": 58
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 67,
+          "question": 61
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "Yes",
+        "No"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 67,
+          "matchScore": 0.135
+        }
+      ]
+    },
+    {
+      "id": "q-059",
+      "type": "multi-select",
+      "prompt": "What are two advantages of using a cloud storage provider instead of an intranet file server?",
+      "topic": "Networking",
+      "options": [
+        "You maintain complete control of your cloud servers.",
+        "Files are available from any location that has internet access.",
+        "Cloud storage offers less latency",
+        "Cloud storage supports many different client devices and operating systems"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 60,
+          "question": 59
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 68,
+          "question": 62
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 68,
+          "matchScore": 0.346
+        }
+      ]
+    },
+    {
+      "id": "q-060",
+      "type": "mcq",
+      "prompt": "You connect a smartphone to a Windows 10 laptop using a USB cable. However, the operating system does not recognize the phone. You need to ensure that the most appropriate driver is installed. Which option should you configure?",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "Windows Mobility Center",
+        "System Configuration",
+        "Device Manager",
+        "Phone and Modem"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 61,
+          "question": 60
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-061",
+      "type": "mcq",
+      "prompt": "You are tracking hardware and software inventory on vanishing devices. You need to support communication between the devices and the Microsoft Intune administrative console. Which device requirement must be met?",
+      "topic": "Cloud Services",
+      "options": [
+        "All devices must be domain members.",
+        "All enrolled devices must be in the same device category.",
+        "Devices must enroll in the Intune service.",
+        "Windows computers must run Windows 8.1 or later"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 62,
+          "question": 61
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-062",
+      "type": "mcq",
+      "prompt": "You are the system administrator for your organization. You need to ensure that any application requesting an elevation of privilege performs a public key infrastructure check. Which User Account Control (UAC) setting should you enable?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Switch to the secure desktop when prompting for elevation.",
+        "Detect application installations and prompt for elevation.",
+        "Only elevate UI Access applications that are installed in secure locations.",
+        "Only elevate executables that are signed and validated"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 63,
+          "question": 62
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 9,
+          "question": 3
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 71,
+          "question": 65
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 9,
+          "matchScore": 0.714
+        },
+        {
+          "collection": "pretest-70",
+          "page": 71,
+          "matchScore": 0.422
+        }
+      ]
+    },
+    {
+      "id": "q-063",
+      "type": "mcq",
+      "prompt": "When you access a file that is stored in a shared folder, which permissions take precedence?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Most restrictive",
+        "Least restrictive",
+        "NTFS",
+        "Share"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 64,
+          "question": 63
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 72,
+          "question": 66
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 72,
+          "matchScore": 0.269
+        }
+      ]
+    },
+    {
+      "id": "q-064",
+      "type": "mcq",
+      "prompt": "Which group must you be a member of to install Microsoft Office on a computer?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Network Configuration Operators",
+        "Administrators",
+        "Backup Operators",
+        "Device Owners"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 65,
+          "question": 64
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 73,
+          "question": 67
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 73,
+          "matchScore": 0.476
+        }
+      ]
+    },
+    {
+      "id": "q-065",
+      "type": "true-false-group",
+      "prompt": "For each statement about installing or removing applications, select True or False Note: You will receive partial credit for each correct selection",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "64-bit applications are installed in the \"C:\\Program Files (x86)\" folder",
+        "Deleting an application's folder and its associated files uninstalls it from the computer and removes the associated registry settings",
+        "A User Account Control (UAC) prompt displays when Standard Users install applications in ° the \"Program Files\" or \"Program Files (x86)\" folders"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 66,
+          "question": 65
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 74,
+          "question": 68
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ],
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 74,
+          "matchScore": 0.357
+        }
+      ]
+    },
+    {
+      "id": "q-066",
+      "type": "mcq",
+      "prompt": "You need to uninstall a Windows update from a computer. Where should you perform this task?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Windows Update history",
+        "Windows Update Advanced Options",
+        "Action Center",
+        "Windows Security"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 67,
+          "question": 66
+        },
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 75,
+          "question": 69
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "duplicateSources": [
+        {
+          "collection": "pretest-70",
+          "page": 75,
+          "matchScore": 0.714
+        }
+      ]
+    },
+    {
+      "id": "q-067",
+      "type": "mcq",
+      "prompt": "A user reports that their Windows 10 not applying the new security settings Implemented by the IT department These settings include password complexity requirements and screen timeout policies. You need to manually refresh the settings on the computer. What should you do?",
+      "topic": "Windows Settings",
+      "options": [
+        "Open System Information and choose Refresh from",
+        "Run the gpupdate force command from the command prompt",
+        "Open local Security Policy and choose Reload from",
+        "Run the gpresult /h command from the command prompt the View menu the Action menu"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 69,
+          "question": 1
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-068",
+      "type": "mcq",
+      "prompt": "Which Windows feature displays a consent prompt when a user attempts to install software?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Windows Defender",
+        "Active Directory (AD)",
+        "Windows Hello",
+        "User Account Control (UAC)"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 70,
+          "question": 2
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-069",
+      "type": "mcq",
+      "prompt": "user wants a recommendation for an account where they can easily Share files and settings between multiple, personally-owned computers at home. Witch type of account should you recommend ?",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Microsoft Account",
+        "Guest Account",
+        "Local Account",
+        "Domain account"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 71,
+          "question": 3
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-070",
+      "type": "mcq",
+      "prompt": "you have determined that a non-responsive application causing your Windows 10 machine to perform Which Task Manager tab and action should you use to resolve this issue",
+      "topic": "Applications and Updates",
+      "options": [
+        "Performance→ Monitor Resource usage",
+        "Services → stop service",
+        "Startup apps→disable",
+        "Processes→ end task"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 72,
+          "question": 4
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-071",
+      "type": "true-false-group",
+      "prompt": "For each statement that about using the Microsoft authenticator app In Windows 10, select True or False Note• You Will receive partial credit for each correct",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Answer Microsoft authenticator app can send push notification to approve sign-in attempts for both local and Microsoft account",
+        "You can use Microsoft authenticator app to login if you forget your password",
+        "Microsoft authenticator app generates time-based one-time passwords as part of the multi-factor authentication"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 73,
+          "question": 5
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-072",
+      "type": "matching",
+      "prompt": "Determine whether each statement describes a Private network or a Public network Note. You receive partial credit for each correct selection Network discovery is turned off to prevent other devices on the network from seeing your computer Private public This network profile is typically used for home or office networks where you trust the devices connected Private public This network profile is used when you connect as a guest to a network where you do not have a user account Private public",
+      "topic": "Networking",
+      "options": [
+        "Public",
+        "Private"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Network discovery is turned off"
+        },
+        {
+          "id": "item-2",
+          "text": "Typically used for trusted home or office networks"
+        },
+        {
+          "id": "item-3",
+          "text": "Used when connecting as a guest without a user account"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Public",
+        "item-2": "Private",
+        "item-3": "Public"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 74,
+          "question": 6
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-073",
+      "type": "mcq",
+      "prompt": "A user cannot connect to the network. You need to determine their IP address and default gateway Which command should you enter at the command line?",
+      "topic": "Networking",
+      "options": [
+        "Ping 0.0.0.0",
+        "Ping 127.0.0.1",
+        "Ipconfig",
+        "Ipconfig/release"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 75,
+          "question": 7
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-074",
+      "type": "true-false-group",
+      "prompt": "For each statement about connectors, select True or False Note You will reserve partial credit for each correct selection.",
+      "topic": "Hardware and Peripherals",
+      "options": [],
+      "statements": [
+        "A dvi cable can be plugged into a VGA port without an adapter",
+        "A USB-C cable can be plugged into a USB-A port without an adapter",
+        "A USB 3 0 cable can be plugged into a USB 1 0 port without an adapter"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 76,
+          "question": 8
+        },
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 77,
+          "question": 9
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-075",
+      "type": "mcq",
+      "prompt": "need to assign a new IP address to all network adapters on a computer Which command should you enter at the command prompt?",
+      "topic": "Networking",
+      "options": [
+        "Ipconfig /all",
+        "Ipconfig / release",
+        "Ipconfig / renew",
+        "Ipconfig"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 78,
+          "question": 10
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-076",
+      "type": "mcq",
+      "prompt": "What the the purpose of the Microsoft Store?",
+      "topic": "Applications and Updates",
+      "options": [
+        "A digital distribution platform and marketplace for Microsoft approved applications",
+        "digital distribution platform and marketplace for all applications",
+        "An online marketplace for buying Microsoft branded computers and peripherals",
+        "An online marketplace for selling and buying used hardware"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 79,
+          "question": 11
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-077",
+      "type": "mcq",
+      "prompt": "What is the primary function of the Windows Registry",
+      "topic": "General",
+      "options": [
+        "Verifies the Integrity of files on the hard drive",
+        "Provides protection from malicious software and related threats",
+        "Stores data for profiles, applications, and hardware drivers",
+        "Indexes data in the file system to improve searching"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 81,
+          "question": 13
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-078",
+      "type": "true-false-group",
+      "prompt": "a windows 10 file server named FS1 has a folder named D \\projects\\Training. This folder is shared as training . you have access to the shared folder and you have the ability to use remote Desktop to connect FS1",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Can you open a file at \\\\FS1\\\\Training ?",
+        "Can you create a file at \\\\FS1\\\\Training ?",
+        "Can you edit a file D \\projects\\Training if you remote into FS1"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 82,
+          "question": 14
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-079",
+      "type": "matching",
+      "prompt": "you connected a windows 10 laptop to a 50 wide screen FHD television wirelessly you want to cast a video encoded in 4k with windows media player to the television Only window media content must be shown on the television all other Desktop menus and icons should be shown on the laptop the system tray must not be visible on the television the television must show the best clarity and detail of the media player content you open file the display settings windows and choose the display representing the television Display orientation: Landscape Display resolution: 1920x1080 (Recommended) [Since the TV is FHD] Multiple displays: Extend these displays Change the size of text, apps, and other items: 100% (Recommended)",
+      "topic": "Windows Settings",
+      "options": [
+        "Landscape",
+        "1920x1080 (Recommended)",
+        "Extend these displays",
+        "100% (Recommended)"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Display orientation"
+        },
+        {
+          "id": "item-2",
+          "text": "Display resolution"
+        },
+        {
+          "id": "item-3",
+          "text": "Multiple displays"
+        },
+        {
+          "id": "item-4",
+          "text": "Size of text, apps, and other items"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Landscape",
+        "item-2": "1920x1080 (Recommended)",
+        "item-3": "Extend these displays",
+        "item-4": "100% (Recommended)"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 83,
+          "question": 16
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-83.jpg"
+    },
+    {
+      "id": "q-080",
+      "type": "source-review",
+      "prompt": "coco update to the latest driver for her touchpad on her windows 10 laptop now she cannot move the mouse pointer with the touchpad was working correctly before the update you need to make the touchpad work again. You open the properties dialog box for the touchpad in device manage which button should you click",
+      "topic": "General",
+      "options": [],
+      "statements": [],
+      "items": [],
+      "correctAnswer": "Roll Back Driver",
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 84,
+          "question": 17
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-84.jpg"
+    },
+    {
+      "id": "q-081",
+      "type": "true-false-group",
+      "prompt": "for each statement about device management and desk management select trueor false",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Setting up a new drive is done through Disk management",
+        "Freeing up Disk space for a slow running computer is done through Disk management",
+        "Manually updating drivers can be done through the device manager"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 85,
+          "question": 18
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-082",
+      "type": "mcq",
+      "prompt": "You want to ensure that a windows 10 computer backs up all files in the D \\Books folder even when connected to the Internet No other folders or files should be backup should accrue automatically every 10 minutes the solution should allow you to restore previous versions of all files in that folder What should you do?",
+      "topic": "Backup and Recovery",
+      "options": [
+        "Configuration OneDrive to sync user files",
+        "Use backup and restore to create a system image",
+        "Enable file history to save copies of files to a network drive",
+        "Configure system restore to create restore points on a schedule"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 86,
+          "question": 19
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-083",
+      "type": "mcq",
+      "prompt": "Task Manager, which tab should you use to end a program that IS not responding",
+      "topic": "Troubleshooting",
+      "options": [
+        "Performance",
+        "Startup apps",
+        "Processes",
+        "App history"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 2,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 87,
+          "question": 20
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-084",
+      "type": "mcq",
+      "prompt": "you are working as a tier I technical support technician tor a company that has 4 tiers of technical support personnel an employee is experiencing an issue that requires specialized knowledge about hardware that is different from the hardware you have been trained on how should you assist the user In resolving their Issue?",
+      "topic": "General",
+      "options": [
+        "Submit a request to be trained In the unique hardware and software to support the employee",
+        "Escalate employee's Issue to a tier 2 technical support technician",
+        "Provide employee With phone numbers for the hardware vendor to receive support D. Can the hardware to receive training to help support the employee."
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 1,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 88,
+          "question": 21
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-085",
+      "type": "mcq",
+      "prompt": "You have lust run a malware scan and reserved these results. Windows Defender quarantined a dangerous program, Your IT department confirms that the program IS falsely triggering Windows Defender and IS not actually dangerous Which action should you take?",
+      "topic": "Security and Malware",
+      "options": [
+        "Recover ne file from quarantine.",
+        "Run the scan again",
+        "Find and delete the file in Windows Explorer",
+        "Reinstall the program"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 89,
+          "question": 22
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-086",
+      "type": "matching",
+      "prompt": "Move each connector type from the list on the left to the correct definition on the right. Self-replicating malware worm Malware that is disguised as legitimate software Trojan horse An attack that targets websites and servers by distributing network services in an attempt to exhaust an applications resources DDOS An attack that aims to steal or damage sensitive data by deceiving people into revealing personal information like passwords and credit card numbers. Phishing",
+      "topic": "Networking",
+      "options": [
+        "worm",
+        "Trojan horse",
+        "DDoS",
+        "Phishing"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Self-replicating malware"
+        },
+        {
+          "id": "item-2",
+          "text": "Malware disguised as legitimate software"
+        },
+        {
+          "id": "item-3",
+          "text": "Attack that exhausts website or server resources"
+        },
+        {
+          "id": "item-4",
+          "text": "Attack that deceives people into revealing personal information"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "worm",
+        "item-2": "Trojan horse",
+        "item-3": "DDoS",
+        "item-4": "Phishing"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 90,
+          "question": 23
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-087",
+      "type": "mcq",
+      "prompt": "You Install a new feature update on your Windows 10 machines then install a new application but the update has caused several issues in the few hours you've had it installed you want to revert to the previous version of Windows but want to keep your newly installed application which feature should you use to accomplish this?",
+      "topic": "Applications and Updates",
+      "options": [
+        "Reset the PC",
+        "Go back",
+        "System image recovery",
+        "System restore"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 3,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 91,
+          "question": 24
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-088",
+      "type": "true-false-group",
+      "prompt": "You are confining the desktop environment for a Windows 10 computer For each configuration option, select Yes If It can be locally configured or No If It cannot Note You Will reserve partial credit tor each correct selection",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Logo on the start button",
+        "Taskbar location",
+        "Display resolution and orientation",
+        "Folders that appear in the start menu"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 92,
+          "question": 25
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "q-089",
+      "type": "true-false-group",
+      "prompt": "For each statement about Windows Update settings in Windows 10, select True or False Note You Will receive partial credit for each correct",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "Optional updates are accessible directly from Windows Update Advanced Options",
+        "Uninstall for recently installed updates can be accessed under update history",
+        "Required updates that are pending installation will only install when active hours are set"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 93,
+          "question": 26
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-090",
+      "type": "true-false-group",
+      "prompt": "for each statement about active Directory select true or false Note You Will receive partial credit for each correct",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "It allows users to use their credentials throughout the network",
+        "It allows efficient searching of files on your computer",
+        "It allows to all users to configure their own rights"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 94,
+          "question": 27
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-091",
+      "type": "source-review",
+      "prompt": "you connected an external hard drive to your windows 10 via a USB-C cable however you can not find the drive in windows explorer only see the internal Toshiba Disk drive",
+      "topic": "Hardware and Peripherals",
+      "options": [],
+      "statements": [],
+      "items": [],
+      "correctAnswer": "Click Scan for hardware changes from the Action menu",
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 95,
+          "question": 28
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "./assets/source-pages/bank-page-95.jpg"
+    },
+    {
+      "id": "q-092",
+      "type": "mcq",
+      "prompt": "In which settings can you find monitor resolution and refresh rate",
+      "topic": "Hardware and Peripherals",
+      "options": [
+        "Advanced display",
+        "Gaming",
+        "Accessibility",
+        "Device Manager"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 96,
+          "question": 29
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-093",
+      "type": "true-false-group",
+      "prompt": "For each statement about facial recognition setup in Windows 10, select True or False Note You",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "WII receive part credit for each correct selection A Microsoft account is necessary to configure facial recognition for sign up",
+        "A compatible infrared (IR) camera needed to set up facial",
+        "If facial recognition setup fails the user will be automatically logged in with the saved password"
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 97,
+          "question": 30
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-094",
+      "type": "multi-select",
+      "prompt": "Which option should a user select to configure Narrator settings in Windows",
+      "topic": "Windows Settings",
+      "options": [
+        "Accessibility",
+        "Ease of Access",
+        "Personalization",
+        "Apps"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 98,
+          "question": 31
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-095",
+      "type": "mcq",
+      "prompt": "Which Windows 10 Professional account type is used to log into an organization network and access the resources and services available on that network",
+      "topic": "Networking",
+      "options": [
+        "Domain Account",
+        "Local Standard Account",
+        "Microsoft account",
+        "Local Administrator Account"
+      ],
+      "statements": [],
+      "items": [],
+      "correctAnswer": 0,
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 99,
+          "question": 32
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-096",
+      "type": "matching",
+      "prompt": "Complete the sentences by selecting the correct option from each drop-down list. Note: You will receive partial credit for each correct selection. The….. permission that allows you to create a subfolder is: Write The permission that allows you to delete a subfolder is: Modify The permission that allows you to run an application is: Read & Execute",
+      "topic": "Accounts and Permissions",
+      "options": [
+        "Write",
+        "Modify",
+        "Read & Execute"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Permission that allows you to create a subfolder"
+        },
+        {
+          "id": "item-2",
+          "text": "Permission that allows you to delete a subfolder"
+        },
+        {
+          "id": "item-3",
+          "text": "Permission that allows you to run an application"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Write",
+        "item-2": "Modify",
+        "item-3": "Read & Execute"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 100,
+          "question": 33
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-097",
+      "type": "true-false-group",
+      "prompt": "For each statement about Installing or removing applications, select True or False Note You will receive partial credit for each correct",
+      "topic": "Applications and Updates",
+      "options": [],
+      "statements": [
+        "64-bit applications are installed in the \"C:\\Program Files (x86)\" folder",
+        "Deleting an application's folder and its associated files uninstalls it from the computer and removes the associated registry settings",
+        "A User Account Control (UAC) prompt displays when Standard Users install applications in ° the \"Program Files\" or \"Program Files (x86)\" folders"
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 101,
+          "question": 34
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-098",
+      "type": "matching",
+      "prompt": "move each service from the list on the lift to the correct service descriptions on the right Note You will receive partial credit for each correct selection A collection of cloud- based productivity apps Microsoft 365 (Office 365) Works like binder with taps separating sections and pages OneNote Used for storing documentation for celebration across an organization SharePoint Can be used to run an operating system and is accessible from windows macOS or chromeOS Windows 365 Cloud PC",
+      "topic": "Cloud Services",
+      "options": [
+        "Microsoft 365 (Office 365)",
+        "OneNote",
+        "SharePoint",
+        "Windows 365 Cloud PC"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Collection of cloud-based productivity apps"
+        },
+        {
+          "id": "item-2",
+          "text": "Works like a binder with tabs separating sections and pages"
+        },
+        {
+          "id": "item-3",
+          "text": "Stores documentation for collaboration across an organization"
+        },
+        {
+          "id": "item-4",
+          "text": "Runs an operating system accessible from Windows, macOS, or ChromeOS"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "Microsoft 365 (Office 365)",
+        "item-2": "OneNote",
+        "item-3": "SharePoint",
+        "item-4": "Windows 365 Cloud PC"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 102,
+          "question": 35
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-099",
+      "type": "true-false-group",
+      "prompt": "For each statement about motherboards, select True or False Note: You will receive partial credit for each correct selection.",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "A computer's maximum supported RAM capacity and speed are determined by the motherboard.",
+        "You can upgrade an Intel processor to an AMD processor without changing the motherboard.",
+        "BIOS settings are stored on the motherboard."
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 103,
+          "question": 37
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-100",
+      "type": "true-false-group",
+      "prompt": "For each statement about the Windows Registry, select True or False. Note: You will receive partial credit for each correct response.",
+      "topic": "General",
+      "options": [],
+      "statements": [
+        "Settings are persistent across system restarts.",
+        "Application installers can modify the registry.",
+        "Changes to settings are immediately backed up to OneDrive."
+      ],
+      "items": [],
+      "correctAnswer": [
+        true,
+        true,
+        false
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 104,
+          "question": 38
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-101",
+      "type": "true-false-group",
+      "prompt": "For each statement about NTFS, exFAT, and FAT32, select True or False. Note: You will receive partial credit for each correct selection.",
+      "topic": "Storage and File Systems",
+      "options": [],
+      "statements": [
+        "NTFS supports a maximum file size of 4GB.",
+        "FAT32 supports partitions up to 32TB.",
+        "ExFAT is ideal for flash drives and supports storage media up to 256TB."
+      ],
+      "items": [],
+      "correctAnswer": [
+        false,
+        false,
+        true
+      ],
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 105,
+          "question": 39
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": "",
+      "answerLabels": [
+        "True",
+        "False"
+      ]
+    },
+    {
+      "id": "q-102",
+      "type": "matching",
+      "prompt": "You have lost connection to the Internet. You suspect this has something to do with the Wi-Fi connection to your router. What are some troubleshooting steps you can take? Complete the sentences by selecting the correct option from each drop-down list. Go to command prompt and run ipconfig /renew (or ping the router). If the \"No internet\" icon is visible, verify Wi-Fi is turned on (or airplane mode is off). You should also try restarting the router (or forgetting and reconnecting to the network).",
+      "topic": "Networking",
+      "options": [
+        "run ipconfig /renew (or ping the router)",
+        "Wi-Fi is turned on (or airplane mode is off)",
+        "restarting the router (or forgetting and reconnecting to the network)"
+      ],
+      "statements": [],
+      "items": [
+        {
+          "id": "item-1",
+          "text": "Go to Command Prompt and …"
+        },
+        {
+          "id": "item-2",
+          "text": "If the \"No internet\" icon is visible, verify …"
+        },
+        {
+          "id": "item-3",
+          "text": "You should also try …"
+        }
+      ],
+      "correctAnswer": {
+        "item-1": "run ipconfig /renew (or ping the router)",
+        "item-2": "Wi-Fi is turned on (or airplane mode is off)",
+        "item-3": "restarting the router (or forgetting and reconnecting to the network)"
+      },
+      "sources": [
+        {
+          "collection": "bank-105",
+          "file": "Device_Configuration_and_Management_Eng_Ali_Mohamed.pdf",
+          "page": 106,
+          "question": 40
+        }
+      ],
+      "explanation": "",
+      "needsReview": false,
+      "reviewNotes": "",
+      "sourceImage": ""
+    },
+    {
+      "id": "q-103",
+      "type": "source-review",
+      "prompt": "Complete the sentence by selecting the correct option from each drop-down list.",
+      "topic": "General",
+      "options": [],
+      "statements": [],
+      "items": [],
+      "correctAnswer": null,
+      "sources": [
+        {
+          "collection": "pretest-70",
+          "file": "ITS OD 103 Pre-Test.pdf",
+          "page": 46,
+          "question": 40
+        }
+      ],
+      "explanation": "",
+      "needsReview": true,
+      "reviewNotes": "Answer conflict: pre-test PDF page 46 highlights Differential, while the 105-question bank PDF page 38 marks Incremental.",
+      "sourceImage": ""
+    }
+  ]
+}
