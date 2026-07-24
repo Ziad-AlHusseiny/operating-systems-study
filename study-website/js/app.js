@@ -1,4 +1,4 @@
-import { filterQuestions, loadQuestionBank } from "./questions.js";
+import { filterQuestions, loadQuestionBank, shuffleChoices } from "./questions.js";
 import {
   escapeHtml,
   normalizeResponse,
@@ -40,7 +40,8 @@ const app = {
   questionMap: new Map(),
   state: loadState(),
   finishedSession: null,
-  filters: { search: "", source: "all", type: "all", topic: "all", status: "all" },
+  filters: { search: "", source: "all", type: "all", topic: "all", status: "all", focus: "all" },
+  revisionFilters: { source: "all", topic: "all" },
   timer: null,
 };
 
@@ -125,6 +126,7 @@ function dashboardMarkup() {
       <a class="btn btn--primary" href="#/practice">${icon("play")}Start Practice</a>
       <a class="btn btn--primary" href="#/exam">${icon("exam")}Start Mock Exam</a>
       ${app.state.activePractice ? `<button class="btn btn--secondary" data-action="continue-practice">Continue Practice</button>` : ""}
+      ${app.state.activeExam ? `<button class="btn btn--secondary" data-action="continue-exam">Continue Exam</button>` : ""}
       <a class="btn btn--secondary" href="#/mistakes">${icon("mistakes")}Review Mistakes</a>
       <a class="btn btn--secondary" href="#/bookmarks">${icon("bookmark")}Review Bookmarks</a>
     </div>
@@ -161,6 +163,7 @@ function dashboardMarkup() {
 function setupMarkup(mode) {
   const isExam = mode === "exam";
   const topics = [...new Set(app.questions.map((question) => question.topic))].sort();
+  const types = [...new Set(app.questions.map((question) => question.type))].sort();
   return `
     ${heading(isExam ? "Mock Exam" : "Practice", isExam ? "Answer first, then review your complete result." : "Get immediate official-answer feedback after every question.")}
     <section class="section-block setup-card">
@@ -178,6 +181,20 @@ function setupMarkup(mode) {
             <option value="all">All topics</option>
             ${topics.map((topic) => `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`).join("")}
           </select></label>
+          <label class="field"><span>Question type</span><select class="select" name="type">
+            <option value="all">All types</option>
+            ${types.map((type) => `<option value="${type}">${escapeHtml(type.replaceAll("-", " "))}</option>`).join("")}
+          </select></label>
+          ${
+            !isExam
+              ? `<label class="field"><span>Progress</span><select class="select" name="status">
+                  <option value="all">All questions</option>
+                  <option value="unanswered">Unanswered only</option>
+                  <option value="wrong">Current mistakes</option>
+                  <option value="bookmarked">Bookmarks only</option>
+                </select></label>`
+              : ""
+          }
           ${
             isExam
               ? `<label class="field"><span>Time limit</span><select class="select" name="durationMinutes">
@@ -187,10 +204,15 @@ function setupMarkup(mode) {
           }
         </div>
         <label class="checkbox-row"><input type="checkbox" name="shuffle" checked> Shuffle question order</label>
-        <label class="checkbox-row"><input type="checkbox" name="excludeReview"> Exclude the one unresolved source-conflict item</label>
+        ${!isExam ? `<label class="checkbox-row"><input type="checkbox" name="shuffleChoices"> Shuffle choices for single and multiple choice questions</label>` : ""}
+        <label class="checkbox-row"><input type="checkbox" name="excludeReview" ${isExam ? "checked" : ""}> Exclude the one unresolved source-conflict item</label>
         <button class="btn btn--primary" type="submit">${isExam ? "Start Mock Exam" : "Start Practice"}</button>
       </form>
     </section>`;
+}
+
+function questionForSession(session, id) {
+  return session.questionOverrides?.[id] || app.questionMap.get(id);
 }
 
 function responseFromForm(question, form) {
@@ -233,7 +255,7 @@ function sessionMarkup(session) {
   if (!session.questionIds.length) {
     return `${heading("No matching questions")}<div class="empty-state"><strong>Change the filters and try again.</strong><a class="btn btn--primary" href="#/${session.mode}">Back to setup</a></div>`;
   }
-  const question = app.questionMap.get(session.questionIds[session.index]);
+  const question = questionForSession(session, session.questionIds[session.index]);
   const saved = session.answers[question.id];
   const isExam = session.mode === "exam";
   const remaining = getRemainingSeconds(session);
@@ -270,6 +292,9 @@ function sessionMarkup(session) {
 
 function resultsMarkup(session) {
   const { stats } = session;
+  const topicRows = sessionBreakdown(session, "topic");
+  const sourceRows = sessionBreakdown(session, "source");
+  const wrongIds = session.questionIds.filter((id) => session.answers[id]?.correct === false);
   return `
     ${heading(session.mode === "exam" ? "Exam Result" : "Practice Result", "Your progress has been saved in this browser.")}
     <section class="results-summary">
@@ -281,14 +306,60 @@ function resultsMarkup(session) {
         <div class="mini-card"><span>Time</span><strong>${formatDuration(stats.durationSeconds)}</strong></div>
       </div>
     </section>
-    <div class="page-actions"><a class="btn btn--primary" href="#/${session.mode}">Start another</a><a class="btn btn--secondary" href="#/mistakes">Review mistakes</a></div>
+    <div class="page-actions">
+      <a class="btn btn--primary" href="#/${session.mode}">Start another</a>
+      ${wrongIds.length ? `<button class="btn btn--secondary" data-action="retry-wrong" data-ids="${wrongIds.join(",")}">Retry wrong questions</button>` : ""}
+      <a class="btn btn--secondary" href="#/mistakes">Review mistakes</a>
+    </div>
+    <section class="section-block">
+      <div class="section-header"><h2>Performance Breakdown</h2></div>
+      <div class="results-breakdowns">
+        <div><h3>By topic</h3>${breakdownRows(topicRows)}</div>
+        <div><h3>By source</h3>${breakdownRows(sourceRows)}</div>
+      </div>
+    </section>
     <section class="section-block"><div class="section-header"><h2>Answer Review</h2></div>
       <div class="revision-list">${session.questionIds.map((id, index) => {
-        const question = app.questionMap.get(id);
+        const question = questionForSession(session, id);
         const answer = session.answers[id];
         return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${answer ? (answer.correct ? "Correct" : "Wrong") : "Skipped"}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}</details>`;
       }).join("")}</div>
     </section>`;
+}
+
+function sessionBreakdown(session, dimension) {
+  const groups = new Map();
+  for (const id of session.questionIds) {
+    const question = questionForSession(session, id);
+    const names =
+      dimension === "source"
+        ? [...new Set(question.sources.map((source) => sourceLabel(source)))]
+        : [question.topic || "General"];
+    for (const name of names) {
+      const group = groups.get(name) || { name, correct: 0, answered: 0 };
+      const answer = session.answers[id];
+      if (answer) {
+        group.answered += 1;
+        if (answer.correct) group.correct += 1;
+      }
+      groups.set(name, group);
+    }
+  }
+  return [...groups.values()]
+    .map((group) => ({
+      ...group,
+      accuracy: group.answered ? Math.round((group.correct / group.answered) * 100) : 0,
+    }))
+    .sort((left, right) => left.accuracy - right.accuracy || left.name.localeCompare(right.name));
+}
+
+function breakdownRows(rows) {
+  return `<div class="breakdown-list">${rows
+    .map(
+      (row) =>
+        `<div class="breakdown-row"><span><strong>${escapeHtml(row.name)}</strong><small>${row.correct}/${row.answered} correct</small></span><strong>${row.accuracy}%</strong></div>`
+    )
+    .join("")}</div>`;
 }
 
 function bankFiltersMarkup() {
@@ -302,13 +373,23 @@ function bankFiltersMarkup() {
     <label class="field"><span>Type</span><select class="select" name="type"><option value="all">All types</option>${types.map((type) => `<option value="${type}" ${app.filters.type === type ? "selected" : ""}>${escapeHtml(type)}</option>`).join("")}</select></label>
     <label class="field"><span>Topic</span><select class="select" name="topic"><option value="all">All topics</option>${topics.map((topic) => `<option value="${escapeHtml(topic)}" ${app.filters.topic === topic ? "selected" : ""}>${escapeHtml(topic)}</option>`).join("")}</select></label>
     <label class="field"><span>Status</span><select class="select" name="status"><option value="all">Any status</option><option value="unanswered" ${app.filters.status === "unanswered" ? "selected" : ""}>Unanswered</option><option value="correct" ${app.filters.status === "correct" ? "selected" : ""}>Correct</option><option value="wrong" ${app.filters.status === "wrong" ? "selected" : ""}>Wrong</option></select></label>
+    <label class="field"><span>Saved / review</span><select class="select" name="focus">
+      <option value="all">All questions</option>
+      <option value="bookmarked" ${app.filters.focus === "bookmarked" ? "selected" : ""}>Bookmarked only</option>
+      <option value="review" ${app.filters.focus === "review" ? "selected" : ""}>Manual review only</option>
+    </select></label>
   </form>`;
 }
 
-function questionListMarkup(questions, emptyCopy = "No questions match these filters.") {
+function questionListMarkup(
+  questions,
+  emptyCopy = "No questions match these filters.",
+  { showProgress = false } = {}
+) {
   if (!questions.length) return `<div class="empty-state"><strong>${escapeHtml(emptyCopy)}</strong></div>`;
   return `<div class="bank-list">${questions.map((question) => {
     const status = app.state.progress[question.id]?.status || "unanswered";
+    const progress = app.state.progress[question.id];
     const sourceRefs = question.sources.map((source) => `${sourceLabel(source)} p.${source.page}`).join(" • ");
     return `<details class="bank-row">
       <summary>
@@ -318,7 +399,12 @@ function questionListMarkup(questions, emptyCopy = "No questions match these fil
       </summary>
       <div class="bank-row__details">
         ${renderQuestion(question)}
-        ${renderAnswerReview(question, null)}
+        ${renderAnswerReview(question, showProgress && progress ? progress.lastAnswer : null)}
+        ${
+          showProgress && progress
+            ? `<p class="attempt-note"><strong>Attempts:</strong> ${progress.attempts} • <strong>Incorrect attempts:</strong> ${progress.incorrectAttempts}</p>`
+            : ""
+        }
         <button class="btn btn--secondary" data-action="bookmark" data-id="${question.id}">${app.state.bookmarks.includes(question.id) ? "★ Remove bookmark" : "☆ Bookmark"}</button>
       </div>
     </details>`;
@@ -326,18 +412,34 @@ function questionListMarkup(questions, emptyCopy = "No questions match these fil
 }
 
 function bankMarkup() {
-  const filtered = filterQuestions(app.questions, { ...app.filters, progress: app.state.progress });
+  const filtered = filterQuestions(app.questions, {
+    ...app.filters,
+    bookmarked: app.filters.focus === "bookmarked",
+    needsReview: app.filters.focus === "review" ? true : undefined,
+    bookmarks: app.state.bookmarks,
+    progress: app.state.progress,
+  });
   return `${heading("Question Bank", `Browse ${app.questions.length} unique questions covering all ${app.bank.sourceEntryCount} source entries.`)}
     ${bankFiltersMarkup()}
     <section class="section-block section-block--flat"><div class="section-header"><h2>${filtered.length} questions</h2><span>Official PDF content only</span></div>${questionListMarkup(filtered)}</section>`;
 }
 
 function revisionMarkup() {
-  const summary = buildRevisionSummary(app.questions, app.state);
+  const topics = [...new Set(app.questions.map((question) => question.topic))].sort();
+  const revisionQuestions = filterQuestions(app.questions, app.revisionFilters);
+  const summary = buildRevisionSummary(revisionQuestions, app.state);
   const weakRows = summary.weakTopics.length
     ? summary.weakTopics.map((topic) => `<div class="breakdown-row"><span><strong>${escapeHtml(topic.topic)}</strong><small>${topic.answered} answered • ${topic.wrong} currently wrong</small></span><strong>${topic.accuracy}%</strong></div>`).join("")
     : `<div class="empty-state"><strong>Complete some questions to identify weak topics.</strong></div>`;
   return `${heading("Revision Summary", "A focused summary built from your answers, mistakes, and saved questions.")}
+    <form class="filter-bar" data-revision-filter-form>
+      <label class="field"><span>Source</span><select class="select" name="source">
+        <option value="all">Both sources</option>
+        <option value="bank-105" ${app.revisionFilters.source === "bank-105" ? "selected" : ""}>105 Question Bank</option>
+        <option value="pretest-70" ${app.revisionFilters.source === "pretest-70" ? "selected" : ""}>70 Question Pre-Test</option>
+      </select></label>
+      <label class="field"><span>Topic</span><select class="select" name="topic"><option value="all">All topics</option>${topics.map((topic) => `<option value="${escapeHtml(topic)}" ${app.revisionFilters.topic === topic ? "selected" : ""}>${escapeHtml(topic)}</option>`).join("")}</select></label>
+    </form>
     <div class="revision-cards">
       <a class="mini-card" href="#/mistakes"><span>Mistakes to review</span><strong>${summary.mistakes.length}</strong></a>
       <a class="mini-card" href="#/bookmarks"><span>Bookmarked questions</span><strong>${summary.bookmarks.length}</strong></a>
@@ -345,7 +447,7 @@ function revisionMarkup() {
     </div>
     <section class="section-block"><div class="section-header"><h2>Weak Topics</h2></div><div class="breakdown-list">${weakRows}</div></section>
     <section class="section-block"><div class="section-header"><h2>Quick Revision: Official Answers</h2></div>
-      ${questionListMarkup([...summary.mistakes, ...summary.bookmarks.filter((question) => !summary.mistakes.includes(question))].slice(0, 20), "Mistakes and bookmarks will appear here for quick revision.")}
+      ${questionListMarkup([...summary.mistakes, ...summary.bookmarks.filter((question) => !summary.mistakes.includes(question))].slice(0, 20), "Mistakes and bookmarks will appear here for quick revision.", { showProgress: true })}
     </section>`;
 }
 
@@ -354,8 +456,11 @@ function collectionMarkup(route) {
   const selected = isMistakes
     ? app.questions.filter((question) => app.state.progress[question.id]?.status === "wrong")
     : app.questions.filter((question) => app.state.bookmarks.includes(question.id));
-  return `${heading(isMistakes ? "Mistakes" : "Bookmarks", isMistakes ? "Review questions whose latest answer was incorrect." : "Your saved official questions and answers.")}
-    <section class="section-block section-block--flat">${questionListMarkup(selected, isMistakes ? "No current mistakes. Keep practicing." : "No bookmarks yet.")}</section>`;
+  const actions = selected.length
+    ? `<button class="btn btn--primary" data-action="start-focused" data-ids="${selected.map((question) => question.id).join(",")}">Practice this collection</button>`
+    : "";
+  return `${heading(isMistakes ? "Mistakes" : "Bookmarks", isMistakes ? "Review your selected answer, the official answer, and attempt history." : "Your saved official questions and answers.", actions)}
+    <section class="section-block section-block--flat">${questionListMarkup(selected, isMistakes ? "No current mistakes. Keep practicing." : "No bookmarks yet.", { showProgress: true })}</section>`;
 }
 
 function render() {
@@ -376,7 +481,7 @@ function render() {
 
   const session = route === "practice" ? app.state.activePractice : route === "exam" ? app.state.activeExam : null;
   if (session) {
-    const question = app.questionMap.get(session.questionIds[session.index]);
+    const question = questionForSession(session, session.questionIds[session.index]);
     applySavedResponse(question, session.answers[question.id]?.response);
     bindOrdering();
     if (session.mode === "exam" && session.durationMinutes) {
@@ -384,7 +489,7 @@ function render() {
         const remaining = getRemainingSeconds(session);
         const label = main.querySelector("[data-timer]");
         if (label) label.textContent = formatDuration(remaining);
-        if (remaining === 0) completeActiveSession("exam");
+        if (remaining === 0) completeActiveSession("exam", true);
       }, 1000);
     }
   }
@@ -407,12 +512,16 @@ function activeSession() {
 }
 
 function updateActiveSession(session) {
-  persist({ ...app.state, [session.mode === "exam" ? "activeExam" : "activePractice"]: session });
+  persist({
+    ...app.state,
+    lastQuestionId: session.questionIds[session.index] || null,
+    [session.mode === "exam" ? "activeExam" : "activePractice"]: session,
+  });
 }
 
 function submitCurrentAnswer() {
   const session = activeSession();
-  const question = app.questionMap.get(session.questionIds[session.index]);
+  const question = questionForSession(session, session.questionIds[session.index]);
   const form = main.querySelector("[data-question-form]");
   const response = responseFromForm(question, form);
   const nextSession = answerSessionQuestion(session, question, response);
@@ -422,7 +531,7 @@ function submitCurrentAnswer() {
     persist(
       recordAttempt(app.state, {
         questionId: question.id,
-        selectedAnswer: response,
+        selectedAnswer: canonicalResponse(question, response),
         correct: result.correct,
         mode: session.mode,
       })
@@ -436,9 +545,17 @@ function submitCurrentAnswer() {
   }
 }
 
-function completeActiveSession(mode) {
+function completeActiveSession(mode, force = false) {
   const session = mode === "exam" ? app.state.activeExam : app.state.activePractice;
   if (!session) return;
+  if (
+    !force &&
+    !confirm(
+      `Finish this ${mode === "exam" ? "mock exam" : "practice session"} now? Unanswered questions will be counted as skipped.`
+    )
+  ) {
+    return;
+  }
   const finished = finishSession(session);
   let next = {
     ...app.state,
@@ -450,11 +567,11 @@ function completeActiveSession(mode) {
   };
   if (mode === "exam") {
     for (const [questionId, answer] of Object.entries(finished.answers)) {
-      const question = app.questionMap.get(questionId);
+      const question = questionForSession(finished, questionId);
       if (question.correctAnswer !== null && answer.possible > 0) {
         next = recordAttempt(next, {
           questionId,
-          selectedAnswer: answer.response,
+          selectedAnswer: canonicalResponse(question, answer.response),
           correct: answer.correct,
           mode: "exam",
         });
@@ -470,16 +587,57 @@ function completeActiveSession(mode) {
 function startSession(form) {
   const data = new FormData(form);
   const mode = form.dataset.mode;
-  const session = createSession(app.questions, {
-    mode,
-    count: Number(data.get("count")),
+  const status = data.get("status") || "all";
+  const candidates = filterQuestions(app.questions, {
     source: data.get("source"),
     topic: data.get("topic"),
+    type: data.get("type"),
+    status: status === "bookmarked" ? "all" : status,
+    bookmarked: status === "bookmarked",
+    bookmarks: app.state.bookmarks,
+    progress: app.state.progress,
+  });
+  let session = createSession(candidates, {
+    mode,
+    count: Number(data.get("count")),
+    source: "all",
+    topic: "all",
     durationMinutes: Number(data.get("durationMinutes") || 0),
     shuffle: data.get("shuffle") === "on",
+    shuffleChoices: data.get("shuffleChoices") === "on",
     excludeReview: data.get("excludeReview") === "on",
   });
+  if (session.config.shuffleChoices) {
+    session = {
+      ...session,
+      questionOverrides: Object.fromEntries(
+        session.questionIds.map((id) => [id, shuffleChoices(app.questionMap.get(id))])
+      ),
+    };
+  }
   updateActiveSession(session);
+  render();
+}
+
+function canonicalResponse(question, response) {
+  if (!question.choiceOrder || response === null || response === undefined) return response;
+  if (question.type === "mcq") return question.choiceOrder[response];
+  if (question.type === "multi-select") {
+    return response.map((index) => question.choiceOrder[index]).sort((a, b) => a - b);
+  }
+  return response;
+}
+
+function startFocusedPractice(ids) {
+  const questions = ids.map((id) => app.questionMap.get(id)).filter(Boolean);
+  const session = createSession(questions, {
+    mode: "practice",
+    count: questions.length,
+    shuffle: false,
+    excludeReview: false,
+  });
+  updateActiveSession(session);
+  location.hash = "#/practice";
   render();
 }
 
@@ -514,12 +672,27 @@ main.addEventListener("input", (event) => {
   }
 });
 
+main.addEventListener("change", (event) => {
+  const form = event.target.closest("[data-revision-filter-form]");
+  if (!form) return;
+  app.revisionFilters = Object.fromEntries(new FormData(form).entries());
+  main.innerHTML = revisionMarkup();
+});
+
 main.addEventListener("click", (event) => {
   const button = event.target.closest("[data-action]");
   if (!button) return;
   const action = button.dataset.action;
   if (action === "continue-practice") {
     location.hash = "#/practice";
+    return;
+  }
+  if (action === "continue-exam") {
+    location.hash = "#/exam";
+    return;
+  }
+  if (action === "start-focused" || action === "retry-wrong") {
+    startFocusedPractice((button.dataset.ids || "").split(",").filter(Boolean));
     return;
   }
   if (action === "export") downloadProgress();
@@ -587,6 +760,7 @@ function applyTheme(theme) {
 themeToggle.addEventListener("click", () => {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   localStorage.setItem("its-study-theme", next);
+  persist({ ...app.state, theme: next });
   applyTheme(next);
 });
 
@@ -596,17 +770,42 @@ document.querySelector("#mobile-more").addEventListener("click", () => {
 });
 window.addEventListener("hashchange", render);
 window.addEventListener("keydown", (event) => {
-  if (event.target.matches("input, select, textarea")) return;
+  if (
+    event.target.matches("input, select, textarea") ||
+    event.target.isContentEditable
+  ) {
+    return;
+  }
   const session = activeSession();
   if (!session) return;
   if (event.key === "ArrowLeft") main.querySelector('[data-action="previous"]')?.click();
   if (event.key === "ArrowRight") main.querySelector('[data-action="next"]')?.click();
   if (event.key === "Enter") main.querySelector('[data-action="submit-answer"]')?.click();
+  if (/^[1-4]$/.test(event.key)) {
+    const control = main.querySelector(
+      `[data-question-form] [name="answer"][value="${Number(event.key) - 1}"]`
+    );
+    if (control) {
+      if (control.type === "checkbox") control.checked = !control.checked;
+      else control.checked = true;
+    }
+  }
+  if (event.key.toLowerCase() === "t" || event.key.toLowerCase() === "f") {
+    const value = event.key.toLowerCase() === "t" ? "true" : "false";
+    const rows = [...main.querySelectorAll(".statement-row")];
+    const row = rows.find((item) => !item.querySelector("input:checked")) || rows[0];
+    const control = row?.querySelector(`input[value="${value}"]`);
+    if (control) control.checked = true;
+  }
+  if (event.key.toLowerCase() === "b") {
+    main.querySelector('[data-action="bookmark"]')?.click();
+  }
 });
 
 async function start() {
   const savedTheme =
     localStorage.getItem("its-study-theme") ||
+    app.state.theme ||
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   applyTheme(savedTheme);
   try {

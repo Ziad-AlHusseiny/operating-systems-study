@@ -41,6 +41,7 @@ test("choice shuffling remaps a single correct answer", () => {
   const values = [0.9, 0.1];
   const shuffled = shuffleChoices(question, () => values.shift());
   assert.equal(shuffled.options[shuffled.correctAnswer], "B");
+  assert.equal(shuffled.choiceOrder[shuffled.correctAnswer], 1);
   assert.deepEqual(question.options, ["A", "B", "C"]);
 });
 

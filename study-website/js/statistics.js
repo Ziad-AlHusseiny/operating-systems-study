@@ -70,7 +70,7 @@ export function getSessionStats(questionIds, answers, durationSeconds = 0) {
   const values = Object.values(answers || {});
   const correct = values.filter((answer) => answer.correct === true).length;
   const wrong = values.filter((answer) => answer.correct === false).length;
-  const skipped = Math.max(0, total - values.length);
+  const skipped = Math.max(0, total - correct - wrong);
   return {
     total,
     correct,

@@ -697,6 +697,11 @@ svg {
   border-color: var(--primary);
 }
 
+.answer-option:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
 .answer-option.is-selected {
   border-color: var(--primary);
   background: var(--primary-soft);
@@ -1549,6 +1554,21 @@ svg {
   gap: 10px;
 }
 
+.results-breakdowns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.results-breakdowns h3 {
+  margin: 0 0 12px;
+}
+
+.attempt-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .revision-item {
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -1567,6 +1587,10 @@ svg {
 
 @media (max-width: 680px) {
   .revision-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .results-breakdowns {
     grid-template-columns: 1fr;
   }
 

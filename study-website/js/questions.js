@@ -91,11 +91,14 @@ export function shuffleChoices(question, random = Math.random) {
   const correctAnswer =
     question.type === "mcq"
       ? newIndexByOriginal.get(question.correctAnswer)
-      : question.correctAnswer.map((index) => newIndexByOriginal.get(index)).sort();
+      : question.correctAnswer
+          .map((index) => newIndexByOriginal.get(index))
+          .sort((left, right) => left - right);
 
   return {
     ...question,
     options: indexed.map((item) => item.value),
     correctAnswer,
+    choiceOrder: indexed.map((item) => item.originalIndex),
   };
 }

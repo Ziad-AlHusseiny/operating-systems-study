@@ -14,6 +14,7 @@ import {
 import {
   getDashboardStats,
   getPerformanceBreakdown,
+  getSessionStats,
 } from "../js/statistics.js";
 
 function memoryStorage(initial = {}) {
@@ -106,4 +107,16 @@ test("performance breakdown groups by topic", () => {
     { name: "Networking", total: 2, answered: 2, correct: 1, wrong: 1, accuracy: 50 },
     { name: "Security", total: 1, answered: 1, correct: 1, wrong: 0, accuracy: 100 },
   ]);
+});
+
+test("unscored source-review answers remain in skipped totals", () => {
+  const stats = getSessionStats(
+    ["q1"],
+    { q1: { correct: null, possible: 0 } },
+    10
+  );
+  assert.deepEqual(
+    { correct: stats.correct, wrong: stats.wrong, skipped: stats.skipped },
+    { correct: 0, wrong: 0, skipped: 1 }
+  );
 });
