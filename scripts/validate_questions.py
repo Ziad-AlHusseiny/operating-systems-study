@@ -754,7 +754,13 @@ def main() -> None:
         ROOT / "study-website" / "assets" / "source-pages" / "pretest-page-46.jpg"
     )
     output_asset.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source_asset, output_asset)
+    if source_asset.exists():
+        shutil.copyfile(source_asset, output_asset)
+    elif not output_asset.exists():
+        raise FileNotFoundError(
+            "The pre-test page 46 evidence image is missing from both the extraction "
+            "cache and the delivered source-page assets."
+        )
     DATA_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
