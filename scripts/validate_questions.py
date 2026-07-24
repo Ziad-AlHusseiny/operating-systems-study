@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -597,6 +598,7 @@ def attach_pretest_sources(
                 "Answer conflict: pre-test PDF page 46 highlights Differential, "
                 "while the 105-question bank PDF page 38 marks Incremental."
             )
+            question["sourceImage"] = "./assets/source-pages/pretest-page-46.jpg"
             questions.append(question)
             conflicts += 1
             notes.append(question["reviewNotes"])
@@ -747,6 +749,12 @@ def main() -> None:
         "questions": questions,
     }
     DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    source_asset = ROOT / "extraction" / "source-pages" / "pretest-46.jpg"
+    output_asset = (
+        ROOT / "study-website" / "assets" / "source-pages" / "pretest-page-46.jpg"
+    )
+    output_asset.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source_asset, output_asset)
     DATA_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",

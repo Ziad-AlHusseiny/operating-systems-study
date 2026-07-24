@@ -1,3 +1,4 @@
 .worktrees/
 tmp/
 extraction/source-pages/
+.playwright-cli/

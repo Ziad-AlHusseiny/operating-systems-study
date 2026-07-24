@@ -2,6 +2,12 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export function escapeHtml(value = "") {
   return String(value)
+    .replaceAll("â€¢", "•")
+    .replaceAll("â€”", "—")
+    .replaceAll("â€“", "–")
+    .replaceAll("â€™", "’")
+    .replaceAll("â€œ", "“")
+    .replaceAll("â€", "”")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -29,6 +35,12 @@ export function normalizeResponse(question, input = {}) {
         .filter(Number.isInteger)
         .sort((a, b) => a - b);
     case "true-false-group":
+      if (typeof FormData !== "undefined" && input instanceof FormData) {
+        return (question.statements || []).map((_, index) => {
+          const value = input.get(`statement-${index}`);
+          return value === null ? null : value === "true";
+        });
+      }
       return valuesFrom(input, "statement")
         .slice(0, question.statements?.length || Infinity)
         .map((value) => value === true || value === "true");

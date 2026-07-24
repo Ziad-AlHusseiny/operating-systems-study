@@ -20,6 +20,18 @@ test("scores grouped true-false with partial detail", () => {
   });
 });
 
+test("does not credit an unanswered false statement", () => {
+  const question = {
+    type: "true-false-group",
+    correctAnswer: [false],
+  };
+  assert.deepEqual(scoreResponse(question, [null]), {
+    correct: false,
+    earned: 0,
+    possible: 1,
+  });
+});
+
 test("scores matching independent of response property order", () => {
   const question = {
     type: "matching",
