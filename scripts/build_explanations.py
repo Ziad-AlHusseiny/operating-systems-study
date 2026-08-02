@@ -57,7 +57,7 @@ def main() -> None:
     )
     output_path = root / "study-website" / "data" / "explanations-ar.json"
     output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Validated {len(payload['explanations'])} explanations.")
+    print(f"Validated {len(payload['explanations'])} Arabic explanations.")
 
 
 if __name__ == "__main__":

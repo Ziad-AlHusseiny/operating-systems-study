@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
 const questions = JSON.parse(
@@ -9,6 +10,16 @@ const payload = JSON.parse(
   await readFile(new URL("../data/explanations-ar.json", import.meta.url), "utf8")
 );
 const arabic = /[\u0600-\u06ff]/;
+
+test("builder reports the required Arabic delivery count", () => {
+  const result = spawnSync("python", ["scripts/build_explanations.py"], {
+    cwd: new URL("../../", import.meta.url),
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout.trim(), "Validated 103 Arabic explanations.");
+});
 
 test("Arabic explanations cover every canonical question exactly once", () => {
   const questionIds = questions.map((question) => question.id).sort();
