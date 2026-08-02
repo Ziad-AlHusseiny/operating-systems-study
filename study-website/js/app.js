@@ -5,8 +5,10 @@ import {
   validateExplanationPayload,
 } from "./explanations.js";
 import {
+  explanationFocusSelector,
   increaseVisibleCount,
   limitExplanationEntries,
+  renderMobileMoreMenu,
 } from "./explanations-view.js";
 import {
   escapeHtml,
@@ -43,6 +45,14 @@ const themeLabel = document.querySelector("#theme-toggle-label");
 const sidebarCollapse = document.querySelector("#sidebar-collapse");
 const fileInput = document.querySelector("#progress-file-input");
 const toastRegion = document.querySelector("#toast-region");
+const mobileMoreSlot = document.querySelector("#mobile-more-slot");
+
+mobileMoreSlot.innerHTML = renderMobileMoreMenu();
+mobileMoreSlot.addEventListener("click", (event) => {
+  if (event.target.closest("a")) {
+    mobileMoreSlot.querySelector("details")?.removeAttribute("open");
+  }
+});
 
 const app = {
   bank: null,
@@ -562,6 +572,7 @@ function render() {
   clearInterval(app.timer);
   const route = currentRoute();
   document.querySelectorAll("[data-route]").forEach((item) => item.classList.toggle("is-active", item.dataset.route === route));
+  mobileMoreSlot.querySelector("details")?.removeAttribute("open");
 
   if (route === "dashboard") main.innerHTML = dashboardMarkup();
   else if (route === "practice") {
@@ -759,13 +770,14 @@ main.addEventListener("submit", (event) => {
 main.addEventListener("input", (event) => {
   const explanationForm = event.target.closest("[data-explanation-filter-form]");
   if (explanationForm) {
+    const focusSelector = explanationFocusSelector({ filterName: event.target.name });
     app.explanationFilters = Object.fromEntries(new FormData(explanationForm).entries());
     app.visibleExplanationCount = 15;
     main.innerHTML = explanationsMarkup();
+    const focusTarget = focusSelector ? main.querySelector(focusSelector) : null;
+    focusTarget?.focus();
     if (event.target.name === "search") {
-      const search = main.querySelector('[data-explanation-filter-form] [name="search"]');
-      search?.focus();
-      search?.setSelectionRange(search.value.length, search.value.length);
+      focusTarget?.setSelectionRange(focusTarget.value.length, focusTarget.value.length);
     }
     return;
   }
@@ -830,10 +842,18 @@ main.addEventListener("click", (event) => {
     }
   }
   if (action === "bookmark") {
+    const explanationFocus =
+      currentRoute() === "explanations"
+        ? explanationFocusSelector({ questionId: button.dataset.id })
+        : null;
     persist(toggleBookmark(app.state, button.dataset.id));
     toast(app.state.bookmarks.includes(button.dataset.id) ? "Question bookmarked." : "Bookmark removed.");
-    if (currentRoute() === "explanations") main.innerHTML = explanationsMarkup();
-    else render();
+    if (explanationFocus) {
+      main.innerHTML = explanationsMarkup();
+      main.querySelector(explanationFocus)?.focus();
+      return;
+    }
+    render();
   }
 
   const session = activeSession();
@@ -891,9 +911,6 @@ themeToggle.addEventListener("click", () => {
 });
 
 sidebarCollapse.addEventListener("click", () => appShell.classList.toggle("is-collapsed"));
-document.querySelector("#mobile-more").addEventListener("click", () => {
-  location.hash = "#/revision";
-});
 window.addEventListener("hashchange", render);
 window.addEventListener("keydown", (event) => {
   if (

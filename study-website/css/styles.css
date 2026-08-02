@@ -13,12 +13,15 @@
   --primary: #0878f9;
   --primary-hover: #0565d6;
   --primary-soft: #eaf3ff;
+  --primary-ink: #075aaa;
   --success: #159947;
   --success-soft: #eaf8ef;
+  --success-ink: #087333;
   --danger: #d82424;
   --danger-soft: #fff0f0;
   --warning: #a86600;
   --warning-soft: #fff7e8;
+  --warning-ink: #765000;
   --focus: #64b5ff;
   --shadow-dialog: 0 16px 48px rgb(11 23 48 / 18%);
   --sidebar-width: 224px;
@@ -44,12 +47,15 @@
   --primary: #3f9cff;
   --primary-hover: #6cb3ff;
   --primary-soft: #102b4c;
+  --primary-ink: #3f9cff;
   --success: #47c977;
   --success-soft: #102c1c;
+  --success-ink: #47c977;
   --danger: #ff6b6b;
   --danger-soft: #351718;
   --warning: #f1b850;
   --warning-soft: #30240f;
+  --warning-ink: #f1b850;
   --focus: #82c1ff;
 }
 
@@ -1165,6 +1171,67 @@ svg {
   .mobile-nav__item.is-active {
     color: var(--primary);
   }
+
+  .mobile-nav__more,
+  .mobile-more,
+  .mobile-more > summary {
+    height: 100%;
+    min-width: 0;
+  }
+
+  .mobile-nav__more,
+  .mobile-more {
+    position: relative;
+  }
+
+  .mobile-more > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mobile-more > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-more[open] > summary,
+  .mobile-more:has(.mobile-more__link.is-active) > summary {
+    color: var(--primary-ink);
+  }
+
+  .mobile-more__menu {
+    position: absolute;
+    right: 8px;
+    bottom: calc(100% + 8px);
+    z-index: 35;
+    display: grid;
+    width: min(260px, calc(100vw - 24px));
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow-dialog);
+  }
+
+  .mobile-more__link {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 650;
+    text-align: left;
+  }
+
+  .mobile-more__link + .mobile-more__link {
+    border-top: 1px solid var(--border);
+  }
+
+  .mobile-more__link:hover,
+  .mobile-more__link.is-active {
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+  }
 }
 
 @media (max-width: 680px) {
@@ -1624,7 +1691,7 @@ svg {
   height: 28px;
   place-items: center;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--primary-ink);
   color: #ffffff;
   font-family: Georgia, serif;
   font-size: 16px;
@@ -1756,7 +1823,7 @@ svg {
 .explanation-bookmark[aria-pressed="true"] {
   border-color: color-mix(in srgb, var(--warning) 58%, var(--border));
   background: var(--warning-soft);
-  color: var(--warning);
+  color: var(--warning-ink);
 }
 
 .explanation-card__source {
@@ -1770,7 +1837,7 @@ svg {
 
 .explanation-card__eyebrow {
   margin: 0 0 7px;
-  color: var(--primary);
+  color: var(--primary-ink);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -1828,7 +1895,7 @@ svg {
 }
 
 .explanation-official-answer h3 {
-  color: var(--success);
+  color: var(--success-ink);
 }
 
 .explanation-body {
@@ -1837,7 +1904,7 @@ svg {
 }
 
 .explanation-body h3 {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .explanation-body .explanation-paragraph + .explanation-paragraph {
@@ -1850,7 +1917,7 @@ svg {
 }
 
 .explanation-note h3 {
-  color: var(--warning);
+  color: var(--warning-ink);
 }
 
 .explanation-conflict {
