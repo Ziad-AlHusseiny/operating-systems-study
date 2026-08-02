@@ -9,8 +9,12 @@ const ARABIC = /[\u0600-\u06ff]/;
 const CONFLICT = /تعارض|اختلاف|conflict/i;
 const DIFFERENTIAL = /(?<![A-Za-z0-9_])Differential(?![A-Za-z0-9_])/i;
 const INCREMENTAL = /(?<![A-Za-z0-9_])Incremental(?![A-Za-z0-9_])/i;
-const ANSWER_SELECTION =
-  /(?:الإجابة(?:\s+الصحيحة)?|الخيار\s+الصحيح)\s*(?:(?:هي|هو)\s*)?[:：=\-–—]?\s*(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])|(?:the\s+)?(?:correct\s+)?answer\s*(?:is\s*)?[:：=\-–—]?\s*(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])/i;
+const ANSWER_PHRASE =
+  /(?<![A-Za-z0-9_\u0600-\u06ff])(?:(?:the\s+)?(?:correct\s+)?answer|الإجابة(?:\s+الصحيحة)?|(?:الخيار|الاختيار)\s+الصحيح)(?![A-Za-z0-9_\u0600-\u06ff])/gi;
+const TECHNICAL_LABEL =
+  /(?<![A-Za-z0-9_\u0600-\u06ff])["'“”«»‘’]?\s*(?:(?:الـ|ال)\s*)?["'“”«»‘’]?\s*(?:Differential|Incremental)(?![A-Za-z0-9_\u0600-\u06ff])(?:\s*["'“”«»‘’])?/gi;
+const SENTENCE_BOUNDARY = /[.!?؟؛\r\n]+/;
+const MAX_SELECTION_SPAN = 120;
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -24,6 +28,26 @@ function hasExactFields(value, fields) {
 
 function isNonEmptyArabic(value) {
   return typeof value === "string" && value.trim().length > 0 && ARABIC.test(value);
+}
+
+function hasAnswerSelection(value) {
+  for (const sentence of value.split(SENTENCE_BOUNDARY)) {
+    const answerMatches = [...sentence.matchAll(ANSWER_PHRASE)];
+    const labelMatches = [...sentence.matchAll(TECHNICAL_LABEL)];
+    for (const answerMatch of answerMatches) {
+      for (const labelMatch of labelMatches) {
+        const answerEnd = answerMatch.index + answerMatch[0].length;
+        const labelEnd = labelMatch.index + labelMatch[0].length;
+        const gap = Math.max(
+          labelMatch.index - answerEnd,
+          answerMatch.index - labelEnd,
+          0
+        );
+        if (gap <= MAX_SELECTION_SPAN) return true;
+      }
+    }
+  }
+  return false;
 }
 
 function invalidPayload(reason) {
@@ -102,7 +126,7 @@ export function validateExplanationPayload(payload, questions) {
       if (!DIFFERENTIAL.test(combined) || !INCREMENTAL.test(combined)) {
         throw invalidPayload("q-103 must mention both Differential and Incremental");
       }
-      if (ANSWER_SELECTION.test(combined)) {
+      if (hasAnswerSelection(combined)) {
         throw invalidPayload("q-103 must not select an answer");
       }
     }

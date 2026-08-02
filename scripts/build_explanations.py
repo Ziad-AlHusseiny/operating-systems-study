@@ -14,16 +14,29 @@ INCREMENTAL = re.compile(
     r"(?<![A-Za-z0-9_])Incremental(?![A-Za-z0-9_])",
     re.IGNORECASE,
 )
-TECHNICAL_TERM = (
-    r"(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])"
-)
-ANSWER_SELECTION = re.compile(
-    rf"(?:الإجابة(?:\s+الصحيحة)?|الخيار\s+الصحيح)"
-    rf"\s*(?:(?:هي|هو)\s*)?[:：=\-–—]?\s*{TECHNICAL_TERM}"
-    rf"|(?:the\s+)?(?:correct\s+)?answer"
-    rf"\s*(?:is\s*)?[:：=\-–—]?\s*{TECHNICAL_TERM}",
+TOKEN_CHARACTERS = r"A-Za-z0-9_\u0600-\u06ff"
+ANSWER_PHRASE = re.compile(
+    rf"(?<![{TOKEN_CHARACTERS}])"
+    rf"(?:"
+    rf"(?:the\s+)?(?:correct\s+)?answer"
+    rf"|الإجابة(?:\s+الصحيحة)?"
+    rf"|(?:الخيار|الاختيار)\s+الصحيح"
+    rf")"
+    rf"(?![{TOKEN_CHARACTERS}])",
     re.IGNORECASE,
 )
+TECHNICAL_LABEL = re.compile(
+    rf"(?<![{TOKEN_CHARACTERS}])"
+    rf"[\"'“”«»‘’]?\s*"
+    rf"(?:(?:الـ|ال)\s*)?"
+    rf"[\"'“”«»‘’]?\s*"
+    rf"(?:Differential|Incremental)"
+    rf"(?![{TOKEN_CHARACTERS}])"
+    rf"(?:\s*[\"'“”«»‘’])?",
+    re.IGNORECASE,
+)
+SENTENCE_BOUNDARY = re.compile(r"[.!?؟؛\r\n]+")
+MAX_SELECTION_SPAN = 120
 REQUIRED_FIELDS = {"translation", "explanation", "note"}
 PART_RANGES = {
     "q001-026.json": (1, 26),
@@ -36,6 +49,22 @@ QUESTION_ID = re.compile(r"q-(\d{3})$")
 
 def is_non_empty_arabic(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip()) and bool(ARABIC.search(value))
+
+
+def has_answer_selection(value: str) -> bool:
+    for sentence in SENTENCE_BOUNDARY.split(value):
+        answer_matches = list(ANSWER_PHRASE.finditer(sentence))
+        label_matches = list(TECHNICAL_LABEL.finditer(sentence))
+        for answer_match in answer_matches:
+            for label_match in label_matches:
+                gap = max(
+                    label_match.start() - answer_match.end(),
+                    answer_match.start() - label_match.end(),
+                    0,
+                )
+                if gap <= MAX_SELECTION_SPAN:
+                    return True
+    return False
 
 
 def validate_entry(question_id: str, entry: object) -> list[str]:
@@ -67,7 +96,7 @@ def validate_entry(question_id: str, entry: object) -> list[str]:
             errors.append("q-103 must mention the unresolved source conflict")
         if not DIFFERENTIAL.search(combined) or not INCREMENTAL.search(combined):
             errors.append("q-103 must mention both Differential and Incremental")
-        if ANSWER_SELECTION.search(combined):
+        if has_answer_selection(combined):
             errors.append("q-103 must not select an answer")
     return errors
 

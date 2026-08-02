@@ -6,6 +6,17 @@ from pathlib import Path
 from scripts.build_explanations import build_payload, validate_entry
 
 
+SELECTION_CASES = json.loads(
+    (
+        Path(__file__).resolve().parents[1]
+        / "study-website"
+        / "tests"
+        / "fixtures"
+        / "q103-selection-cases.json"
+    ).read_text(encoding="utf-8")
+)
+
+
 VALID_ENTRY = {
     "translation": "ترجمة عربية واضحة.",
     "explanation": [
@@ -123,18 +134,6 @@ class ValidateEntryTests(unittest.TestCase):
                 )
 
     def test_q103_rejects_explicit_answer_selection_patterns(self) -> None:
-        selections = [
-            "الإجابة الصحيحة: Differential",
-            "الإجابة: Incremental",
-            "الخيار الصحيح هو Differential",
-            "الإجابة الصحيحة هي: Differential",
-            "الإجابة الصحيحة = Differential",
-            "Answer: Differential",
-            "the answer is Incremental",
-            "correct answer Differential",
-            "the correct answer is: Incremental",
-            "Answer = Incremental",
-        ]
         base = {
             **VALID_ENTRY,
             "translation": "يوجد تعارض بين المصدرين.",
@@ -144,13 +143,28 @@ class ValidateEntryTests(unittest.TestCase):
             ],
         }
 
-        for selection in selections:
+        for selection in SELECTION_CASES["reject"]:
             with self.subTest(selection=selection):
                 entry = {**base, "note": f"ملاحظة للمراجعة: {selection}."}
                 self.assertIn(
                     "q-103 must not select an answer",
                     validate_entry("q-103", entry),
                 )
+
+    def test_q103_selection_fixture_preserves_sentence_boundaries(self) -> None:
+        base = {
+            **VALID_ENTRY,
+            "translation": "يوجد تعارض بين المصدرين.",
+            "explanation": [
+                "يذكر المصدر الأول Differential دون ترجيح.",
+                "ويذكر المصدر الثاني Incremental دون ترجيح.",
+            ],
+        }
+
+        for neutral_text in SELECTION_CASES["allow"]:
+            with self.subTest(neutral_text=neutral_text):
+                entry = {**base, "note": f"ملاحظة عربية: {neutral_text}"}
+                self.assertEqual(validate_entry("q-103", entry), [])
 
     def test_q103_accepts_neutral_conflict_text(self) -> None:
         entry = {

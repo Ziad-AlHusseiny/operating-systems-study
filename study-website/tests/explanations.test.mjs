@@ -15,6 +15,9 @@ const payload = JSON.parse(
   await readFile(new URL("../data/explanations-ar.json", import.meta.url), "utf8")
 );
 const explanations = payload.explanations;
+const q103SelectionCases = JSON.parse(
+  await readFile(new URL("./fixtures/q103-selection-cases.json", import.meta.url), "utf8")
+);
 
 function clonePayload() {
   return structuredClone(payload);
@@ -237,20 +240,7 @@ test("q-103 requires conflict wording and standalone answer labels", () => {
 });
 
 test("q-103 rejects explicit Arabic and English answer selection", () => {
-  const selections = [
-    "الإجابة الصحيحة: Differential",
-    "الإجابة: Incremental",
-    "الخيار الصحيح هو Differential",
-    "الإجابة الصحيحة هي: Differential",
-    "الإجابة الصحيحة = Differential",
-    "Answer: Differential",
-    "the answer is Incremental",
-    "correct answer Differential",
-    "the correct answer is: Incremental",
-    "Answer = Incremental",
-  ];
-
-  for (const selection of selections) {
+  for (const selection of q103SelectionCases.reject) {
     const candidate = clonePayload();
     candidate.explanations["q-103"] = {
       translation: "يوجد تعارض غير محسوم بين المصدرين.",
@@ -264,6 +254,21 @@ test("q-103 rejects explicit Arabic and English answer selection", () => {
       () => validateExplanationPayload(candidate, questions),
       /q-103 must not select an answer/i
     );
+  }
+});
+
+test("q-103 selection parity fixture preserves sentence boundaries", () => {
+  for (const neutralText of q103SelectionCases.allow) {
+    const candidate = clonePayload();
+    candidate.explanations["q-103"] = {
+      translation: "يوجد تعارض غير محسوم بين المصدرين.",
+      explanation: [
+        "المصدر الأول يذكر Differential دون ترجيح.",
+        "المصدر الثاني يذكر Incremental دون ترجيح.",
+      ],
+      note: `ملاحظة عربية: ${neutralText}`,
+    };
+    assert.doesNotThrow(() => validateExplanationPayload(candidate, questions));
   }
 });
 
