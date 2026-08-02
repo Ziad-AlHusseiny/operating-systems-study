@@ -315,3 +315,66 @@ test("escapes items in a derived ordering official answer", () => {
   assert.ok(html.includes("&lt;script&gt;orderingOne()&lt;/script&gt;"));
   assert.ok(html.includes("&lt;script&gt;orderingTwo()&lt;/script&gt;"));
 });
+
+test("isolates English labels and a mixed technical official answer from Arabic direction", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["PowerShell <script>answer()</script> / إدارة"],
+      correctAnswer: 0,
+      needsReview: false,
+    },
+    {
+      translation: "ترجمة السؤال",
+      explanation: ["شرح المفهوم", "شرح الإجابة"],
+      note: "ملاحظة للمراجعة",
+    }
+  );
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(html, /<p class="explanation-guidance-label" lang="en" dir="ltr">/);
+  assert.match(html, /<h3 lang="en" dir="ltr">Arabic translation<\/h3>/);
+  assert.match(html, /<section class="explanation-official-answer" lang="en" dir="ltr">/);
+  assert.match(
+    html,
+    /<bdi class="official-answer-text" lang="en" dir="ltr">PowerShell &lt;script&gt;answer\(\)&lt;\/script&gt; \/ إدارة<\/bdi>/
+  );
+  assert.match(html, /<h3 lang="en" dir="ltr">Explanation<\/h3>/);
+  assert.match(html, /<h3 lang="en" dir="ltr">Revision note<\/h3>/);
+  assert.match(html, /<section class="explanation-translation">[\s\S]*<p>ترجمة السؤال<\/p>/);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("isolates and escapes the English source-conflict warning from Arabic direction", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "source-review",
+      correctAnswer: null,
+      needsReview: true,
+      reviewNotes: "Official <script>review()</script> sources disagree.",
+    },
+    {
+      translation: "ترجمة التعارض",
+      explanation: ["شرح التعارض", "سبب عدم اختيار إجابة"],
+      note: "راجع المصدرين",
+    }
+  );
+
+  assert.match(
+    html,
+    /<section class="explanation-conflict" role="alert" lang="en" dir="ltr">/
+  );
+  assert.match(html, /<h3>Answer review warning<\/h3>/);
+  assert.ok(html.includes("Official &lt;script&gt;review()&lt;/script&gt; sources disagree."));
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("isolates the English missing state from Arabic direction", () => {
+  const html = renderArabicExplanation({ type: "mcq", correctAnswer: 0 }, null);
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(
+    html,
+    /<p class="explanation-unavailable" lang="en" dir="ltr">Arabic explanation is unavailable for this question\.<\/p>/
+  );
+});
