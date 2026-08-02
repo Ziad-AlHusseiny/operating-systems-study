@@ -33,7 +33,7 @@
 
 ## Arabic guidance maintenance
 
-- Editable entries are split across `content/explanations-ar/q001-026.json`, `q027-052.json`, `q053-078.json`, and `q079-103.json`.
+- Editable entries are split across `content/explanations-ar/q001-026.json`, `content/explanations-ar/q027-052.json`, `content/explanations-ar/q053-078.json`, and `content/explanations-ar/q079-103.json`.
 - Run `python scripts/build_explanations.py` from the project root to merge the parts, require exact canonical-ID coverage, validate Arabic fields, and regenerate `study-website/data/explanations-ar.json`.
 - Correct guidance in the matching content-part entry without changing the canonical prompt, official answer, or source references.
 - Never select an answer for an unresolved official-source conflict. Preserve `needsReview`, the source references, and the unscored behavior.

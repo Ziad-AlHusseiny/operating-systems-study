@@ -1,8 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 const dataUrl = new URL("../data/questions.json", import.meta.url);
+const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
+const extractionReportUrl = new URL(
+  "../QUESTION_EXTRACTION_REPORT.md",
+  import.meta.url
+);
 
 async function loadData() {
   return JSON.parse(await readFile(dataUrl, "utf8"));
@@ -53,4 +60,19 @@ test("unresolved content is clearly reported instead of guessed", async () => {
     assert.equal(question.correctAnswer, null);
     assert.ok(question.reviewNotes.trim().length > 0);
   }
+});
+
+test("question validation preserves Arabic guidance maintenance documentation", async () => {
+  execFileSync("python", ["scripts/validate_questions.py"], {
+    cwd: projectRoot,
+    encoding: "utf8",
+  });
+
+  const report = await readFile(extractionReportUrl, "utf8");
+  assert.match(report, /^## Arabic study guidance$/m);
+  assert.match(report, /^## Arabic guidance maintenance$/m);
+  assert.match(report, /python scripts\/build_explanations\.py/);
+  assert.match(report, /content\/explanations-ar\/q079-103\.json/);
+  assert.match(report, /never during an active Mock Exam/);
+  assert.match(report, /Never select an answer for an unresolved official-source conflict/);
 });

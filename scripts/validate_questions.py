@@ -700,6 +700,23 @@ def create_report(
         )
     lines.extend([
         "",
+        "## Arabic study guidance",
+        "",
+        "- `data/explanations-ar.json` contains 103 generated Arabic translations and study explanations, one for each canonical question.",
+        "- The generated guidance is clearly labeled in the site and remains separate from official PDF questions and answers.",
+        "- Search covers English prompts plus Arabic translations, explanation paragraphs, and revision notes; source, topic, and type filters can be combined.",
+        "- Guidance appears after Practice answers and inside Question Bank and Exam Result review disclosures, but never during an active Mock Exam.",
+        "- The guidance does not resolve `q-103`; it describes the conflict and directs learners to pre-test PDF page 46 and 105-question bank PDF page 38.",
+        "",
+        "## Arabic guidance maintenance",
+        "",
+        "- Editable entries are split across `content/explanations-ar/q001-026.json`, `content/explanations-ar/q027-052.json`, `content/explanations-ar/q053-078.json`, and `content/explanations-ar/q079-103.json`.",
+        "- Run `python scripts/build_explanations.py` from the project root to merge the parts, require exact canonical-ID coverage, validate Arabic fields, and regenerate `study-website/data/explanations-ar.json`.",
+        "- Correct guidance in the matching content-part entry without changing the canonical prompt, official answer, or source references.",
+        "- Never select an answer for an unresolved official-source conflict. Preserve `needsReview`, the source references, and the unscored behavior.",
+    ])
+    lines.extend([
+        "",
         "## Extraction quality",
         "",
         "- The 105-question PDF was extracted from selectable text.",
