@@ -5,6 +5,12 @@ const PAYLOAD_FIELDS = [
   "version",
 ];
 const ENTRY_FIELDS = ["explanation", "note", "translation"];
+const ARABIC = /[\u0600-\u06ff]/;
+const CONFLICT = /تعارض|اختلاف|conflict/i;
+const DIFFERENTIAL = /(?<![A-Za-z0-9_])Differential(?![A-Za-z0-9_])/i;
+const INCREMENTAL = /(?<![A-Za-z0-9_])Incremental(?![A-Za-z0-9_])/i;
+const ANSWER_SELECTION =
+  /(?:الإجابة(?:\s+الصحيحة)?|الخيار\s+الصحيح)\s*(?:(?:هي|هو)\s*)?[:：=\-–—]?\s*(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])|(?:the\s+)?(?:correct\s+)?answer\s*(?:is\s*)?[:：=\-–—]?\s*(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])/i;
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -14,6 +20,10 @@ function hasExactFields(value, fields) {
   if (!isObject(value)) return false;
   const actual = Object.keys(value).sort();
   return actual.length === fields.length && actual.every((field, index) => field === fields[index]);
+}
+
+function isNonEmptyArabic(value) {
+  return typeof value === "string" && value.trim().length > 0 && ARABIC.test(value);
 }
 
 function invalidPayload(reason) {
@@ -38,8 +48,8 @@ export function validateExplanationPayload(payload, questions) {
   if (payload.language !== "ar") {
     throw invalidPayload("language must be ar");
   }
-  if (typeof payload.generatedStudyGuidance !== "boolean") {
-    throw invalidPayload("generatedStudyGuidance must be a boolean");
+  if (payload.generatedStudyGuidance !== true) {
+    throw invalidPayload("generatedStudyGuidance must be true");
   }
   if (!isObject(payload.explanations)) {
     throw invalidPayload("explanations must be an object");
@@ -69,17 +79,32 @@ export function validateExplanationPayload(payload, questions) {
     if (!hasExactFields(entry, ENTRY_FIELDS)) {
       throw invalidPayload(`${questionId} has an unexpected entry schema`);
     }
-    if (typeof entry.translation !== "string") {
-      throw invalidPayload(`${questionId} translation must be a string`);
+    if (!isNonEmptyArabic(entry.translation)) {
+      throw invalidPayload(`${questionId} translation must be a non-empty Arabic string`);
     }
-    if (
-      !Array.isArray(entry.explanation) ||
-      !entry.explanation.every((paragraph) => typeof paragraph === "string")
-    ) {
-      throw invalidPayload(`${questionId} explanation must be an array of strings`);
+    if (!Array.isArray(entry.explanation) || ![2, 3].includes(entry.explanation.length)) {
+      throw invalidPayload(`${questionId} explanation must have 2 or 3 paragraphs`);
     }
-    if (typeof entry.note !== "string") {
-      throw invalidPayload(`${questionId} note must be a string`);
+    if (!entry.explanation.every(isNonEmptyArabic)) {
+      throw invalidPayload(
+        `${questionId} every explanation paragraph must be a non-empty Arabic string`
+      );
+    }
+    if (!isNonEmptyArabic(entry.note)) {
+      throw invalidPayload(`${questionId} note must be a non-empty Arabic string`);
+    }
+
+    if (questionId === "q-103") {
+      const combined = [entry.translation, ...entry.explanation, entry.note].join(" ");
+      if (!CONFLICT.test(combined)) {
+        throw invalidPayload("q-103 must mention the unresolved source conflict");
+      }
+      if (!DIFFERENTIAL.test(combined) || !INCREMENTAL.test(combined)) {
+        throw invalidPayload("q-103 must mention both Differential and Incremental");
+      }
+      if (ANSWER_SELECTION.test(combined)) {
+        throw invalidPayload("q-103 must not select an answer");
+      }
     }
   }
 

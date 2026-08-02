@@ -117,6 +117,156 @@ test("rejects invalid metadata, object shapes, and field types", () => {
   }
 });
 
+test("rejects payloads not marked as generated study guidance", () => {
+  const candidate = clonePayload();
+  candidate.generatedStudyGuidance = false;
+
+  assert.throws(
+    () => validateExplanationPayload(candidate, questions),
+    /generatedStudyGuidance must be true/i
+  );
+});
+
+test("rejects empty translations, notes, and explanation paragraphs", () => {
+  const cases = [];
+
+  const emptyTranslation = clonePayload();
+  emptyTranslation.explanations["q-001"].translation = "";
+  cases.push(emptyTranslation);
+
+  const emptyNote = clonePayload();
+  emptyNote.explanations["q-001"].note = "   ";
+  cases.push(emptyNote);
+
+  const emptyParagraph = clonePayload();
+  emptyParagraph.explanations["q-001"].explanation[0] = "";
+  cases.push(emptyParagraph);
+
+  for (const candidate of cases) {
+    assert.throws(
+      () => validateExplanationPayload(candidate, questions),
+      /non-empty Arabic string/i
+    );
+  }
+});
+
+test("rejects non-Arabic translations, notes, and explanation paragraphs", () => {
+  const cases = [];
+
+  const englishTranslation = clonePayload();
+  englishTranslation.explanations["q-001"].translation = "English only";
+  cases.push(englishTranslation);
+
+  const englishNote = clonePayload();
+  englishNote.explanations["q-001"].note = "English only";
+  cases.push(englishNote);
+
+  const englishParagraph = clonePayload();
+  englishParagraph.explanations["q-001"].explanation[0] = "English only";
+  cases.push(englishParagraph);
+
+  for (const candidate of cases) {
+    assert.throws(
+      () => validateExplanationPayload(candidate, questions),
+      /non-empty Arabic string/i
+    );
+  }
+});
+
+test("requires exactly two or three explanation paragraphs", () => {
+  const paragraphCases = [
+    [],
+    ["فقرة عربية واحدة."],
+    [
+      "فقرة عربية أولى.",
+      "فقرة عربية ثانية.",
+      "فقرة عربية ثالثة.",
+      "فقرة عربية رابعة.",
+    ],
+  ];
+
+  for (const explanation of paragraphCases) {
+    const candidate = clonePayload();
+    candidate.explanations["q-001"].explanation = explanation;
+    assert.throws(
+      () => validateExplanationPayload(candidate, questions),
+      /explanation must have 2 or 3 paragraphs/i
+    );
+  }
+});
+
+test("q-103 requires conflict wording and standalone answer labels", () => {
+  const validEntry = {
+    translation: "يوجد تعارض غير محسوم بين المصدرين.",
+    explanation: [
+      "المصدر الأول يذكر Differential دون ترجيح.",
+      "المصدر الثاني يذكر Incremental وتبقى المسألة للمراجعة.",
+    ],
+    note: "ملاحظة عربية للمراجعة.",
+  };
+  const validCandidate = clonePayload();
+  validCandidate.explanations["q-103"] = validEntry;
+  assert.doesNotThrow(() => validateExplanationPayload(validCandidate, questions));
+
+  const malformedEntries = [
+    { ...validEntry, translation: "يوجد مصدران للمراجعة." },
+    {
+      ...validEntry,
+      explanation: [
+        "المصدر الأول يذكر nondifferential دون ترجيح.",
+        validEntry.explanation[1],
+      ],
+    },
+    {
+      ...validEntry,
+      explanation: [
+        validEntry.explanation[0],
+        "المصدر الثاني يذكر incrementally وتبقى المسألة للمراجعة.",
+      ],
+    },
+  ];
+
+  for (const entry of malformedEntries) {
+    const candidate = clonePayload();
+    candidate.explanations["q-103"] = entry;
+    assert.throws(
+      () => validateExplanationPayload(candidate, questions),
+      /q-103 must mention/i
+    );
+  }
+});
+
+test("q-103 rejects explicit Arabic and English answer selection", () => {
+  const selections = [
+    "الإجابة الصحيحة: Differential",
+    "الإجابة: Incremental",
+    "الخيار الصحيح هو Differential",
+    "الإجابة الصحيحة هي: Differential",
+    "الإجابة الصحيحة = Differential",
+    "Answer: Differential",
+    "the answer is Incremental",
+    "correct answer Differential",
+    "the correct answer is: Incremental",
+    "Answer = Incremental",
+  ];
+
+  for (const selection of selections) {
+    const candidate = clonePayload();
+    candidate.explanations["q-103"] = {
+      translation: "يوجد تعارض غير محسوم بين المصدرين.",
+      explanation: [
+        "المصدر الأول يذكر Differential دون ترجيح.",
+        "المصدر الثاني يذكر Incremental وتبقى المسألة للمراجعة.",
+      ],
+      note: `ملاحظة للمراجعة: ${selection}.`,
+    };
+    assert.throws(
+      () => validateExplanationPayload(candidate, questions),
+      /q-103 must not select an answer/i
+    );
+  }
+});
+
 test("rejects missing and unknown explanation IDs", () => {
   const candidate = clonePayload();
   delete candidate.explanations["q-001"];
