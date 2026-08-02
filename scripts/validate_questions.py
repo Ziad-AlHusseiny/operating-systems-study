@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import shutil
@@ -739,8 +740,8 @@ def create_report(
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
-    raw = json.loads(RAW_PATH.read_text(encoding="utf-8"))
+def build_artifacts(raw_path: Path = RAW_PATH) -> tuple[dict[str, Any], str]:
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
     bank_entries = [entry for entry in raw if entry["sourceId"] == "bank-105"]
     pretest_entries = [entry for entry in raw if entry["sourceId"] == "pretest-70"]
     if len(bank_entries) != 105 or len(pretest_entries) != 70:
@@ -765,6 +766,43 @@ def main() -> None:
         "sourceEntryCount": 175,
         "questions": questions,
     }
+    report = create_report(
+        questions,
+        bank_duplicate_count,
+        answer_conflicts,
+        matching_notes,
+    )
+    return payload, report
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="compare committed artifacts with fresh results without writing files",
+    )
+    args = parser.parse_args()
+    payload, report = build_artifacts()
+    data_text = json.dumps(payload, ensure_ascii=False, indent=2)
+
+    if args.check:
+        stale = []
+        if DATA_PATH.read_text(encoding="utf-8") != data_text:
+            stale.append(DATA_PATH.relative_to(ROOT).as_posix())
+        if REPORT_PATH.read_text(encoding="utf-8") != report:
+            stale.append(REPORT_PATH.relative_to(ROOT).as_posix())
+        if stale:
+            raise ValueError(
+                "committed question artifacts are out of date: " + ", ".join(stale)
+            )
+        print(
+            f"Validated {len(payload['questions'])} canonical questions "
+            f"({sum(question['needsReview'] for question in payload['questions'])} "
+            "need review); committed artifacts are current."
+        )
+        return
+
     DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
     source_asset = ROOT / "extraction" / "source-pages" / "pretest-46.jpg"
     output_asset = (
@@ -778,22 +816,12 @@ def main() -> None:
             "The pre-test page 46 evidence image is missing from both the extraction "
             "cache and the delivered source-page assets."
         )
-    DATA_PATH.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    REPORT_PATH.write_text(
-        create_report(
-            questions,
-            bank_duplicate_count,
-            answer_conflicts,
-            matching_notes,
-        ),
-        encoding="utf-8",
-    )
+    DATA_PATH.write_text(data_text, encoding="utf-8")
+    REPORT_PATH.write_text(report, encoding="utf-8")
     print(
-        f"Validated {len(questions)} canonical questions "
-        f"({sum(question['needsReview'] for question in questions)} need review)."
+        f"Validated {len(payload['questions'])} canonical questions "
+        f"({sum(question['needsReview'] for question in payload['questions'])} "
+        "need review)."
     )
 
 

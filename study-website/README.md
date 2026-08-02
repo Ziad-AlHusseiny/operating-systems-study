@@ -77,15 +77,15 @@ Progress is saved only in the current browser under `its-study-progress-v1`. Use
 Run from the parent project folder:
 
 ```powershell
-python scripts/validate_questions.py
-python scripts/build_explanations.py
+python scripts/validate_questions.py --check
+python scripts/build_explanations.py --check
 node --check study-website/js/app.js
 node --check study-website/js/explanations.js
 node --check study-website/js/question-renderer.js
 node --test study-website/tests/*.test.mjs
 ```
 
-The question validator recreates the canonical data from `extraction/raw-questions.json`, verifies both collection totals, checks official-answer mappings, and regenerates the extraction report. The explanation builder merges and validates exactly 103 Arabic entries before writing `study-website/data/explanations-ar.json`.
+The check commands recreate both payloads in memory, validate them, and compare them with the committed data and report without rewriting tracked files. Run the same commands without `--check` only when intentionally regenerating those artifacts.
 
 ## Maintain Arabic guidance
 

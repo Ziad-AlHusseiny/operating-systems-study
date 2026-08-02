@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 
 const questions = JSON.parse(
   await readFile(new URL("../data/questions.json", import.meta.url), "utf8")
@@ -11,14 +11,21 @@ const payload = JSON.parse(
 );
 const arabic = /[\u0600-\u06ff]/;
 
-test("builder reports the required Arabic delivery count", () => {
-  const result = spawnSync("python", ["scripts/build_explanations.py"], {
+test("builder check compares the committed payload without rewriting it", async () => {
+  const payloadUrl = new URL("../data/explanations-ar.json", import.meta.url);
+  const before = await stat(payloadUrl);
+  const result = spawnSync("python", ["scripts/build_explanations.py", "--check"], {
     cwd: new URL("../../", import.meta.url),
     encoding: "utf8",
   });
+  const after = await stat(payloadUrl);
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(result.stdout.trim(), "Validated 103 Arabic explanations.");
+  assert.equal(
+    result.stdout.trim(),
+    "Validated 103 Arabic explanations; committed payload is current."
+  );
+  assert.equal(after.mtimeMs, before.mtimeMs);
 });
 
 test("Arabic explanations cover every canonical question exactly once", () => {

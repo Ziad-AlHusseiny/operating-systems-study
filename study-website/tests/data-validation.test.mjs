@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const dataUrl = new URL("../data/questions.json", import.meta.url);
@@ -62,13 +62,23 @@ test("unresolved content is clearly reported instead of guessed", async () => {
   }
 });
 
-test("question validation preserves Arabic guidance maintenance documentation", async () => {
-  execFileSync("python", ["scripts/validate_questions.py"], {
+test("question validation checks committed artifacts without rewriting them", async () => {
+  const beforeData = await stat(dataUrl);
+  const beforeReport = await stat(extractionReportUrl);
+  const stdout = execFileSync("python", ["scripts/validate_questions.py", "--check"], {
     cwd: projectRoot,
     encoding: "utf8",
   });
+  const afterData = await stat(dataUrl);
+  const afterReport = await stat(extractionReportUrl);
 
   const report = await readFile(extractionReportUrl, "utf8");
+  assert.equal(
+    stdout.trim(),
+    "Validated 103 canonical questions (1 need review); committed artifacts are current."
+  );
+  assert.equal(afterData.mtimeMs, beforeData.mtimeMs);
+  assert.equal(afterReport.mtimeMs, beforeReport.mtimeMs);
   assert.match(report, /^## Arabic study guidance$/m);
   assert.match(report, /^## Arabic guidance maintenance$/m);
   assert.match(report, /python scripts\/build_explanations\.py/);

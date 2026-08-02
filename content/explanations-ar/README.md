@@ -16,9 +16,11 @@ entry must use this shape:
 }
 ```
 
-Keys must be within the assigned range for the part file. `translation`, every
-`explanation` paragraph, and `note` must contain Arabic text. `explanation`
-must contain exactly two or three paragraphs.
+Every entry must be an object with exactly the `translation`, `explanation`,
+and `note` fields. Keys must be within the assigned range named by the part
+file. `translation`, every `explanation` paragraph, and `note` must be
+non-empty strings containing Arabic text. `explanation` must contain exactly
+two or three paragraphs.
 
-`q-103` must remain unresolved: explain the source conflict without choosing an
-answer as correct.
+`q-103` must remain unresolved: mention the source conflict, `Differential`,
+and `Incremental` without using an answer-selection phrase.
