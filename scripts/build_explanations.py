@@ -19,9 +19,9 @@ TECHNICAL_TERM = (
 )
 ANSWER_SELECTION = re.compile(
     rf"(?:الإجابة(?:\s+الصحيحة)?|الخيار\s+الصحيح)"
-    rf"\s*(?:(?:هي|هو)\s*|[:：-]\s*)?{TECHNICAL_TERM}"
+    rf"\s*(?:(?:هي|هو)\s*)?[:：=\-–—]?\s*{TECHNICAL_TERM}"
     rf"|(?:the\s+)?(?:correct\s+)?answer"
-    rf"\s*(?:is\s*|[:：-]\s*)?{TECHNICAL_TERM}",
+    rf"\s*(?:is\s*)?[:：=\-–—]?\s*{TECHNICAL_TERM}",
     re.IGNORECASE,
 )
 REQUIRED_FIELDS = {"translation", "explanation", "note"}

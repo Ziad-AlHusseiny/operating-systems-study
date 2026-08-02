@@ -127,9 +127,13 @@ class ValidateEntryTests(unittest.TestCase):
             "الإجابة الصحيحة: Differential",
             "الإجابة: Incremental",
             "الخيار الصحيح هو Differential",
+            "الإجابة الصحيحة هي: Differential",
+            "الإجابة الصحيحة = Differential",
             "Answer: Differential",
             "the answer is Incremental",
             "correct answer Differential",
+            "the correct answer is: Incremental",
+            "Answer = Incremental",
         ]
         base = {
             **VALID_ENTRY,
