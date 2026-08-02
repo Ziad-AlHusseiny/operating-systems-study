@@ -29,6 +29,6 @@ test("every explanation has complete Arabic study content", () => {
 test("the unresolved item explains the conflict without selecting an answer", () => {
   const item = payload.explanations["q-103"];
   const combined = [item.translation, ...item.explanation, item.note].join(" ");
-  assert.match(combined, /ØªØ¹Ø§Ø±Ø¶|Ø§Ø®ØªÙ„Ø§Ù/);
-  assert.doesNotMatch(combined, /Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø© Ø§Ù„ØµØ­ÙŠØ­Ø© Ù‡ÙŠ/);
+  assert.match(combined, /تعارض|اختلاف/);
+  assert.doesNotMatch(combined, /الإجابة الصحيحة هي/);
 });
