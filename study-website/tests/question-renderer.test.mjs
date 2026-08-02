@@ -9,6 +9,25 @@ import {
   scoreResponse,
 } from "../js/question-renderer.js";
 
+function openingSectionTagWithClass(html, className) {
+  return (html.match(/<section\b[^>]*>/gi) || []).find((openingTag) => {
+    const classAttribute = openingTag.match(
+      /(?:^|[\t\n\f\r ])class[\t\n\f\r ]*=[\t\n\f\r ]*(["'])(.*?)\1/i
+    );
+    return classAttribute?.[2]
+      .split(/[\t\n\f\r ]+/)
+      .includes(className);
+  });
+}
+
+function hasAttributeValue(openingTag, attributeName, value) {
+  const attribute = new RegExp(
+    `[\\t\\n\\f\\r ]${attributeName}[\\t\\n\\f\\r ]*=[\\t\\n\\f\\r ]*(?:"${value}"|'${value}')(?=[\\t\\n\\f\\r ]|/?>)`,
+    "i"
+  );
+  return attribute.test(openingTag);
+}
+
 test("scores grouped true-false with partial detail", () => {
   const question = {
     type: "true-false-group",
@@ -342,18 +361,14 @@ test("isolates English labels and a mixed technical official answer from Arabic 
   assert.match(html, /<h3 lang="en" dir="ltr">Explanation<\/h3>/);
   assert.match(html, /<h3 lang="en" dir="ltr">Revision note<\/h3>/);
   assert.match(html, /<section class="explanation-translation">[\s\S]*<p>ترجمة السؤال<\/p>/);
-  const explanationBodyOpeningTag = html.match(
-    /<section\b[^>]*class="[^"]*\bexplanation-body\b[^"]*"[^>]*>/
-  )?.[0];
-  const explanationNoteOpeningTag = html.match(
-    /<section\b[^>]*class="[^"]*\bexplanation-note\b[^"]*"[^>]*>/
-  )?.[0];
+  const explanationBodyOpeningTag = openingSectionTagWithClass(html, "explanation-body");
+  const explanationNoteOpeningTag = openingSectionTagWithClass(html, "explanation-note");
   assert.ok(explanationBodyOpeningTag);
-  assert.doesNotMatch(explanationBodyOpeningTag, /\blang="en"/);
-  assert.doesNotMatch(explanationBodyOpeningTag, /\bdir="ltr"/);
+  assert.equal(hasAttributeValue(explanationBodyOpeningTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(explanationBodyOpeningTag, "dir", "ltr"), false);
   assert.ok(explanationNoteOpeningTag);
-  assert.doesNotMatch(explanationNoteOpeningTag, /\blang="en"/);
-  assert.doesNotMatch(explanationNoteOpeningTag, /\bdir="ltr"/);
+  assert.equal(hasAttributeValue(explanationNoteOpeningTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(explanationNoteOpeningTag, "dir", "ltr"), false);
   assert.doesNotMatch(html, /<script>/);
 });
 
