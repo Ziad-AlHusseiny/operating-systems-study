@@ -342,6 +342,14 @@ test("isolates English labels and a mixed technical official answer from Arabic 
   assert.match(html, /<h3 lang="en" dir="ltr">Explanation<\/h3>/);
   assert.match(html, /<h3 lang="en" dir="ltr">Revision note<\/h3>/);
   assert.match(html, /<section class="explanation-translation">[\s\S]*<p>ترجمة السؤال<\/p>/);
+  assert.match(
+    html,
+    /<section class="explanation-body">\s*<h3 lang="en" dir="ltr">Explanation<\/h3>\s*<p class="explanation-paragraph">شرح المفهوم<\/p>/
+  );
+  assert.match(
+    html,
+    /<section class="explanation-note">\s*<h3 lang="en" dir="ltr">Revision note<\/h3>\s*<p>ملاحظة للمراجعة<\/p>/
+  );
   assert.doesNotMatch(html, /<script>/);
 });
 
