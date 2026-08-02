@@ -9,7 +9,7 @@ This is a lightweight static study website built with plain HTML, CSS, JavaScrip
 - All 175 source references preserved with collection, original question number, and PDF page
 - One official answer conflict clearly marked as unscored and shown with its source-page image
 
-No answer or explanation was invented. See `QUESTION_EXTRACTION_REPORT.md` for the measured extraction record and the exact conflict.
+No official answer or official source explanation was invented. The Arabic translations and explanations are generated study guidance kept separate from official PDF content. See `QUESTION_EXTRACTION_REPORT.md` for the measured extraction record and the exact conflict.
 
 ## Features
 
@@ -105,7 +105,7 @@ When correcting official source data, update the extraction or validation logic,
 The `study-website` folder can be published as-is to any static host:
 
 - Netlify: deploy the folder with no build command.
-- GitHub Pages: publish the folder contents from a Pages branch or `/docs` folder.
+- GitHub Pages: a push to `master` or a manual `workflow_dispatch` runs `.github/workflows/pages.yml`, uploads `study-website`, and deploys it to <https://ziad-alhusseiny.github.io/its-device-configuration-study/>.
 - Vercel: set the output/root directory to `study-website` and use no framework preset.
 
 ## Known limitations
