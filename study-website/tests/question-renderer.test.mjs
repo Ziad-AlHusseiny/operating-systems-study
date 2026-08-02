@@ -12,7 +12,7 @@ import {
 function openingSectionTagWithClass(html, className) {
   return (html.match(/<section\b[^>]*>/gi) || []).find((openingTag) => {
     const classAttribute = openingTag.match(
-      /(?:^|[\t\n\f\r ])class[\t\n\f\r ]*=[\t\n\f\r ]*(["'])(.*?)\1/i
+      /(?:^|[\t\n\f\r ])class[\t\n\f\r ]*=[\t\n\f\r ]*(["'])([\s\S]*?)\1/i
     );
     return classAttribute?.[2]
       .split(/[\t\n\f\r ]+/)
@@ -22,11 +22,28 @@ function openingSectionTagWithClass(html, className) {
 
 function hasAttributeValue(openingTag, attributeName, value) {
   const attribute = new RegExp(
-    `[\\t\\n\\f\\r ]${attributeName}[\\t\\n\\f\\r ]*=[\\t\\n\\f\\r ]*(?:"${value}"|'${value}')(?=[\\t\\n\\f\\r ]|/?>)`,
+    `[\\t\\n\\f\\r ]${attributeName}[\\t\\n\\f\\r ]*=[\\t\\n\\f\\r ]*(?:"${value}"|'${value}'|${value})(?=[\\t\\n\\f\\r ]|/?>)`,
     "i"
   );
   return attribute.test(openingTag);
 }
+
+test("direction assertion helpers handle exact HTML token and attribute boundaries", () => {
+  const multilineClassHtml = [
+    '<section class="explanation-body-extra">Wrong section</section>',
+    '<section data-lang="en" data-dir=ltr class="wrapper\n explanation-body\tactive">Right section</section>',
+  ].join("");
+  const openingTag = openingSectionTagWithClass(multilineClassHtml, "explanation-body");
+
+  assert.equal(
+    openingTag,
+    '<section data-lang="en" data-dir=ltr class="wrapper\n explanation-body\tactive">'
+  );
+  assert.equal(hasAttributeValue(openingTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(openingTag, "dir", "ltr"), false);
+  assert.equal(hasAttributeValue('<section lang=en dir=ltr>', "lang", "en"), true);
+  assert.equal(hasAttributeValue('<section lang=en dir=ltr>', "dir", "ltr"), true);
+});
 
 test("scores grouped true-false with partial detail", () => {
   const question = {
