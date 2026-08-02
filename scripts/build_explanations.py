@@ -6,8 +6,22 @@ from pathlib import Path
 
 ARABIC = re.compile(r"[\u0600-\u06ff]")
 CONFLICT = re.compile(r"تعارض|اختلاف|conflict", re.IGNORECASE)
+DIFFERENTIAL = re.compile(
+    r"(?<![A-Za-z0-9_])Differential(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+INCREMENTAL = re.compile(
+    r"(?<![A-Za-z0-9_])Incremental(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+TECHNICAL_TERM = (
+    r"(?<![A-Za-z0-9_])(?:Differential|Incremental)(?![A-Za-z0-9_])"
+)
 ANSWER_SELECTION = re.compile(
-    r"الإجابة\s+(?:الصحيحة\s+)?هي|the\s+correct\s+answer\s+is",
+    rf"(?:الإجابة(?:\s+الصحيحة)?|الخيار\s+الصحيح)"
+    rf"\s*(?:(?:هي|هو)\s*|[:：-]\s*)?{TECHNICAL_TERM}"
+    rf"|(?:the\s+)?(?:correct\s+)?answer"
+    rf"\s*(?:is\s*|[:：-]\s*)?{TECHNICAL_TERM}",
     re.IGNORECASE,
 )
 REQUIRED_FIELDS = {"translation", "explanation", "note"}
@@ -51,7 +65,7 @@ def validate_entry(question_id: str, entry: object) -> list[str]:
         combined = " ".join(value for value in values if isinstance(value, str))
         if not CONFLICT.search(combined):
             errors.append("q-103 must mention the unresolved source conflict")
-        if "differential" not in combined.lower() or "incremental" not in combined.lower():
+        if not DIFFERENTIAL.search(combined) or not INCREMENTAL.search(combined):
             errors.append("q-103 must mention both Differential and Incremental")
         if ANSWER_SELECTION.search(combined):
             errors.append("q-103 must not select an answer")

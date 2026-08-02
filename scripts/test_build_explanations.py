@@ -95,6 +95,71 @@ class ValidateEntryTests(unittest.TestCase):
                     any("q-103 must" in error for error in validate_entry("q-103", entry))
                 )
 
+    def test_q103_requires_standalone_technical_terms(self) -> None:
+        entries = [
+            {
+                **VALID_ENTRY,
+                "translation": "يوجد تعارض بين المصدرين.",
+                "explanation": [
+                    "يستخدم النص كلمة nondifferential فقط.",
+                    "ويذكر المصدر الآخر Incremental.",
+                ],
+            },
+            {
+                **VALID_ENTRY,
+                "translation": "يوجد اختلاف بين المصدرين.",
+                "explanation": [
+                    "يذكر المصدر الأول Differential.",
+                    "ويستخدم المصدر الآخر كلمة incrementally فقط.",
+                ],
+            },
+        ]
+
+        for entry in entries:
+            with self.subTest(entry=entry):
+                self.assertIn(
+                    "q-103 must mention both Differential and Incremental",
+                    validate_entry("q-103", entry),
+                )
+
+    def test_q103_rejects_explicit_answer_selection_patterns(self) -> None:
+        selections = [
+            "الإجابة الصحيحة: Differential",
+            "الإجابة: Incremental",
+            "الخيار الصحيح هو Differential",
+            "Answer: Differential",
+            "the answer is Incremental",
+            "correct answer Differential",
+        ]
+        base = {
+            **VALID_ENTRY,
+            "translation": "يوجد تعارض بين المصدرين.",
+            "explanation": [
+                "يذكر المصدر الأول Differential.",
+                "ويذكر المصدر الثاني Incremental.",
+            ],
+        }
+
+        for selection in selections:
+            with self.subTest(selection=selection):
+                entry = {**base, "note": f"ملاحظة للمراجعة: {selection}."}
+                self.assertIn(
+                    "q-103 must not select an answer",
+                    validate_entry("q-103", entry),
+                )
+
+    def test_q103_accepts_neutral_conflict_text(self) -> None:
+        entry = {
+            **VALID_ENTRY,
+            "translation": "يوجد تعارض غير محسوم بين المصدرين.",
+            "explanation": [
+                "المصدر الأول يذكر Differential دون ترجيح.",
+                "المصدر الثاني يذكر Incremental وتبقى المسألة للمراجعة.",
+            ],
+        }
+
+        self.assertEqual(validate_entry("q-103", entry), [])
+
 
 class BuildPayloadTests(unittest.TestCase):
     def test_rejects_ids_outside_the_part_filename_range(self) -> None:
