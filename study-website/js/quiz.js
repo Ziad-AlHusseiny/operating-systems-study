@@ -3,6 +3,7 @@ import { shuffleQuestions } from "./questions.js";
 import { getSessionStats } from "./statistics.js";
 
 export function createSession(questions, config = {}, random = Math.random, now = Date.now()) {
+  const mode = config.mode || "practice";
   const eligible = questions.filter((question) => {
     if (config.topic && config.topic !== "all" && question.topic !== config.topic) return false;
     if (
@@ -12,15 +13,15 @@ export function createSession(questions, config = {}, random = Math.random, now 
     ) {
       return false;
     }
-    if (config.excludeReview && question.needsReview) return false;
+    if ((mode === "exam" || config.excludeReview) && question.needsReview) return false;
     return true;
   });
   const ordered = config.shuffle === false ? [...eligible] : shuffleQuestions(eligible, random);
   const requested = Math.max(1, Number(config.count) || 10);
   const selected = ordered.slice(0, Math.min(requested, ordered.length));
   return {
-    id: `${config.mode || "practice"}-${now}`,
-    mode: config.mode || "practice",
+    id: `${mode}-${now}`,
+    mode,
     questionIds: selected.map((question) => question.id),
     index: 0,
     answers: {},

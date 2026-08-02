@@ -10,7 +10,10 @@ export function questionsForCollection(questions, collection) {
 export function buildRevisionSummary(questions, state) {
   const bookmarks = new Set(state.bookmarks || []);
   const mistakes = questions
-    .filter((question) => state.progress?.[question.id]?.status === "wrong")
+    .filter(
+      (question) =>
+        !question.needsReview && state.progress?.[question.id]?.status === "wrong"
+    )
     .sort(
       (left, right) =>
         (state.progress?.[right.id]?.incorrectAttempts || 0) -

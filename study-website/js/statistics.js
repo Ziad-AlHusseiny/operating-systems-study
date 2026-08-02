@@ -3,22 +3,24 @@ function percentage(numerator, denominator) {
 }
 
 export function getDashboardStats(questions, state) {
+  const scoredQuestions = questions.filter((question) => !question.needsReview);
   let correct = 0;
   let wrong = 0;
-  for (const question of questions) {
+  for (const question of scoredQuestions) {
     const status = state.progress?.[question.id]?.status;
     if (status === "correct") correct += 1;
     if (status === "wrong") wrong += 1;
   }
   const answered = correct + wrong;
   return {
-    total: questions.length,
+    uniqueTotal: questions.length,
+    total: scoredQuestions.length,
     answered,
     correct,
     wrong,
-    unanswered: Math.max(0, questions.length - answered),
+    unanswered: Math.max(0, scoredQuestions.length - answered),
     accuracy: percentage(correct, answered),
-    completion: percentage(answered, questions.length),
+    completion: percentage(answered, scoredQuestions.length),
   };
 }
 
@@ -37,6 +39,7 @@ function dimensionValues(question, dimension) {
 export function getPerformanceBreakdown(questions, state, dimension = "topic") {
   const groups = new Map();
   for (const question of questions) {
+    if (question.needsReview) continue;
     for (const name of dimensionValues(question, dimension)) {
       if (!groups.has(name)) {
         groups.set(name, { name, total: 0, answered: 0, correct: 0, wrong: 0 });

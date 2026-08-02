@@ -71,6 +71,10 @@ function arraysEqual(left = [], right = []) {
 export function scoreResponse(question, response) {
   const correctAnswer = question.correctAnswer;
 
+  if (question.needsReview) {
+    return { correct: null, earned: 0, possible: 0 };
+  }
+
   if (question.type === "source-review") {
     if (correctAnswer === null || correctAnswer === undefined) {
       return { correct: null, earned: 0, possible: 0 };
@@ -245,9 +249,57 @@ function describeAnswer(question, answer) {
   return String(answer);
 }
 
+export function renderArabicExplanation(question, explanation, options = {}) {
+  const guidanceLabel =
+    options.generatedStudyGuidance === false
+      ? ""
+      : `<p class="explanation-guidance-label" lang="en" dir="ltr">${escapeHtml("Generated study guidance — not an official source explanation")}</p>`;
+
+  if (!explanation) {
+    return `
+      <aside class="arabic-explanation" lang="ar" dir="rtl">
+        <p class="explanation-unavailable" lang="en" dir="ltr">${escapeHtml("Arabic explanation is unavailable for this question.")}</p>
+      </aside>`;
+  }
+
+  const answerRegion = question.needsReview
+    ? `<section class="explanation-conflict" role="alert" lang="en" dir="ltr">
+         <h3>${escapeHtml("Answer review warning")}</h3>
+         <p>${escapeHtml(question.reviewNotes || "The marked source answer requires review, so no correct answer is shown.")}</p>
+       </section>`
+    : `<section class="explanation-official-answer" lang="en" dir="ltr">
+         <h3>${escapeHtml("Official answer")}</h3>
+         <p><bdi class="official-answer-text" lang="en" dir="ltr">${escapeHtml(describeAnswer(question, question.correctAnswer))}</bdi></p>
+       </section>`;
+
+  return `
+    <aside class="arabic-explanation" lang="ar" dir="rtl">
+      ${guidanceLabel}
+      <section class="explanation-translation">
+        <h3 lang="en" dir="ltr">${escapeHtml("Arabic translation")}</h3>
+        <p>${escapeHtml(explanation.translation)}</p>
+      </section>
+      ${answerRegion}
+      <section class="explanation-body">
+        <h3 lang="en" dir="ltr">${escapeHtml("Explanation")}</h3>
+        ${(explanation.explanation || [])
+          .map((paragraph) => `<p class="explanation-paragraph">${escapeHtml(paragraph)}</p>`)
+          .join("")}
+      </section>
+      <section class="explanation-note">
+        <h3 lang="en" dir="ltr">${escapeHtml("Revision note")}</h3>
+        <p>${escapeHtml(explanation.note)}</p>
+      </section>
+    </aside>`;
+}
+
 export function renderAnswerReview(question, response) {
   const result = scoreResponse(question, response);
   const official = describeAnswer(question, question.correctAnswer);
+  const answerLabel =
+    question.needsReview && question.correctAnswer !== null && question.correctAnswer !== undefined
+      ? "Marked source answer"
+      : "Official answer";
   const selected =
     question.type === "source-review"
       ? response === null
@@ -257,13 +309,13 @@ export function renderAnswerReview(question, response) {
           : "Did not match"
       : describeAnswer(question, response);
   const status =
-    result.correct === null ? "Source conflict" : result.correct ? "Correct" : "Review this answer";
+    result.correct === null ? "Answer review warning" : result.correct ? "Correct" : "Review this answer";
 
   return `
     <section class="answer-review ${result.correct === true ? "is-correct" : result.correct === false ? "is-incorrect" : "is-unscored"}">
       <h3>${status}</h3>
       <p><strong>Your answer:</strong> ${escapeHtml(selected)}</p>
-      <p><strong>Official answer:</strong> ${escapeHtml(official)}</p>
+      <p><strong>${escapeHtml(answerLabel)}:</strong> ${escapeHtml(official)}</p>
       ${
         result.possible > 1
           ? `<p><strong>Credit:</strong> ${result.earned} of ${result.possible}</p>`

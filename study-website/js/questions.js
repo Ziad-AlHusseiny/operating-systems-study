@@ -39,7 +39,9 @@ export function filterQuestions(questions, filters = {}) {
       return false;
     }
 
-    const status = progress[question.id]?.status || "unanswered";
+    const status = question.needsReview
+      ? "unanswered"
+      : progress[question.id]?.status || "unanswered";
     if (filters.status && filters.status !== "all" && status !== filters.status) {
       return false;
     }

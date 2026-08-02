@@ -11,6 +11,7 @@ const questions = [
   { id: "a", type: "mcq", topic: "One", correctAnswer: 1 },
   { id: "b", type: "mcq", topic: "Two", correctAnswer: 0 },
   { id: "c", type: "mcq", topic: "One", correctAnswer: 2 },
+  { id: "review", type: "mcq", topic: "Review", correctAnswer: 0, needsReview: true },
 ];
 
 test("creates a bounded practice session", () => {
@@ -18,6 +19,28 @@ test("creates a bounded practice session", () => {
   assert.equal(session.questionIds.length, 2);
   assert.equal(session.mode, "practice");
   assert.equal(session.startedAt, 1000);
+});
+
+test("Mock Exams always exclude review items even when the caller disables exclusion", () => {
+  const session = createSession(
+    questions,
+    { count: 10, mode: "exam", shuffle: false, excludeReview: false },
+    Math.random,
+    1000
+  );
+
+  assert.deepEqual(session.questionIds, ["a", "b", "c"]);
+});
+
+test("Practice may include review items when exclusion is disabled", () => {
+  const session = createSession(
+    questions,
+    { count: 10, mode: "practice", shuffle: false, excludeReview: false },
+    Math.random,
+    1000
+  );
+
+  assert.ok(session.questionIds.includes("review"));
 });
 
 test("records and navigates answers without losing prior work", () => {

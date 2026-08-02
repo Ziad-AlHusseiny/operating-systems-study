@@ -1,8 +1,20 @@
 import { filterQuestions, loadQuestionBank, shuffleChoices } from "./questions.js";
 import {
+  loadExplanations,
+  searchExplanationEntries,
+  validateExplanationPayload,
+} from "./explanations.js";
+import {
+  explanationFocusSelector,
+  increaseVisibleCount,
+  limitExplanationEntries,
+  renderMobileMoreMenu,
+} from "./explanations-view.js";
+import {
   escapeHtml,
   normalizeResponse,
   renderAnswerReview,
+  renderArabicExplanation,
   renderQuestion,
 } from "./question-renderer.js";
 import {
@@ -19,6 +31,7 @@ import {
   exportState,
   importState,
   loadState,
+  normalizeStateForQuestions,
   recordAttempt,
   resetState,
   saveState,
@@ -33,17 +46,37 @@ const themeLabel = document.querySelector("#theme-toggle-label");
 const sidebarCollapse = document.querySelector("#sidebar-collapse");
 const fileInput = document.querySelector("#progress-file-input");
 const toastRegion = document.querySelector("#toast-region");
+const mobileMoreSlot = document.querySelector("#mobile-more-slot");
 
-const app = {
+mobileMoreSlot.innerHTML = renderMobileMoreMenu();
+mobileMoreSlot.addEventListener("click", (event) => {
+  if (event.target.closest("a")) {
+    mobileMoreSlot.querySelector("details")?.removeAttribute("open");
+  }
+});
+
+export const app = {
   bank: null,
   questions: [],
   questionMap: new Map(),
+  explanations: {},
+  explanationPayload: null,
+  explanationsError: null,
   state: loadState(),
   finishedSession: null,
   filters: { search: "", source: "all", type: "all", topic: "all", status: "all", focus: "all" },
   revisionFilters: { source: "all", topic: "all" },
+  explanationFilters: { search: "", source: "all", type: "all", topic: "all" },
+  visibleExplanationCount: 15,
   timer: null,
 };
+
+export function explanationDisclosure(question, { open = false } = {}) {
+  return `<details class="explanation-disclosure"${open ? " open" : ""}>
+    <summary>Arabic Explanation</summary>
+    ${renderArabicExplanation(question, app.explanations?.[question.id] ?? null)}
+  </details>`;
+}
 
 function icon(name) {
   const paths = {
@@ -70,6 +103,15 @@ function persist(nextState = app.state) {
   app.state = saveState(nextState);
 }
 
+function applyQuestionStateNormalization(state) {
+  const reviewIds = new Set(
+    app.questions.filter((question) => question.needsReview).map((question) => question.id)
+  );
+  const clearedLegacyExam = state.activeExam?.questionIds?.some((id) => reviewIds.has(id));
+  persist(normalizeStateForQuestions(state, app.questions));
+  return Boolean(clearedLegacyExam);
+}
+
 function currentRoute() {
   return location.hash.replace(/^#\//, "").split("/")[0] || "dashboard";
 }
@@ -90,7 +132,7 @@ function formatDuration(seconds = 0) {
   return `${minutes}:${String(remaining).padStart(2, "0")}`;
 }
 
-function dashboardMarkup() {
+export function dashboardMarkup() {
   const stats = getDashboardStats(app.questions, app.state);
   const recent = [...app.state.sessions, ...app.state.exams]
     .sort((a, b) => (b.finishedAt || 0) - (a.finishedAt || 0))
@@ -106,7 +148,7 @@ function dashboardMarkup() {
           <div class="progress-track" aria-label="${stats.completion}% complete">
             <div class="progress-track__fill" style="--progress: ${stats.completion}%"></div>
           </div>
-          <p class="metric-help">${stats.answered} of ${stats.total} unique questions answered.</p>
+          <p class="metric-help">${stats.answered} of ${stats.total} scoreable questions answered.</p>
         </div>
         <div class="progress-panel__section">
           <div class="metric-label">Accuracy</div>
@@ -115,7 +157,7 @@ function dashboardMarkup() {
         </div>
       </div>
       <div class="metric-strip">
-        <div class="metric-strip__item"><span class="metric-label">Unique questions</span><strong class="metric-strip__value metric-value--primary">${stats.total}</strong></div>
+        <div class="metric-strip__item"><span class="metric-label">Unique questions</span><strong class="metric-strip__value metric-value--primary">${stats.uniqueTotal}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Source entries</span><strong class="metric-strip__value">${app.bank.sourceEntryCount}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Answered</span><strong class="metric-strip__value">${stats.answered}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Correct</span><strong class="metric-strip__value metric-value--success">${stats.correct}</strong></div>
@@ -160,7 +202,7 @@ function dashboardMarkup() {
     </section>`;
 }
 
-function setupMarkup(mode) {
+export function setupMarkup(mode) {
   const isExam = mode === "exam";
   const topics = [...new Set(app.questions.map((question) => question.topic))].sort();
   const types = [...new Set(app.questions.map((question) => question.type))].sort();
@@ -205,7 +247,11 @@ function setupMarkup(mode) {
         </div>
         <label class="checkbox-row"><input type="checkbox" name="shuffle" checked> Shuffle question order</label>
         ${!isExam ? `<label class="checkbox-row"><input type="checkbox" name="shuffleChoices"> Shuffle choices for single and multiple choice questions</label>` : ""}
-        <label class="checkbox-row"><input type="checkbox" name="excludeReview" ${isExam ? "checked" : ""}> Exclude the one unresolved source-conflict item</label>
+        ${
+          isExam
+            ? `<p class="setup-note">Review items are always excluded from Mock Exams.</p>`
+            : `<label class="checkbox-row"><input type="checkbox" name="excludeReview"> Exclude questions marked for answer review</label>`
+        }
         <button class="btn btn--primary" type="submit">${isExam ? "Start Mock Exam" : "Start Practice"}</button>
       </form>
     </section>`;
@@ -251,7 +297,7 @@ function applySavedResponse(question, response) {
   }
 }
 
-function sessionMarkup(session) {
+export function sessionMarkup(session) {
   if (!session.questionIds.length) {
     return `${heading("No matching questions")}<div class="empty-state"><strong>Change the filters and try again.</strong><a class="btn btn--primary" href="#/${session.mode}">Back to setup</a></div>`;
   }
@@ -265,7 +311,11 @@ function sessionMarkup(session) {
       <section class="question-workspace">
         <div class="question-progress"><div class="progress-track"><div class="progress-track__fill" style="--progress:${Math.round(((session.index + 1) / session.questionIds.length) * 100)}%"></div></div></div>
         ${renderQuestion(question)}
-        <div data-answer-feedback>${!isExam && saved ? renderAnswerReview(question, saved.response) : ""}</div>
+        <div data-answer-feedback>${
+          !isExam && saved
+            ? `${renderAnswerReview(question, saved.response)}${explanationDisclosure(question, { open: true })}`
+            : ""
+        }</div>
         <footer class="question-footer">
           <div class="question-footer__group">
             <button class="btn btn--secondary" data-action="previous" ${session.index === 0 ? "disabled" : ""}>Previous</button>
@@ -290,7 +340,7 @@ function sessionMarkup(session) {
     </div>`;
 }
 
-function resultsMarkup(session) {
+export function resultsMarkup(session) {
   const { stats } = session;
   const topicRows = sessionBreakdown(session, "topic");
   const sourceRows = sessionBreakdown(session, "source");
@@ -322,7 +372,14 @@ function resultsMarkup(session) {
       <div class="revision-list">${session.questionIds.map((id, index) => {
         const question = questionForSession(session, id);
         const answer = session.answers[id];
-        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${answer ? (answer.correct ? "Correct" : "Wrong") : "Skipped"}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}</details>`;
+        const resultLabel = !answer
+          ? "Skipped"
+          : answer.correct === null
+            ? "Unscored"
+            : answer.correct
+              ? "Correct"
+              : "Wrong";
+        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${resultLabel}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}${explanationDisclosure(question)}</details>`;
       }).join("")}</div>
     </section>`;
 }
@@ -330,6 +387,8 @@ function resultsMarkup(session) {
 function sessionBreakdown(session, dimension) {
   const groups = new Map();
   for (const id of session.questionIds) {
+    const answer = session.answers[id];
+    if (answer?.correct === null) continue;
     const question = questionForSession(session, id);
     const names =
       dimension === "source"
@@ -337,7 +396,6 @@ function sessionBreakdown(session, dimension) {
         : [question.topic || "General"];
     for (const name of names) {
       const group = groups.get(name) || { name, correct: 0, answered: 0 };
-      const answer = session.answers[id];
       if (answer) {
         group.answered += 1;
         if (answer.correct) group.correct += 1;
@@ -381,15 +439,15 @@ function bankFiltersMarkup() {
   </form>`;
 }
 
-function questionListMarkup(
+export function questionListMarkup(
   questions,
   emptyCopy = "No questions match these filters.",
   { showProgress = false } = {}
 ) {
   if (!questions.length) return `<div class="empty-state"><strong>${escapeHtml(emptyCopy)}</strong></div>`;
   return `<div class="bank-list">${questions.map((question) => {
-    const status = app.state.progress[question.id]?.status || "unanswered";
-    const progress = app.state.progress[question.id];
+    const progress = question.needsReview ? null : app.state.progress[question.id];
+    const status = question.needsReview ? "review" : progress?.status || "unanswered";
     const sourceRefs = question.sources.map((source) => `${sourceLabel(source)} p.${source.page}`).join(" • ");
     return `<details class="bank-row">
       <summary>
@@ -400,6 +458,7 @@ function questionListMarkup(
       <div class="bank-row__details">
         ${renderQuestion(question)}
         ${renderAnswerReview(question, showProgress && progress ? progress.lastAnswer : null)}
+        ${explanationDisclosure(question)}
         ${
           showProgress && progress
             ? `<p class="attempt-note"><strong>Attempts:</strong> ${progress.attempts} • <strong>Incorrect attempts:</strong> ${progress.incorrectAttempts}</p>`
@@ -411,7 +470,7 @@ function questionListMarkup(
   }).join("")}</div>`;
 }
 
-function bankMarkup() {
+export function bankMarkup() {
   const filtered = filterQuestions(app.questions, {
     ...app.filters,
     bookmarked: app.filters.focus === "bookmarked",
@@ -421,7 +480,87 @@ function bankMarkup() {
   });
   return `${heading("Question Bank", `Browse ${app.questions.length} unique questions covering all ${app.bank.sourceEntryCount} source entries.`)}
     ${bankFiltersMarkup()}
-    <section class="section-block section-block--flat"><div class="section-header"><h2>${filtered.length} questions</h2><span>Official PDF content only</span></div>${questionListMarkup(filtered)}</section>`;
+    <section class="section-block section-block--flat"><div class="section-header"><h2>${filtered.length} questions</h2><span>Questions and official answers come from the PDFs. Arabic explanations are generated study guidance and are labeled separately.</span></div>${questionListMarkup(filtered)}</section>`;
+}
+
+function explanationFiltersMarkup() {
+  const topics = [...new Set(app.questions.map((question) => question.topic))].sort();
+  const types = [...new Set(app.questions.map((question) => question.type))].sort();
+  return `<form class="filter-bar explanation-filter-bar" data-explanation-filter-form>
+    <label class="field"><span>Search English or Arabic</span><input class="input" name="search" value="${escapeHtml(app.explanationFilters.search)}" placeholder="Search questions or Arabic guidance" autocomplete="off"></label>
+    <label class="field"><span>Source</span><select class="select" name="source">
+      <option value="all">Both sources</option>
+      <option value="bank-105" ${app.explanationFilters.source === "bank-105" ? "selected" : ""}>105 Question Bank</option>
+      <option value="pretest-70" ${app.explanationFilters.source === "pretest-70" ? "selected" : ""}>70 Question Pre-Test</option>
+    </select></label>
+    <label class="field"><span>Topic</span><select class="select" name="topic"><option value="all">All topics</option>${topics.map((topic) => `<option value="${escapeHtml(topic)}" ${app.explanationFilters.topic === topic ? "selected" : ""}>${escapeHtml(topic)}</option>`).join("")}</select></label>
+    <label class="field"><span>Question type</span><select class="select" name="type"><option value="all">All types</option>${types.map((type) => `<option value="${escapeHtml(type)}" ${app.explanationFilters.type === type ? "selected" : ""}>${escapeHtml(type.replaceAll("-", " "))}</option>`).join("")}</select></label>
+  </form>`;
+}
+
+function explanationCardMarkup({ question, explanation }) {
+  const bookmarked = app.state.bookmarks.includes(question.id);
+  const sourceRefs = (question.sources || [])
+    .map((source) => `${sourceLabel(source)}, page ${source.page}`)
+    .join(" · ");
+  return `<article class="explanation-card" data-question-id="${escapeHtml(question.id)}">
+    <header class="explanation-card__header">
+      <span class="explanation-card__number" aria-label="Question ${escapeHtml(question.id.replace("q-", ""))}">${escapeHtml(question.id.replace("q-", ""))}</span>
+      <div class="explanation-card__identity">
+        <div class="explanation-card__metadata">
+          <span>${escapeHtml(question.type.replaceAll("-", " "))}</span>
+          <span>${escapeHtml(question.topic || "General")}</span>
+        </div>
+        <p class="explanation-card__sources">${escapeHtml(sourceRefs)}</p>
+      </div>
+      <button class="btn btn--quiet explanation-bookmark" type="button" data-action="bookmark" data-id="${escapeHtml(question.id)}" aria-pressed="${bookmarked}">${bookmarked ? "★ Bookmarked" : "☆ Bookmark"}</button>
+    </header>
+    <section class="explanation-card__source" lang="en" dir="ltr">
+      <p class="explanation-card__eyebrow">Original English question</p>
+      <h2>${escapeHtml(question.prompt)}</h2>
+    </section>
+    ${renderArabicExplanation(question, explanation, { generatedStudyGuidance: false })}
+  </article>`;
+}
+
+function explanationsMarkup() {
+  const intro = heading(
+    "Question Explanations",
+    "Read each original question with a clear Arabic translation, answer reasoning, and revision note."
+  );
+  const notice = `<aside class="guidance-notice" role="note">
+    <span class="guidance-notice__mark" aria-hidden="true">i</span>
+    <div><strong>Generated study guidance</strong><p>Arabic translations and explanations were added for learning support. They are not official PDF explanations, and source answers remain unchanged.</p></div>
+  </aside>`;
+
+  if (app.explanationsError || !app.explanationPayload) {
+    return `${intro}${notice}<div class="empty-state explanation-error" role="status"><strong>Question explanations are currently unavailable.</strong><p>${escapeHtml(app.explanationsError?.message || "The explanation data did not load.")} Practice, Mock Exam, and the Question Bank are still available.</p></div>`;
+  }
+
+  const filtered = searchExplanationEntries(
+    app.questions,
+    app.explanations,
+    app.explanationFilters
+  );
+  const visible = limitExplanationEntries(filtered, app.visibleExplanationCount);
+  const remaining = Math.max(0, filtered.length - visible.length);
+  return `${intro}${notice}${explanationFiltersMarkup()}
+    <section class="explanations-results" aria-labelledby="explanations-count">
+      <div class="explanations-results__header">
+        <h2 id="explanations-count" tabindex="-1">${filtered.length} ${filtered.length === 1 ? "explanation" : "explanations"}</h2>
+        <span aria-live="polite">Showing ${visible.length} of ${filtered.length}</span>
+      </div>
+      ${
+        visible.length
+          ? `<div class="explanations-list">${visible.map(explanationCardMarkup).join("")}</div>`
+          : `<div class="empty-state"><strong>No explanations match these filters.</strong><p>Try a different English or Arabic search term, source, topic, or type.</p></div>`
+      }
+      ${
+        remaining
+          ? `<div class="explanations-more"><button class="btn btn--secondary" type="button" data-action="show-more">Show more</button><span>${remaining} remaining</span></div>`
+          : ""
+      }
+    </section>`;
 }
 
 function revisionMarkup() {
@@ -454,7 +593,10 @@ function revisionMarkup() {
 function collectionMarkup(route) {
   const isMistakes = route === "mistakes";
   const selected = isMistakes
-    ? app.questions.filter((question) => app.state.progress[question.id]?.status === "wrong")
+    ? app.questions.filter(
+        (question) =>
+          !question.needsReview && app.state.progress[question.id]?.status === "wrong"
+      )
     : app.questions.filter((question) => app.state.bookmarks.includes(question.id));
   const actions = selected.length
     ? `<button class="btn btn--primary" data-action="start-focused" data-ids="${selected.map((question) => question.id).join(",")}">Practice this collection</button>`
@@ -467,6 +609,7 @@ function render() {
   clearInterval(app.timer);
   const route = currentRoute();
   document.querySelectorAll("[data-route]").forEach((item) => item.classList.toggle("is-active", item.dataset.route === route));
+  mobileMoreSlot.querySelector("details")?.removeAttribute("open");
 
   if (route === "dashboard") main.innerHTML = dashboardMarkup();
   else if (route === "practice") {
@@ -475,6 +618,7 @@ function render() {
     main.innerHTML = app.state.activeExam ? sessionMarkup(app.state.activeExam) : setupMarkup("exam");
   } else if (route === "results" && app.finishedSession) main.innerHTML = resultsMarkup(app.finishedSession);
   else if (route === "bank") main.innerHTML = bankMarkup();
+  else if (route === "explanations") main.innerHTML = explanationsMarkup();
   else if (route === "revision") main.innerHTML = revisionMarkup();
   else if (route === "mistakes" || route === "bookmarks") main.innerHTML = collectionMarkup(route);
   else main.innerHTML = dashboardMarkup();
@@ -605,7 +749,7 @@ function startSession(form) {
     durationMinutes: Number(data.get("durationMinutes") || 0),
     shuffle: data.get("shuffle") === "on",
     shuffleChoices: data.get("shuffleChoices") === "on",
-    excludeReview: data.get("excludeReview") === "on",
+    excludeReview: mode === "exam" || data.get("excludeReview") === "on",
   });
   if (session.config.shuffleChoices) {
     session = {
@@ -657,9 +801,23 @@ main.addEventListener("submit", (event) => {
     startSession(event.target);
   }
   if (event.target.matches("[data-filter-form]")) event.preventDefault();
+  if (event.target.matches("[data-explanation-filter-form]")) event.preventDefault();
 });
 
 main.addEventListener("input", (event) => {
+  const explanationForm = event.target.closest("[data-explanation-filter-form]");
+  if (explanationForm) {
+    const focusSelector = explanationFocusSelector({ filterName: event.target.name });
+    app.explanationFilters = Object.fromEntries(new FormData(explanationForm).entries());
+    app.visibleExplanationCount = 15;
+    main.innerHTML = explanationsMarkup();
+    const focusTarget = focusSelector ? main.querySelector(focusSelector) : null;
+    focusTarget?.focus();
+    if (event.target.name === "search") {
+      focusTarget?.setSelectionRange(focusTarget.value.length, focusTarget.value.length);
+    }
+    return;
+  }
   const form = event.target.closest("[data-filter-form]");
   if (!form) return;
   const data = new FormData(form);
@@ -695,6 +853,22 @@ main.addEventListener("click", (event) => {
     startFocusedPractice((button.dataset.ids || "").split(",").filter(Boolean));
     return;
   }
+  if (action === "show-more") {
+    const total = searchExplanationEntries(
+      app.questions,
+      app.explanations,
+      app.explanationFilters
+    ).length;
+    app.visibleExplanationCount = increaseVisibleCount(
+      app.visibleExplanationCount,
+      total
+    );
+    main.innerHTML = explanationsMarkup();
+    const nextShowMore = main.querySelector('[data-action="show-more"]');
+    if (nextShowMore) nextShowMore.focus();
+    else main.querySelector("#explanations-count")?.focus();
+    return;
+  }
   if (action === "export") downloadProgress();
   if (action === "import") fileInput.click();
   if (action === "reset") {
@@ -705,8 +879,17 @@ main.addEventListener("click", (event) => {
     }
   }
   if (action === "bookmark") {
+    const explanationFocus =
+      currentRoute() === "explanations"
+        ? explanationFocusSelector({ questionId: button.dataset.id })
+        : null;
     persist(toggleBookmark(app.state, button.dataset.id));
     toast(app.state.bookmarks.includes(button.dataset.id) ? "Question bookmarked." : "Bookmark removed.");
+    if (explanationFocus) {
+      main.innerHTML = explanationsMarkup();
+      main.querySelector(explanationFocus)?.focus();
+      return;
+    }
     render();
   }
 
@@ -740,8 +923,12 @@ fileInput.addEventListener("change", async () => {
   const file = fileInput.files[0];
   if (!file) return;
   try {
-    persist(importState(await file.text()));
-    toast("Progress imported.");
+    const clearedLegacyExam = applyQuestionStateNormalization(importState(await file.text()));
+    toast(
+      clearedLegacyExam
+        ? "Progress imported. A saved Mock Exam used review items and was cleared. Start a new Mock Exam."
+        : "Progress imported."
+    );
     render();
   } catch (error) {
     toast(error.message, true);
@@ -765,9 +952,6 @@ themeToggle.addEventListener("click", () => {
 });
 
 sidebarCollapse.addEventListener("click", () => appShell.classList.toggle("is-collapsed"));
-document.querySelector("#mobile-more").addEventListener("click", () => {
-  location.hash = "#/revision";
-});
 window.addEventListener("hashchange", render);
 window.addEventListener("keydown", (event) => {
   if (
@@ -809,10 +993,35 @@ async function start() {
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   applyTheme(savedTheme);
   try {
-    app.bank = await loadQuestionBank();
+    const [bankResult, explanationsResult] = await Promise.allSettled([
+      loadQuestionBank(),
+      loadExplanations(),
+    ]);
+    if (bankResult.status === "rejected") throw bankResult.reason;
+    app.bank = bankResult.value;
     app.questions = app.bank.questions;
     app.questionMap = new Map(app.questions.map((question) => [question.id, question]));
+    const clearedLegacyExam = applyQuestionStateNormalization(app.state);
+    if (explanationsResult.status === "fulfilled") {
+      try {
+        app.explanationPayload = validateExplanationPayload(
+          explanationsResult.value,
+          app.questions
+        );
+        app.explanations = app.explanationPayload.explanations;
+      } catch (error) {
+        app.explanationsError = error;
+      }
+    } else {
+      app.explanationsError =
+        explanationsResult.reason instanceof Error
+          ? explanationsResult.reason
+          : new Error("The explanation data could not be loaded.");
+    }
     render();
+    if (clearedLegacyExam) {
+      toast("A saved Mock Exam used review items and was cleared. Start a new Mock Exam.");
+    }
   } catch (error) {
     main.innerHTML = `<div class="empty-state"><strong>The official question bank could not be loaded.</strong><p>${escapeHtml(error.message)} Run the website from a simple local server.</p></div>`;
   }

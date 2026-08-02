@@ -1,0 +1,210 @@
+{
+  "q-053": {
+    "translation": "يعمل الكمبيوتر المحمول بنظام Windows 10. وصّلت شاشة خارجية بالكمبيوتر وضبطت Windows على عرض بانورامي ممتد عبر الشاشتين. تحتاج إلى نقل System Tray من شاشة الكمبيوتر المحمول (Screen 1) إلى الشاشة الخارجية (Screen 2)، مع استمرار عرض البيانات على الشاشتين. ما إعداد العرض الذي يجب اختياره للشاشة الخارجية؟ الخيارات: Show only on 2، وExtend desktop to this display، وMake this my main display، وCustom scaling.",
+    "explanation": [
+      "عند جعل Screen 2 هي الشاشة الرئيسية، ينقل Windows عناصر الواجهة الرئيسية إليها، ومنها System Tray، مع بقاء سطح المكتب ممتدًا على الشاشتين.",
+      "الإجابة الصحيحة هي Make this my main display. خيار Show only on 2 يعطّل العرض على الشاشة الأولى، وExtend desktop يوسّع مساحة العمل لكنه لا يحدد وحده مكان System Tray، أما Custom scaling فيغيّر حجم العناصر فقط."
+    ],
+    "note": "لنقل System Tray مع بقاء الشاشتين تعملان، اجعل Screen 2 هي Main display."
+  },
+  "q-054": {
+    "translation": "أنت تستكشف مشكلات بدء التشغيل في ثلاثة أجهزة Windows 10 ضمن Workgroup. اختر Advanced startup option المناسب لكل جهاز. انقل كل خيار إلى الوصف الصحيح، ويمكن استخدام الخيار مرة واحدة أو أكثر أو عدم استخدامه. ستحصل على درجة جزئية لكل مطابقة صحيحة. الخيارات: Safe mode with networking، وLast known good configuration، وEnable boot logging. الأوصاف: تحميل برامج التشغيل المطلوبة فقط للاتصال بأجهزة كمبيوتر أخرى؛ تحميل أحدث برامج التشغيل وإعدادات Registry التي عملت بنجاح؛ إنشاء ملف يحتوي على قائمة ببرامج التشغيل التي ثُبّتت أثناء الإعداد.",
+    "explanation": [
+      "Safe mode with networking يشغّل Windows بأقل مجموعة لازمة من برامج التشغيل والخدمات مع دعم الاتصال بالشبكة. Last known good configuration يعود إلى أحدث إعدادات Drivers وRegistry التي نجح بها التشغيل.",
+      "المطابقة الصحيحة هي: الاتصال بأجهزة أخرى ← Safe mode with networking؛ أحدث Drivers وRegistry ناجحة ← Last known good configuration؛ إنشاء قائمة ببرامج التشغيل المثبتة أثناء الإعداد ← Enable boot logging."
+    ],
+    "note": "Networking للاتصال، Last known good لآخر إعداد ناجح، وBoot logging لقائمة Drivers."
+  },
+  "q-055": {
+    "translation": "أنت تعمل في المنطقة الزمنية Eastern ‏(UTC-5)، وتثبّت Windows 10 لعميل موجود في المنطقة الزمنية Mountain ‏(UTC-7) ولا يملك اتصالًا بالإنترنت. يجب أن يعرض الجهاز الوقت الصحيح للعميل، وألا يحتاج العميل إلى تخصيص إعدادات نظام التشغيل، وأن يستطيع تسجيل الدخول دون اتصال. لكل إجراء اختر Yes إذا كان جزءًا من الإعداد الصحيح أو No إذا لم يكن كذلك. ستحصل على درجة جزئية لكل اختيار صحيح. الإجراءان: تغيير المنطقة الزمنية الافتراضية؛ وضبط الكمبيوتر لاستخدام Local account.",
+    "explanation": [
+      "يجب تغيير المنطقة الزمنية إلى Mountain حتى يظهر الوقت المحلي الصحيح للعميل من دون أن يضطر إلى تعديل الإعدادات بنفسه. هذا الإجراء لا يحتاج إلى اتصال بالإنترنت.",
+      "ويجب أيضًا استخدام Local account لأنه يسمح بتسجيل الدخول محليًا عندما يكون الجهاز Offline. لذلك الإجابتان بالترتيب هما: Yes، ثم Yes."
+    ],
+    "note": "وقت صحيح = غيّر Time zone، ودخول دون إنترنت = Local account."
+  },
+  "q-056": {
+    "translation": "سيحضر صديقك جهاز ألعاب جديدًا، Xbox Series X أو PlayStation 5. أي كابل فيديو يجب أن يكون جاهزًا لتوصيل الجهاز بالتلفزيون من دون استخدام محوّل؟ الخيارات الواردة في السؤال: USB-C، وDVI-DL، وHDMI، وVGA.",
+    "explanation": [
+      "أجهزة الألعاب الحديثة وأجهزة التلفزيون تستخدم HDMI لنقل الفيديو والصوت رقميًا عبر كابل واحد، لذلك يمكن توصيل الجهاز مباشرة من دون Converter.",
+      "الإجابة الصحيحة هي HDMI. أما DVI-DL وVGA فليسا المنفذين القياسيين المباشرين لهذه الأجهزة، وUSB-C ليس الاختيار الصحيح هنا."
+    ],
+    "note": "لتوصيل Xbox Series X أو PlayStation 5 بالتلفزيون مباشرة، تذكّر HDMI."
+  },
+  "q-057": {
+    "translation": "ينظم The Picture Studio ورشة لتحرير الصور. أحد الحاضرين لديه ضعف بصر غير مصحح، وآخر لديه قدرة محدودة على تحريك يديه. تحتاج إلى تخصيص أجهزة Windows 10 التي سيستخدمانها لتحسين تجربتهما. أي فئة من Windows Settings تستخدم؟ اختر الفئة الصحيحة. الخيارات: System، وDevices، وPhone، وNetwork & Internet، وPersonalization، وApps، وAccounts، وTime & Language، وGaming، وEase of Access، وSearch، وPrivacy، وUpdate & Security.",
+    "explanation": [
+      "تجمع فئة Ease of Access أدوات إمكانية الوصول التي تساعد المستخدمين ذوي صعوبات الرؤية أو الحركة، مثل Magnifier وNarrator وHigh Contrast وخيارات Keyboard وMouse المساعدة.",
+      "الإجابة الصحيحة هي Ease of Access لأنها مخصصة لتكييف طريقة مشاهدة النظام والتفاعل معه، بينما الفئات الأخرى تدير مكونات أو إعدادات عامة مختلفة."
+    ],
+    "note": "مشكلات الرؤية أو الحركة في Windows 10 تقود إلى Ease of Access."
+  },
+  "q-058": {
+    "translation": "لكل عبارة، اختر Yes إذا كان يجب تضمينها في Acceptable Use Policy (AUP)، أو No إذا لم يكن يجب تضمينها. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: الاستخدام غير المقبول لشبكة الشركة؛ العواقب المحتملة لمخالفة AUP؛ الاستخدام المقبول والمتوقع لشبكة الشركة.",
+    "explanation": [
+      "تهدف AUP إلى توضيح السلوك المسموح والمرفوض عند استخدام موارد المؤسسة. كما يجب أن تبيّن ما قد يحدث عند مخالفة السياسة حتى تكون القواعد ونتائجها واضحة للمستخدمين.",
+      "لذلك تدخل العبارات الثلاث كلها في AUP: الاستخدام غير المقبول، والعواقب المحتملة للمخالفة، والاستخدام المقبول والمتوقع. الإجابات بالترتيب: Yes، Yes، Yes."
+    ],
+    "note": "AUP تحدد المسموح والممنوع وعواقب المخالفة؛ الثلاثة Yes."
+  },
+  "q-059": {
+    "translation": "ما الميزتان لاستخدام مزود Cloud storage بدلًا من Intranet file server؟ اختر إجابتين. الخيارات: تحتفظ بالتحكم الكامل في خوادمك السحابية؛ تكون الملفات متاحة من أي مكان يتوفر فيه اتصال بالإنترنت؛ يقدم Cloud storage زمن انتقال أقل؛ يدعم Cloud storage أجهزة عميلة وأنظمة تشغيل كثيرة ومختلفة.",
+    "explanation": [
+      "Cloud storage يسهّل الوصول إلى الملفات من مواقع مختلفة عبر الإنترنت، كما يقدم عادة تطبيقات وواجهات تعمل على أنواع متعددة من الأجهزة وأنظمة التشغيل.",
+      "الإجابتان الصحيحتان هما: Files are available from any location that has internet access. وCloud storage supports many different client devices and operating systems. المزود يدير البنية السحابية، لذلك لا تملك تحكمًا كاملًا بها، كما أن انخفاض Latency ليس ميزة مضمونة مقارنة بخادم داخلي."
+    ],
+    "note": "ميزتا Cloud storage هنا: الوصول من أي مكان ودعم أجهزة وأنظمة متعددة."
+  },
+  "q-060": {
+    "translation": "وصلت هاتفًا ذكيًا بكمبيوتر محمول يعمل بنظام Windows 10 باستخدام كابل USB، لكن نظام التشغيل لا يتعرف على الهاتف. تحتاج إلى التأكد من تثبيت أنسب Driver. أي خيار يجب أن تضبطه؟ الخيارات: Windows Mobility Center، وSystem Configuration، وDevice Manager، وPhone and Modem.",
+    "explanation": [
+      "يعرض Device Manager الأجهزة التي اكتشفها Windows وحالة Drivers الخاصة بها. ومنه يمكنك فحص الهاتف أو جهاز USB غير المعروف ثم تحديث Driver أو إعادة تثبيته.",
+      "الإجابة الصحيحة هي Device Manager. أما Windows Mobility Center فيدير إعدادات الجهاز المحمول، وSystem Configuration يدير بدء التشغيل والخدمات، وPhone and Modem يخص إعدادات الاتصال التقليدية."
+    ],
+    "note": "مشكلة تعرف Windows على جهاز أو Driver تُفحص أولًا في Device Manager."
+  },
+  "q-061": {
+    "translation": "أنت تتتبع مخزون Hardware وSoftware على أجهزة متنوعة. تحتاج إلى دعم الاتصال بين الأجهزة ووحدة تحكم Microsoft Intune الإدارية. ما متطلب الجهاز الذي يجب تحقيقه؟ الخيارات: يجب أن تكون كل الأجهزة أعضاء في Domain؛ يجب أن تكون كل الأجهزة المسجلة ضمن Device category واحدة؛ يجب أن تسجل الأجهزة في خدمة Intune؛ يجب أن تعمل أجهزة Windows بنظام Windows 8.1 أو أحدث.",
+    "explanation": [
+      "لكي يدير Intune الجهاز ويتبادل معه معلومات المخزون والسياسات، يجب أن يخضع الجهاز لعملية Enrollment في خدمة Intune. التسجيل ينشئ علاقة الإدارة والاتصال اللازمة مع وحدة التحكم.",
+      "الإجابة الصحيحة هي Devices must enroll in the Intune service. لا يشترط أن تكون كل الأجهزة في Domain أو في الفئة نفسها، كما أن شرط إصدار Windows المذكور لا يغطي كل أنواع الأجهزة في السؤال."
+    ],
+    "note": "اتصال الجهاز بوحدة تحكم Intune يبدأ بعملية Enrollment."
+  },
+  "q-062": {
+    "translation": "أنت مسؤول النظام في مؤسستك. تحتاج إلى ضمان أن أي تطبيق يطلب Elevation of privilege يجري فحص Public Key Infrastructure (PKI). أي إعداد من User Account Control (UAC) يجب تفعيله؟ الخيارات: Switch to the secure desktop when prompting for elevation؛ Detect application installations and prompt for elevation؛ Only elevate UI Access applications that are installed in secure locations؛ Only elevate executables that are signed and validated.",
+    "explanation": [
+      "يعتمد فحص PKI على التوقيع الرقمي والشهادة للتحقق من هوية ناشر الملف التنفيذي وصحة التوقيع قبل السماح برفع الصلاحيات.",
+      "الإجابة الصحيحة هي Only elevate executables that are signed and validated، لأنها تربط Elevation مباشرة بكون الملف موقّعًا وتم التحقق منه. الخيارات الأخرى تتحكم في مكان ظهور الطلب أو اكتشاف التثبيت أو موقع تطبيقات UIAccess."
+    ],
+    "note": "PKI مع UAC يعني Executables موقّعة وتم التحقق منها."
+  },
+  "q-063": {
+    "translation": "عندما تصل إلى ملف مخزن داخل Shared folder، أي صلاحيات تكون لها الأولوية؟ الخيارات: Most restrictive، وLeast restrictive، وNTFS، وShare.",
+    "explanation": [
+      "عند الوصول إلى ملف عبر الشبكة، يطبق Windows كلًا من Share permissions وNTFS permissions. الصلاحية الفعلية تكون النتيجة الأكثر تقييدًا بين المجموعتين.",
+      "الإجابة الصحيحة هي Most restrictive. لا تكون NTFS أو Share لها الأولوية دائمًا بمفردها؛ بل يُحسم الوصول وفق القيود المشتركة الأكثر تشددًا."
+    ],
+    "note": "الوصول عبر Share يخضع لـShare وNTFS، والنتيجة هي Most restrictive."
+  },
+  "q-064": {
+    "translation": "إلى أي مجموعة يجب أن تنتمي كي تثبّت Microsoft Office على كمبيوتر؟ الخيارات: Network Configuration Operators، وAdministrators، وBackup Operators، وDevice Owners.",
+    "explanation": [
+      "تثبيت Microsoft Office يكتب ملفات في مجلدات نظام محمية ويجري تغييرات على مستوى الجهاز، ولذلك يحتاج إلى صلاحيات إدارية.",
+      "الإجابة الصحيحة هي Administrators. المجموعات الأخرى تمنح قدرات متخصصة في الشبكة أو النسخ الاحتياطي أو ملكية الأجهزة، ولا تمنح صلاحية التثبيت الإداري المطلوبة."
+    ],
+    "note": "تثبيت Office على مستوى الجهاز يحتاج عضوية Administrators."
+  },
+  "q-065": {
+    "translation": "لكل عبارة عن تثبيت التطبيقات أو إزالتها، اختر True أو False. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: تُثبّت تطبيقات 64-bit في المجلد \"C:\\Program Files (x86)\"؛ يؤدي حذف مجلد التطبيق وملفاته المرتبطة إلى إلغاء تثبيته من الكمبيوتر وإزالة إعدادات Registry المرتبطة؛ يظهر طلب User Account Control (UAC) عندما يثبت Standard Users تطبيقات داخل \"Program Files\" أو \"Program Files (x86)\".",
+    "explanation": [
+      "تُثبّت تطبيقات 64-bit عادة في C:\\Program Files، بينما يُستخدم C:\\Program Files (x86) لتطبيقات 32-bit. كما أن حذف ملفات التطبيق يدويًا لا يشغّل عملية Uninstall ولا يضمن إزالة خدماته أو إعداداته من Registry.",
+      "أما محاولة Standard User الكتابة أو التثبيت داخل مجلدات Program Files المحمية فتتطلب Elevation، لذلك يظهر UAC prompt. الإجابات بالترتيب هي: False، False، True."
+    ],
+    "note": "64-bit في Program Files، والحذف اليدوي ليس Uninstall، وتثبيت Standard User يطلب UAC."
+  },
+  "q-066": {
+    "translation": "تحتاج إلى إلغاء تثبيت Windows update من كمبيوتر. أين تنفذ هذه المهمة؟ الخيارات: Windows Update history، وWindows Update Advanced Options، وAction Center، وWindows Security.",
+    "explanation": [
+      "تعرض Windows Update history التحديثات التي ثُبّتت على الجهاز، ومنها يمكنك الوصول إلى خيار Uninstall updates واختيار التحديث المطلوب إزالته.",
+      "الإجابة الصحيحة هي Windows Update history. الخيارات الأخرى تدير إعدادات أو تنبيهات أو حماية النظام، لكنها ليست المسار المخصص لمراجعة تحديث مثبت وإلغاء تثبيته."
+    ],
+    "note": "لإزالة تحديث مثبت، ابدأ من Windows Update history."
+  },
+  "q-067": {
+    "translation": "أبلغ مستخدم أن جهاز Windows 10 لديه لا يطبق إعدادات الأمان الجديدة التي نفذها قسم IT، ومنها متطلبات Password complexity وسياسات Screen timeout. تحتاج إلى تحديث الإعدادات يدويًا على الكمبيوتر. ماذا تفعل؟ الخيارات كما وردت: فتح System Information واختيار Refresh from، أي «تحديث من» مع بقاء عبارة from بلا وجهة محددة؛ تشغيل الأمر gpupdate force من Command Prompt؛ فتح Local Security Policy واختيار Reload from، أي «إعادة التحميل من» مع بقاء عبارة from بلا وجهة محددة؛ تشغيل الأمر gpresult /h من Command Prompt، ثم ترد العبارة غير المترابطة the View menu the Action menu، أي «قائمة View ثم قائمة Action».",
+    "explanation": [
+      "الأمر gpupdate يطلب من Windows تحديث إعدادات Group Policy، وتضيف /force إعادة تطبيق كل السياسات بدلًا من الاكتفاء بالسياسات التي تغيرت.",
+      "الإجابة الصحيحة هي Run the gpupdate force command from the command prompt، والصيغة العملية للأمر هي gpupdate /force. أما gpresult /h فينشئ تقريرًا عن السياسات المطبقة ولا يجبر الجهاز على تحديثها، والخيارات الرسومية المذكورة لا تنفذ هذا التحديث."
+    ],
+    "note": "لتحديث Group Policy يدويًا بالقوة استخدم gpupdate /force."
+  },
+  "q-068": {
+    "translation": "أي ميزة في Windows تعرض Consent prompt عندما يحاول مستخدم تثبيت Software؟ الخيارات: Windows Defender، وActive Directory (AD)، وWindows Hello، وUser Account Control (UAC).",
+    "explanation": [
+      "يراقب User Account Control العمليات التي تحتاج إلى صلاحيات إدارية. وعند محاولة برنامج التثبيت إجراء تغييرات محمية، يعرض UAC طلب موافقة أو بيانات اعتماد.",
+      "الإجابة الصحيحة هي User Account Control (UAC). Windows Defender للحماية من التهديدات، وAD لإدارة الهوية والموارد، وWindows Hello لتسجيل الدخول."
+    ],
+    "note": "طلب الموافقة عند تثبيت برنامج هو وظيفة UAC."
+  },
+  "q-069": {
+    "translation": "يريد مستخدم توصية بنوع حساب يمكنه من خلاله مشاركة الملفات والإعدادات بسهولة بين عدة أجهزة كمبيوتر شخصية يملكها في المنزل. أي نوع حساب توصي به؟ الخيارات: Microsoft Account، وGuest Account، وLocal Account، وDomain account.",
+    "explanation": [
+      "يرتبط Microsoft Account بخدمات Microsoft السحابية، ويمكن استخدامه على عدة أجهزة شخصية للوصول إلى الملفات ومزامنة الإعدادات المدعومة.",
+      "الإجابة الصحيحة هي Microsoft Account. Local Account يقتصر أساسًا على جهاز واحد، وGuest Account محدود، وDomain account مخصص لبيئة مؤسسة يديرها Domain."
+    ],
+    "note": "مشاركة الملفات والإعدادات بين أجهزة منزلية متعددة تشير إلى Microsoft Account."
+  },
+  "q-070": {
+    "translation": "حددت أن تطبيقًا لا يستجيب ويتسبب في ضعف أداء جهاز Windows 10. أي تبويب وإجراء في Task Manager تستخدم لحل المشكلة؟ الخيارات: Performance → Monitor Resource usage؛ Services → Stop service؛ Startup apps → Disable؛ Processes → End task.",
+    "explanation": [
+      "يعرض تبويب Processes التطبيقات والعمليات النشطة وحالتها، ويمكن تحديد التطبيق الذي لا يستجيب وإنهاء تشغيله مباشرة باستخدام End task.",
+      "الإجابة الصحيحة هي Processes→ end task. تبويب Performance للمراقبة، وServices يدير الخدمات، وStartup apps يتحكم فيما يبدأ عند تسجيل الدخول ولا ينهي التطبيق المتعطل حاليًا."
+    ],
+    "note": "تطبيق Not responding الآن: Processes ثم End task."
+  },
+  "q-071": {
+    "translation": "لكل عبارة عن استخدام تطبيق Microsoft Authenticator في Windows 10، اختر True أو False. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: يمكن لتطبيق Microsoft Authenticator إرسال Push notification للموافقة على محاولات تسجيل الدخول لكل من Local account وMicrosoft account؛ يمكنك استخدام التطبيق لتسجيل الدخول إذا نسيت كلمة المرور؛ يولد التطبيق Time-based one-time passwords كجزء من Multi-factor authentication.",
+    "explanation": [
+      "Push notifications الخاصة بالموافقة ترتبط بحسابات وخدمات تدعم Microsoft Authenticator، وليست ميزة مصادقة لـLocal account في Windows، لذلك العبارة الأولى False. صياغة العبارة الثانية واسعة على نحو غير معتاد ولا تحدد آلية استرداد الحساب، لكنها تُعامل في هذا السؤال على أنها True: يمكن استخدام التطبيق للمساعدة في تسجيل الدخول عند نسيان كلمة المرور.",
+      "كما يستطيع Microsoft Authenticator إنشاء رموز مؤقتة تتغير مع الوقت وتُستخدم عاملًا إضافيًا في MFA، لذلك العبارة الثالثة True. الإجابات بالترتيب: False، True، True."
+    ],
+    "note": "Authenticator يدعم رموز MFA واسترداد الحساب، لا Push approval لـLocal account؛ والترتيب الرسمي False، True، True."
+  },
+  "q-072": {
+    "translation": "حدد هل تصف كل عبارة شبكة Private أم شبكة Public. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: Network discovery متوقف لمنع الأجهزة الأخرى على الشبكة من رؤية كمبيوترك؛ يُستخدم هذا Network profile عادة لشبكات المنزل أو المكتب التي تثق بأجهزتها؛ يُستخدم هذا Network profile عندما تتصل كضيف بشبكة لا تملك عليها User account. الخيارات لكل عبارة: Public، وPrivate.",
+    "explanation": [
+      "يقلل ملف Public network قابلية اكتشاف الجهاز لأنه يناسب الشبكات غير الموثوقة أو اتصال الضيف. أما Private network فيناسب شبكة المنزل أو المكتب التي تثق بالأجهزة المتصلة بها ويسمح بمشاركة واكتشاف أوسع.",
+      "المطابقة الصحيحة هي: Network discovery متوقف ← Public؛ شبكة منزل أو مكتب موثوقة ← Private؛ اتصال ضيف من دون User account ← Public."
+    ],
+    "note": "Public لغير الموثوق والضيف، وPrivate للمنزل أو المكتب الموثوق."
+  },
+  "q-073": {
+    "translation": "لا يستطيع مستخدم الاتصال بالشبكة. تحتاج إلى معرفة IP address وDefault gateway الخاصين به. أي أمر تدخله في Command Line؟ الخيارات: Ping 0.0.0.0، وPing 127.0.0.1، وIpconfig، وIpconfig /release.",
+    "explanation": [
+      "يعرض ipconfig إعدادات TCP/IP الحالية لمحولات الشبكة، ومنها IPv4 address وDefault Gateway، وهي المعلومات المطلوبة للتشخيص.",
+      "الإجابة الصحيحة هي Ipconfig. أوامر Ping تختبر الاتصال، بينما ipconfig /release يتخلى عن عنوان DHCP الحالي بدلًا من الاكتفاء بعرضه."
+    ],
+    "note": "لعرض IP address وDefault gateway استخدم ipconfig."
+  },
+  "q-074": {
+    "translation": "لكل عبارة عن Connectors، اختر True أو False. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: يمكن توصيل كابل DVI بمنفذ VGA من دون Adapter؛ يمكن توصيل كابل USB-C بمنفذ USB-A من دون Adapter؛ يمكن توصيل كابل USB 3.0 بمنفذ USB 1.0 من دون Adapter.",
+    "explanation": [
+      "موصل DVI لا يطابق منفذ VGA ماديًا، وموصل USB-C لا يطابق منفذ USB-A، لذلك يحتاج كل منهما إلى Adapter أو كابل مناسب ولا يمكن توصيله مباشرة بالمنفذ المذكور.",
+      "أما العبارة الثالثة فتذكر إصداري USB 3.0 وUSB 1.0 بصورة عامة من دون تحديد شكل Connector؛ ويُعامل التوافق بين إصدارات USB في هذا السؤال على أنه True، من دون افتراض أن الموصل USB-A. الإجابات بالترتيب: False، False، True."
+    ],
+    "note": "DVI مع VGA: False، وUSB-C مع USB-A: False، وUSB 3.0 مع USB 1.0: True."
+  },
+  "q-075": {
+    "translation": "تحتاج إلى تعيين IP address جديد لكل Network adapters على كمبيوتر. أي أمر تدخله في Command Prompt؟ الخيارات: Ipconfig /all، وIpconfig /release، وIpconfig /renew، وIpconfig.",
+    "explanation": [
+      "يطلب ipconfig /renew من DHCP server تجديد عقود العناوين لمحولات الشبكة والحصول على إعدادات IP جديدة أو مجددة.",
+      "الإجابة الصحيحة حسب تسمية الخيار هي Ipconfig / renew، والصيغة المعتادة للأمر هي ipconfig /renew. الأمر /release يحرر العنوان الحالي، بينما ipconfig وipconfig /all يعرضان معلومات الإعداد ولا يطلبان عنوانًا جديدًا."
+    ],
+    "note": "تعيين عنوان DHCP جديد = ipconfig /renew."
+  },
+  "q-076": {
+    "translation": "ما الغرض من Microsoft Store؟ الخيارات: منصة توزيع رقمية وسوق لتطبيقات معتمدة من Microsoft؛ منصة توزيع رقمية وسوق لكل التطبيقات؛ سوق إلكتروني لشراء أجهزة كمبيوتر وملحقات تحمل علامة Microsoft؛ سوق إلكتروني لبيع وشراء Hardware مستعمل.",
+    "explanation": [
+      "Microsoft Store قناة رقمية لاكتشاف التطبيقات والحصول عليها وتحديثها، وتخضع التطبيقات المنشورة فيه لسياسات واعتماد Microsoft.",
+      "الإجابة الصحيحة هي A digital distribution platform and marketplace for Microsoft approved applications. ليس الغرض منه توزيع كل تطبيق بلا اعتماد، ولا بيع الأجهزة المستعملة أو الاقتصار على بيع Hardware يحمل علامة Microsoft."
+    ],
+    "note": "Microsoft Store = توزيع رقمي وسوق لتطبيقات معتمدة من Microsoft."
+  },
+  "q-077": {
+    "translation": "ما الوظيفة الأساسية لـWindows Registry؟ الخيارات: التحقق من سلامة الملفات على Hard drive؛ الحماية من Malicious software والتهديدات المرتبطة به؛ تخزين بيانات Profiles وApplications وHardware drivers؛ فهرسة بيانات File system لتحسين البحث.",
+    "explanation": [
+      "Windows Registry قاعدة بيانات هرمية يخزن فيها Windows والتطبيقات إعدادات النظام والمستخدمين ومعلومات مكونات Hardware وDrivers.",
+      "الإجابة الصحيحة هي Stores data for profiles, applications, and hardware drivers. فحص سلامة الملفات والحماية من البرامج الضارة وفهرسة البحث وظائف تؤديها أدوات وخدمات أخرى."
+    ],
+    "note": "Registry يخزن إعدادات وبيانات Profiles وApplications وHardware drivers."
+  },
+  "q-078": {
+    "translation": "يوجد File server يعمل بنظام Windows 10 اسمه FS1، وبه المجلد D:\\projects\\Training، وهذا المجلد مشارك باسم Training. لديك وصول إلى Shared folder، ويمكنك استخدام Remote Desktop للاتصال بـFS1. لكل عبارة اختر True أو False: يمكنك فتح ملف في \\\\FS1\\Training؛ يمكنك إنشاء ملف في \\\\FS1\\Training؛ يمكنك تعديل ملف داخل D:\\projects\\Training إذا اتصلت بـFS1 عبر Remote Desktop.",
+    "explanation": [
+      "لا تحدد المعطيات مستوى File permissions بالتفصيل، لكن الإجابة الرسمية True ثم False للعبارتين الأوليين تفترض حالة وصول تسمح بفتح ملف عبر \\\\FS1\\Training ولا تسمح بإنشاء ملف جديد؛ أي حالة Read/open only.",
+      "Remote Desktop يغيّر طريقة الوصول إلى FS1 ولا يمنح Permission إضافية ولا يحوّل Read إلى Modify. لذلك تظل العبارة الثالثة False، ويكون الترتيب الرسمي الكامل: True، False، False."
+    ],
+    "note": "الوصول وRemote Desktop لا يساويان تعديلًا: True، False، False."
+  }
+}

@@ -4,9 +4,46 @@ import {
   escapeHtml,
   normalizeResponse,
   renderAnswerReview,
+  renderArabicExplanation,
   renderQuestion,
   scoreResponse,
 } from "../js/question-renderer.js";
+
+function openingSectionTagWithClass(html, className) {
+  return (html.match(/<section\b[^>]*>/gi) || []).find((openingTag) => {
+    const classAttribute = openingTag.match(
+      /(?:^|[\t\n\f\r ])class[\t\n\f\r ]*=[\t\n\f\r ]*(["'])([\s\S]*?)\1/i
+    );
+    return classAttribute?.[2]
+      .split(/[\t\n\f\r ]+/)
+      .includes(className);
+  });
+}
+
+function hasAttributeValue(openingTag, attributeName, value) {
+  const attribute = new RegExp(
+    `[\\t\\n\\f\\r ]${attributeName}[\\t\\n\\f\\r ]*=[\\t\\n\\f\\r ]*(?:"${value}"|'${value}'|${value})(?=[\\t\\n\\f\\r ]|/?>)`,
+    "i"
+  );
+  return attribute.test(openingTag);
+}
+
+test("direction assertion helpers handle exact HTML token and attribute boundaries", () => {
+  const multilineClassHtml = [
+    '<section class="explanation-body-extra">Wrong section</section>',
+    '<section data-lang="en" data-dir=ltr class="wrapper\n explanation-body\tactive">Right section</section>',
+  ].join("");
+  const openingTag = openingSectionTagWithClass(multilineClassHtml, "explanation-body");
+
+  assert.equal(
+    openingTag,
+    '<section data-lang="en" data-dir=ltr class="wrapper\n explanation-body\tactive">'
+  );
+  assert.equal(hasAttributeValue(openingTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(openingTag, "dir", "ltr"), false);
+  assert.equal(hasAttributeValue('<section lang=en dir=ltr>', "lang", "en"), true);
+  assert.equal(hasAttributeValue('<section lang=en dir=ltr>', "dir", "ltr"), true);
+});
 
 test("scores grouped true-false with partial detail", () => {
   const question = {
@@ -48,6 +85,16 @@ test("scores multi-select as a set", () => {
   const question = { type: "multi-select", correctAnswer: [1, 3] };
   assert.equal(scoreResponse(question, [3, 1]).correct, true);
   assert.equal(scoreResponse(question, [1, 2]).correct, false);
+});
+
+test("does not score a marked answer when the question needs review", () => {
+  assert.deepEqual(
+    scoreResponse(
+      { type: "mcq", correctAnswer: 3, needsReview: true },
+      3
+    ),
+    { correct: null, earned: 0, possible: 0 }
+  );
 });
 
 test("scores ordering by exact official order", () => {
@@ -99,6 +146,279 @@ test("answer review identifies the official answer without adding explanation", 
   assert.ok(!html.includes("Explanation"));
 });
 
+test("Practice feedback warns that a retained review key is unscored", () => {
+  const html = renderAnswerReview(
+    {
+      type: "mcq",
+      options: ["First", "Second"],
+      correctAnswer: 1,
+      needsReview: true,
+      reviewNotes: "The marked key is conceptually contradictory.",
+    },
+    1
+  );
+
+  assert.match(html, /class="answer-review is-unscored"/);
+  assert.match(html, /Answer review warning/);
+  assert.match(html, /Marked source answer/);
+  assert.doesNotMatch(html, /<h3>Correct<\/h3>/);
+});
+
 test("escapeHtml handles punctuation safely", () => {
   assert.equal(escapeHtml(`A&B < "C"`), "A&amp;B &lt; &quot;C&quot;");
+});
+
+test("renders semantic RTL Arabic study guidance with separate content regions", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["First answer", "Official answer"],
+      correctAnswer: 1,
+      needsReview: false,
+    },
+    {
+      translation: "Arabic translation",
+      explanation: ["Concept paragraph", "Answer reasoning paragraph"],
+      note: "Revision note",
+    }
+  );
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(html, /class="explanation-guidance-label"[^>]*>[^<]*Generated study guidance/);
+  assert.match(html, /class="explanation-translation"[\s\S]*Arabic translation/);
+  assert.match(html, /class="explanation-official-answer"[\s\S]*Official answer/);
+  assert.match(html, /class="explanation-body"[\s\S]*Concept paragraph[\s\S]*Answer reasoning paragraph/);
+  assert.equal((html.match(/class="explanation-paragraph"/g) || []).length, 2);
+  assert.match(html, /class="explanation-note"[\s\S]*Revision note/);
+});
+
+test("suppresses the generated-guidance label when explicitly disabled", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["Official answer"],
+      correctAnswer: 0,
+      needsReview: false,
+    },
+    {
+      translation: "Arabic translation",
+      explanation: ["Concept paragraph", "Answer reasoning paragraph"],
+      note: "Revision note",
+    },
+    { generatedStudyGuidance: false }
+  );
+
+  assert.doesNotMatch(html, /class="explanation-guidance-label"/);
+  assert.match(html, /class="explanation-translation"/);
+});
+
+test("renders an answer-review warning instead of a correct-answer region", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "source-review",
+      correctAnswer: null,
+      needsReview: true,
+      reviewNotes: "The official sources disagree.",
+    },
+    {
+      translation: "Conflict translation",
+      explanation: ["First conflict paragraph", "Second conflict paragraph"],
+      note: "Conflict note",
+    }
+  );
+
+  assert.match(html, /class="explanation-conflict"/);
+  assert.match(html, /Answer review warning/);
+  assert.match(html, /The official sources disagree\./);
+  assert.doesNotMatch(html, /class="explanation-official-answer"/);
+  assert.doesNotMatch(html, /Correct answer/);
+});
+
+test("renders a soft unavailable state when Arabic guidance is missing", () => {
+  const html = renderArabicExplanation({ type: "mcq", correctAnswer: 0 }, null);
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(html, /class="explanation-unavailable"/);
+  assert.match(html, /Arabic explanation is unavailable/);
+});
+
+test("escapes every rendered Arabic explanation field and the official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["<script>official()</script>"],
+      correctAnswer: 0,
+      needsReview: false,
+    },
+    {
+      translation: "<script>translation()</script>",
+      explanation: [
+        "<script>paragraphOne()</script>",
+        "<script>paragraphTwo()</script>",
+      ],
+      note: "<script>note()</script>",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  for (const value of [
+    "official()",
+    "translation()",
+    "paragraphOne()",
+    "paragraphTwo()",
+    "note()",
+  ]) {
+    assert.ok(html.includes(`&lt;script&gt;${value}&lt;/script&gt;`));
+  }
+});
+
+test("escapes source-conflict review notes", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "source-review",
+      correctAnswer: null,
+      needsReview: true,
+      reviewNotes: "<script>conflict()</script>",
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.match(html, /&lt;script&gt;conflict\(\)&lt;\/script&gt;/);
+});
+
+test("escapes statement text in a derived true-false official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "true-false-group",
+      statements: ["<script>trueFalse()</script>"],
+      correctAnswer: [true],
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;trueFalse()&lt;/script&gt;: True"));
+});
+
+test("escapes item text and values in a derived matching official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "matching",
+      items: [{ id: "danger", text: "<script>matchingItem()</script>" }],
+      correctAnswer: { danger: "<script>matchingValue()</script>" },
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;matchingItem()&lt;/script&gt;"));
+  assert.ok(html.includes("&lt;script&gt;matchingValue()&lt;/script&gt;"));
+});
+
+test("escapes items in a derived ordering official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "ordering",
+      correctAnswer: [
+        "<script>orderingOne()</script>",
+        "<script>orderingTwo()</script>",
+      ],
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;orderingOne()&lt;/script&gt;"));
+  assert.ok(html.includes("&lt;script&gt;orderingTwo()&lt;/script&gt;"));
+});
+
+test("isolates English labels and a mixed technical official answer from Arabic direction", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["PowerShell <script>answer()</script> / إدارة"],
+      correctAnswer: 0,
+      needsReview: false,
+    },
+    {
+      translation: "ترجمة السؤال",
+      explanation: ["شرح المفهوم", "شرح الإجابة"],
+      note: "ملاحظة للمراجعة",
+    }
+  );
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(html, /<p class="explanation-guidance-label" lang="en" dir="ltr">/);
+  assert.match(html, /<h3 lang="en" dir="ltr">Arabic translation<\/h3>/);
+  assert.match(html, /<section class="explanation-official-answer" lang="en" dir="ltr">/);
+  assert.match(
+    html,
+    /<bdi class="official-answer-text" lang="en" dir="ltr">PowerShell &lt;script&gt;answer\(\)&lt;\/script&gt; \/ إدارة<\/bdi>/
+  );
+  assert.match(html, /<h3 lang="en" dir="ltr">Explanation<\/h3>/);
+  assert.match(html, /<h3 lang="en" dir="ltr">Revision note<\/h3>/);
+  assert.match(html, /<section class="explanation-translation">[\s\S]*<p>ترجمة السؤال<\/p>/);
+  const explanationBodyOpeningTag = openingSectionTagWithClass(html, "explanation-body");
+  const explanationNoteOpeningTag = openingSectionTagWithClass(html, "explanation-note");
+  assert.ok(explanationBodyOpeningTag);
+  assert.equal(hasAttributeValue(explanationBodyOpeningTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(explanationBodyOpeningTag, "dir", "ltr"), false);
+  assert.ok(explanationNoteOpeningTag);
+  assert.equal(hasAttributeValue(explanationNoteOpeningTag, "lang", "en"), false);
+  assert.equal(hasAttributeValue(explanationNoteOpeningTag, "dir", "ltr"), false);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("isolates and escapes the English source-conflict warning from Arabic direction", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "source-review",
+      correctAnswer: null,
+      needsReview: true,
+      reviewNotes: "Official <script>review()</script> sources disagree.",
+    },
+    {
+      translation: "ترجمة التعارض",
+      explanation: ["شرح التعارض", "سبب عدم اختيار إجابة"],
+      note: "راجع المصدرين",
+    }
+  );
+
+  assert.match(
+    html,
+    /<section class="explanation-conflict" role="alert" lang="en" dir="ltr">/
+  );
+  assert.match(html, /<h3>Answer review warning<\/h3>/);
+  assert.ok(html.includes("Official &lt;script&gt;review()&lt;/script&gt; sources disagree."));
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("isolates the English missing state from Arabic direction", () => {
+  const html = renderArabicExplanation({ type: "mcq", correctAnswer: 0 }, null);
+
+  assert.match(html, /<aside class="arabic-explanation" lang="ar" dir="rtl">/);
+  assert.match(
+    html,
+    /<p class="explanation-unavailable" lang="en" dir="ltr">Arabic explanation is unavailable for this question\.<\/p>/
+  );
 });

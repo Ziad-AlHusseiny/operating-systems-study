@@ -1,8 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { readFile, stat } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 const dataUrl = new URL("../data/questions.json", import.meta.url);
+const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
+const extractionReportUrl = new URL(
+  "../QUESTION_EXTRACTION_REPORT.md",
+  import.meta.url
+);
 
 async function loadData() {
   return JSON.parse(await readFile(dataUrl, "utf8"));
@@ -47,10 +54,44 @@ test("every scored question has a valid official answer", async () => {
   }
 });
 
-test("unresolved content is clearly reported instead of guessed", async () => {
+test("reviewed content preserves marked keys but clearly identifies unresolved items", async () => {
   const data = await loadData();
-  for (const question of data.questions.filter((q) => q.needsReview)) {
-    assert.equal(question.correctAnswer, null);
+  const reviewed = data.questions.filter((question) => question.needsReview);
+  for (const question of reviewed) {
     assert.ok(question.reviewNotes.trim().length > 0);
   }
+
+  assert.deepEqual(
+    reviewed.filter((question) => question.correctAnswer === null).map((question) => question.id),
+    ["q-103"]
+  );
+  assert.deepEqual(
+    reviewed.filter((question) => question.correctAnswer !== null).map((question) => question.id),
+    ["q-015", "q-087", "q-093", "q-094"]
+  );
+});
+
+test("question validation checks committed artifacts without rewriting them", async () => {
+  const beforeData = await stat(dataUrl);
+  const beforeReport = await stat(extractionReportUrl);
+  const stdout = execFileSync("python", ["scripts/validate_questions.py", "--check"], {
+    cwd: projectRoot,
+    encoding: "utf8",
+  });
+  const afterData = await stat(dataUrl);
+  const afterReport = await stat(extractionReportUrl);
+
+  const report = await readFile(extractionReportUrl, "utf8");
+  assert.equal(
+    stdout.trim(),
+    "Validated 103 canonical questions (5 need review); committed artifacts are current."
+  );
+  assert.equal(afterData.mtimeMs, beforeData.mtimeMs);
+  assert.equal(afterReport.mtimeMs, beforeReport.mtimeMs);
+  assert.match(report, /^## Arabic study guidance$/m);
+  assert.match(report, /^## Arabic guidance maintenance$/m);
+  assert.match(report, /python scripts\/build_explanations\.py/);
+  assert.match(report, /content\/explanations-ar\/q079-103\.json/);
+  assert.match(report, /never during an active Mock Exam/);
+  assert.match(report, /Never select an answer for an unresolved official-source conflict/);
 });
