@@ -128,6 +128,26 @@ test("renders semantic RTL Arabic study guidance with separate content regions",
   assert.match(html, /class="explanation-note"[\s\S]*Revision note/);
 });
 
+test("suppresses the generated-guidance label when explicitly disabled", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "mcq",
+      options: ["Official answer"],
+      correctAnswer: 0,
+      needsReview: false,
+    },
+    {
+      translation: "Arabic translation",
+      explanation: ["Concept paragraph", "Answer reasoning paragraph"],
+      note: "Revision note",
+    },
+    { generatedStudyGuidance: false }
+  );
+
+  assert.doesNotMatch(html, /class="explanation-guidance-label"/);
+  assert.match(html, /class="explanation-translation"/);
+});
+
 test("renders a source-conflict warning instead of a correct-answer region", () => {
   const html = renderArabicExplanation(
     {
@@ -205,4 +225,65 @@ test("escapes source-conflict review notes", () => {
 
   assert.doesNotMatch(html, /<script>/);
   assert.match(html, /&lt;script&gt;conflict\(\)&lt;\/script&gt;/);
+});
+
+test("escapes statement text in a derived true-false official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "true-false-group",
+      statements: ["<script>trueFalse()</script>"],
+      correctAnswer: [true],
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;trueFalse()&lt;/script&gt;: True"));
+});
+
+test("escapes item text and values in a derived matching official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "matching",
+      items: [{ id: "danger", text: "<script>matchingItem()</script>" }],
+      correctAnswer: { danger: "<script>matchingValue()</script>" },
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;matchingItem()&lt;/script&gt;"));
+  assert.ok(html.includes("&lt;script&gt;matchingValue()&lt;/script&gt;"));
+});
+
+test("escapes items in a derived ordering official answer", () => {
+  const html = renderArabicExplanation(
+    {
+      type: "ordering",
+      correctAnswer: [
+        "<script>orderingOne()</script>",
+        "<script>orderingTwo()</script>",
+      ],
+      needsReview: false,
+    },
+    {
+      translation: "Translation",
+      explanation: ["First paragraph", "Second paragraph"],
+      note: "Note",
+    }
+  );
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.ok(html.includes("&lt;script&gt;orderingOne()&lt;/script&gt;"));
+  assert.ok(html.includes("&lt;script&gt;orderingTwo()&lt;/script&gt;"));
 });
