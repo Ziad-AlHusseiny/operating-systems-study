@@ -1,6 +1,6 @@
 {
   "q-001": {
-    "translation": "تحاول الوصول عبر الشبكة من كمبيوتر ثانٍ إلى ملف موجود في مجلد على كمبيوتر يعمل بنظام Windows 10. لديك صلاحية NTFS من نوع Full Control، بينما صلاحية المشاركة Share هي Read Only. حدّد صح أو خطأ لكل عبارة: يمكنك قراءة الملف؛ يمكنك حذف الملف؛ يمكنك تعديل الملف.",
+    "translation": "تحاول الوصول عبر الشبكة من كمبيوتر ثانٍ إلى ملف موجود في مجلد على كمبيوتر يعمل بنظام Windows 10. لديك صلاحية NTFS من نوع Full Control، بينما صلاحية المشاركة Share هي Read Only. حدّد صح أو خطأ لكل عبارة: يمكنك قراءة الملف؛ يمكنك حذف الملف؛ يمكنك تعديل الملف. ملاحظة: ستحصل على درجة جزئية عن كل اختيار صحيح.",
     "explanation": [
       "عند الوصول إلى ملف عبر مشاركة شبكية، تُطبَّق صلاحيات NTFS وصلاحيات Share معًا، وتكون الصلاحية الفعلية هي الأكثر تقييدًا بينهما.",
       "لذلك تسمح صلاحية Share: Read Only بقراءة الملف فقط حتى مع وجود NTFS: Full Control. الإجابات الرسمية بالترتيب هي: صح للقراءة، وخطأ للحذف، وخطأ للتعديل."
@@ -24,7 +24,7 @@
     "note": "PKI مع UAC يعني: Signed and validated executables."
   },
   "q-004": {
-    "translation": "أي فئة في Windows Settings يجب تخصيصها لإعداد ميزات تسهيل الاستخدام؟ الخيارات: System، وDevices، وPhone، وNetwork & Internet، وPersonalization، وApps، وAccounts، وTime & Language، وGaming، وEase of Access، وSearch، وPrivacy، وUpdate & Security.",
+    "translation": "أي فئة في Windows Settings يجب تخصيصها لإعداد ميزات تسهيل الاستخدام؟ اختر الفئة الصحيحة في منطقة الإجابة. الخيارات: System، وDevices، وPhone، وNetwork & Internet، وPersonalization، وApps، وAccounts، وTime & Language، وGaming، وEase of Access، وSearch، وPrivacy، وUpdate & Security.",
     "explanation": [
       "يجمع Windows 10 إعدادات مثل Narrator والتكبير والتباين العالي ولوحة المفاتيح المساعدة داخل فئة مخصصة لإمكانية الوصول.",
       "الإجابة الصحيحة هي Ease of Access؛ فهي الفئة التي تحتوي على ميزات تسهيل الاستخدام، وليست System أو Personalization."
@@ -48,7 +48,7 @@
     "note": "زيادة الموارد لمواجهة زيادة الطلب = Scalability."
   },
   "q-007": {
-    "translation": "صِل كل نوع نسخ احتياطي بالوصف الصحيح. الأنواع: Full، وIncremental، وDifferential، وMirror. الأوصاف: نسخة من كل البيانات على القرص في وقت محدد؛ نسخة من كل البيانات التي أُنشئت أو تغيرت منذ آخر نسخة احتياطية؛ نسخة من كل البيانات التي أُنشئت أو تغيرت منذ آخر نسخة Full؛ نسخة تتحدث تلقائيًا كلما تغيرت البيانات على القرص.",
+    "translation": "صِل كل نوع نسخ احتياطي من القائمة اليسرى بالوصف الصحيح في الجهة اليمنى. ملاحظة: ستحصل على درجة جزئية عن كل إجابة صحيحة. الأنواع: Full، وIncremental، وDifferential، وMirror. الأوصاف: نسخة من كل البيانات على القرص في وقت محدد؛ نسخة من كل البيانات التي أُنشئت أو تغيرت منذ آخر نسخة احتياطية؛ نسخة من كل البيانات التي أُنشئت أو تغيرت منذ آخر نسخة Full؛ نسخة تتحدث تلقائيًا كلما تغيرت البيانات على القرص.",
     "explanation": [
       "Full ينسخ كل البيانات، وIncremental ينسخ التغييرات منذ آخر نسخة احتياطية أيًا كان نوعها، وDifferential ينسخ التغييرات منذ آخر Full، بينما Mirror يعكس التغييرات باستمرار.",
       "المطابقة الرسمية هي: كل البيانات في وقت محدد ← Full؛ منذ آخر Backup ← Incremental؛ منذ آخر Full ← Differential؛ تحديث تلقائي مع تغيّر البيانات ← Mirror."
@@ -56,12 +56,12 @@
     "note": "Incremental منذ آخر Backup، وDifferential منذ آخر Full."
   },
   "q-008": {
-    "translation": "لا يستطيع مستخدم تثبيت تطبيق على كمبيوتر عضو في Active Directory domain، ويُشتبه في أن إعدادًا في Group Policy Object (GPO) قد تجاوزه إعداد في GPO آخر. رتّب سياسات المجموعة حسب تطبيقها: Local Group Policy، وSite Group Policy، وDomain Group Policy، وOrganizational Unit Group Policy.",
+    "translation": "لا يستطيع مستخدم تثبيت تطبيق على كمبيوتر عضو في Active Directory domain، ويُشتبه في أن إعدادًا في Group Policy Object (GPO) قد تجاوزه إعداد في GPO آخر. رتّب سياسات المجموعة حسب تطبيقها: Local group policy، وSite group policy، وDomain group policy، وorganization group policy.",
     "explanation": [
-      "تتبع Group Policy قاعدة LSDOU، أي يبدأ التطبيق من المستوى المحلي ثم الموقع ثم المجال ثم الوحدة التنظيمية. الإعداد المطبّق لاحقًا يستطيع عادةً تجاوز إعداد متعارض طُبّق قبله.",
-      "الترتيب الرسمي هو: Local ثم Site ثم Domain ثم Organizational Unit. لذلك تكون سياسة OU هي الأخيرة والأقرب إلى الكائن عند وجود تعارض عادي."
+      "تُطبَّق Group Policy في طبقات متتابعة، وقد يتجاوز الإعداد الذي يُطبَّق لاحقًا إعدادًا متعارضًا طُبّق قبله.",
+      "الترتيب الرسمي هو: Local group policy ثم Site group policy ثم Domain group policy ثم organization group policy."
     ],
-    "note": "احفظ ترتيب Group Policy بالاختصار LSDOU."
+    "note": "احفظ الترتيب: Local group policy ثم Site group policy ثم Domain group policy ثم organization group policy."
   },
   "q-009": {
     "translation": "ما الميزة التي يقدمها Microsoft Store؟ الخيارات: يستضيف تطبيقات غير مخصصة لـWindows كي يحولها المستخدمون للتثبيت عليه؛ يوفر مستودعًا لاختبار وتوزيع source code لتطبيقات Windows 10؛ يسمح للمستخدمين بتثبيت تطبيقات تم التحقق من عملها الصحيح على Windows؛ يستضيف تطبيقات Desktop قديمة لتنزيلها على أجهزة Windows 10.",
@@ -72,7 +72,7 @@
     "note": "Microsoft Store يوزع تطبيقات Windows التي خضعت للتحقق."
   },
   "q-010": {
-    "translation": "لكل نوع اتصال، حدّد هل ينقل صوتًا، أم فيديو، أم صوتًا وفيديو. أنواع الاتصال: DisplayPort، وDVI، وHDMI، وUSB-C، وVGA. التصنيفات المستخدمة في الإجابات: Audio and video، وVideo.",
+    "translation": "لكل نوع اتصال، حدّد هل ينقل صوتًا، أم فيديو، أم صوتًا وفيديو. ملاحظة: ستحصل على درجة جزئية عن كل نوع اتصال تجيب عنه إجابة صحيحة. أنواع الاتصال: DisplayPort، وDVI، وHDMI، وUSB-C، وVGA. التصنيفات المستخدمة في الإجابات: Audio and video، وVideo.",
     "explanation": [
       "الموصلات الرقمية الحديثة DisplayPort وHDMI، وكذلك USB-C عند استخدام وضع عرض مناسب، تستطيع نقل الصوت والفيديو معًا. أما DVI وVGA في هذا التصنيف فينقلان الفيديو فقط.",
       "المطابقة الرسمية هي: DisplayPort ← Audio and video؛ DVI ← Video؛ HDMI ← Audio and video؛ USB-C ← Audio and video؛ VGA ← Video."
@@ -88,7 +88,7 @@
     "note": "لوحة مفاتيح لاسلكية لا تعمل: افحص البطارية وDevice Driver أولًا."
   },
   "q-012": {
-    "translation": "أي ثلاث مهام يمكن تنفيذها باستخدام Disk Management في Windows 10؟ الخيارات الواردة: إنشاء Volume؛ ضغط الملفات على Volume؛ تهيئة Format لـVolume؛ إنشاء Restore Point؛ تهيئة Initialize لقرص جديد.",
+    "translation": "أي ثلاث مهام يمكن تنفيذها باستخدام Disk Management في Windows 10؟ ملاحظة: ستحصل على درجة جزئية عن كل نوع اتصال تجيب عنه إجابة صحيحة. الخيارات الواردة: إنشاء Volume؛ ضغط الملفات على Volume؛ تهيئة Format لـVolume؛ إنشاء Restore Point؛ تهيئة Initialize لقرص جديد.",
     "explanation": [
       "Disk Management يدير الأقراص والأقسام ووحدات التخزين: يمكنه إنشاء Volume، وتهيئته بنظام ملفات، وInitialize لقرص جديد قبل تقسيمه.",
       "وفق الإجابة الرسمية، المهام الثلاث هي Create a volume وFormat a volume وInitialize a new disk. ضغط الملفات يُدار من خصائص نظام الملفات، وإنشاء Restore Point من System Protection وليس من Disk Management."
@@ -96,7 +96,7 @@
     "note": "Disk Management: Create، Format، Initialize."
   },
   "q-013": {
-    "translation": "حدّد صح أو خطأ لكل عبارة عن إعداد حسابات المستخدمين في Windows 10: يجب أن يكون كل حساب مستخدم Microsoft account؛ إنشاء حساب مستخدم لا يستهلك أي مساحة من القرص المحلي؛ يمكن ترقية أي Standard user account إلى Administrator account.",
+    "translation": "حدّد صح أو خطأ لكل عبارة عن إعداد حسابات المستخدمين في Windows 10. ملاحظة: ستحصل على درجة جزئية عن كل نوع اتصال تجيب عنه إجابة صحيحة. العبارات: يجب أن يكون كل حساب مستخدم Microsoft account؛ إنشاء حساب مستخدم لا يستهلك أي مساحة من القرص المحلي؛ يمكن ترقية أي Standard user account إلى Administrator account.",
     "explanation": [
       "يدعم Windows 10 الحسابات المحلية وMicrosoft accounts، وينشئ لكل مستخدم ملفات وملف تعريف محليًا، لذلك لا يصح القول إن كل الحسابات Microsoft أو إنها لا تستخدم مساحة.",
       "الإجابات الرسمية بالترتيب هي: خطأ، خطأ، صح. يمكن لمسؤول يملك الصلاحيات اللازمة تغيير نوع حساب Standard إلى Administrator."
@@ -104,7 +104,7 @@
     "note": "الحساب قد يكون Local، وملف المستخدم يستهلك مساحة، ويمكن تغيير نوعه."
   },
   "q-014": {
-    "translation": "حدّد صح أو خطأ لكل عبارة عن تثبيت Windows: عملية Upgrade أسرع، لكن Clean Install أفضل لصحة الكمبيوتر؛ إذا فشل Clean Install يمكنك الرجوع إلى نظام التشغيل السابق؛ إذا فشل Upgrade يُستعاد نظام التشغيل السابق تلقائيًا.",
+    "translation": "حدّد صح أو خطأ لكل عبارة عن تثبيت Windows. ملاحظة: ستحصل على درجة جزئية عن كل نوع اتصال تجيب عنه إجابة صحيحة. العبارات: عملية Upgrade أسرع، لكن Clean Install أفضل لصحة الكمبيوتر؛ إذا فشل Clean Install يمكنك الرجوع إلى نظام التشغيل السابق؛ إذا فشل Upgrade يُستعاد نظام التشغيل السابق تلقائيًا.",
     "explanation": [
       "Upgrade يحتفظ بالتطبيقات والبيانات والإعدادات، ولذلك يكون أسهل وأسرع عادةً. أما Clean Install فيبدأ بنظام نظيف لكنه يزيل البيئة السابقة ولا يوفر رجوعًا تلقائيًا إليها.",
       "الإجابات الرسمية بالترتيب هي: صح، خطأ، صح. يحاول Upgrade استعادة النظام السابق عند الفشل، بينما فشل Clean Install لا يتيح الرجوع إليه بالطريقة نفسها."
@@ -112,7 +112,7 @@
     "note": "Upgrade يحافظ على النظام السابق ويمكنه التراجع؛ Clean Install يبدأ من جديد."
   },
   "q-015": {
-    "translation": "يريد مديرك إضافة كمبيوتر إلى Domain، وقد أنشأت بالفعل حساب الكمبيوتر في Active Directory. أكمل المطابقة: المعلومة التي تشير إلى إمكانية إضافة الكمبيوتر إلى Domain؛ ونوع الحساب المطلوب لإضافة الكمبيوتر إلى Domain. خيار الإجابة الرسمي المتاح لكل بند هو Local administrator.",
+    "translation": "يريد مديرك إضافة كمبيوتر إلى Domain، وقد أنشأت بالفعل حساب الكمبيوتر في Active Directory. لتحديد ما إذا كان يمكن إضافة الكمبيوتر إلى Domain، تفتح نافذة System Information المعروضة. أكمل المطابقة: المعلومة في نافذة System Information التي تشير إلى إمكانية انضمام الكمبيوتر إلى Domain؛ ونوع الحساب المطلوب لإضافة الكمبيوتر إلى Domain. خيار الإجابة الرسمي المتاح لكل بند هو Local administrator.",
     "explanation": [
       "الانضمام إلى Domain يغيّر إعدادات النظام ويتطلب صلاحيات إدارية محلية على الكمبيوتر لإتمام العملية.",
       "بحسب البيانات الرسمية لهذا السؤال، تُطابق العبارتان مع Local administrator: المعلومة المطلوبة لإمكان الانضمام، ونوع الحساب المطلوب لتنفيذ الانضمام."
@@ -144,7 +144,7 @@
     "note": "صورة كاملة = System Image Recovery؛ تراجع عن Driver = System Restore."
   },
   "q-019": {
-    "translation": "تجري نسخة Full احتياطية للخوادم كل يوم أحد الساعة 4:00 صباحًا، وتحتاج إلى نسخ إضافية من الاثنين إلى السبت. أي نوع Backup، مع نسخة Full، يتيح استعادة كل البيانات بأسرع وقت؟ الخيارات: Copy، وDifferential، وIncremental، وIncremental forever.",
+    "translation": "يُعد توفر البيانات وحمايتها أمرين بالغَي الأهمية في مؤسستك. تجري نسخة Full احتياطية للخوادم كل يوم أحد الساعة 4:00 صباحًا، وتحتاج إلى نسخ إضافية من الاثنين إلى السبت. أي نوع Backup، مع نسخة Full، يتيح استعادة كل البيانات بأسرع وقت؟ الخيارات: Copy، وDifferential، وIncremental، وIncremental forever.",
     "explanation": [
       "Differential Backup يجمع كل التغييرات منذ آخر Full Backup. عند الاستعادة تحتاج فقط إلى آخر نسخة Full وآخر نسخة Differential.",
       "لذلك الإجابة الصحيحة هي Differential. استخدام Incremental يتطلب استعادة النسخة Full ثم جميع النسخ المتزايدة بالتتابع، فيستغرق عادةً وقتًا أطول."
@@ -160,7 +160,7 @@
     "note": "USB-C للطاقة والبيانات، VGA قديم، DisplayPort للحاسوب، HDMI واسع الاستخدام."
   },
   "q-021": {
-    "translation": "أي نوعين من تحديثات Windows قد يتضمنهما Quality Update؟ الخيارات: Feature updates، وCritical updates، وSecurity updates، وMicrosoft product updates.",
+    "translation": "أي نوعين من تحديثات Windows قد يتضمنهما Quality Update؟ ملاحظة: ستحصل على درجة جزئية عن كل إجابة صحيحة. الخيارات: Feature updates، وCritical updates، وSecurity updates، وMicrosoft product updates.",
     "explanation": [
       "Quality Updates هي تحديثات تراكمية دورية تركز على إصلاح الأخطاء والثغرات وتحسين استقرار الإصدار الحالي، وليست ترقيات كبيرة إلى إصدار ميزات جديد.",
       "الإجابتان الصحيحتان هما Critical updates وSecurity updates. أما Feature updates فتقدم إصدارًا وميزات جديدة، وتحديثات منتجات Microsoft الأخرى ليست النوعين المطلوبين هنا."
@@ -168,7 +168,7 @@
     "note": "Quality Update يرتبط بالإصلاحات Critical وSecurity."
   },
   "q-022": {
-    "translation": "أنت تُعد حسابات مستخدمين في Windows 10. أكمل العبارات: يجب تعيين … فريد لكل حساب؛ سيظهر اسم المستخدم مع … الخاص بالمستخدم؛ سيظهر اسم المستخدم على … الخاص بالمستخدم. خيارات الإكمال: username، وuser name and photo، وStart menu and welcome screen.",
+    "translation": "أنت تُعد حسابات مستخدمين في Windows 10. أكمل الجمل باختيار الإجابة الصحيحة من كل قائمة منسدلة. ملاحظة: ستحصل على درجة جزئية عن كل إجابة صحيحة. العبارات: يجب تعيين … فريد لكل حساب؛ سيظهر اسم المستخدم مع … الخاص بالمستخدم؛ سيظهر اسم المستخدم على … الخاص بالمستخدم. خيارات الإكمال: username، وuser name and photo، وStart menu and welcome screen.",
     "explanation": [
       "يحتاج كل حساب إلى username يميّزه. ويعرض Windows هوية الحساب بصريًا مع الاسم والصورة، كما يظهر ذلك في واجهات الدخول والاستخدام.",
       "المطابقة الرسمية هي: قيمة فريدة لكل حساب ← username؛ يظهر الاسم مع ← user name and photo؛ يظهر الاسم على ← Start menu and welcome screen."
@@ -184,7 +184,7 @@
     "note": "موصل شاشة بآلية Latch = DisplayPort."
   },
   "q-024": {
-    "translation": "تُعد الشبكة لفندق صغير في موقع واحد، ولديك ثلاثة أنواع من المستخدمين: Guests، وEmployees، وBusiness Partners. لتحقيق أعلى أمان، صِل كل فئة بأعلى Network Segment مسموح لها الوصول إليه. المقاطع: Public network، وPrivate network، وExtranet.",
+    "translation": "تُعد الشبكة لفندق صغير في موقع واحد، ولديك ثلاثة أنواع من المستخدمين: Guests، وEmployees، وBusiness Partners. لتحقيق أعلى أمان، ما أعلى Network Segment يجب السماح لكل فئة بالوصول إليه؟ انقل كل Network Segment من القائمة اليسرى إلى مجموعة المستخدمين الصحيحة في الجهة اليمنى. ملاحظة: ستحصل على درجة جزئية عن كل اختيار صحيح. المقاطع: Public network، وPrivate network، وExtranet.",
     "explanation": [
       "تقسيم الشبكة يمنح كل فئة أقل مستوى وصول يلائم عملها: الضيوف يبقون خارج الموارد الداخلية، والموظفون يحتاجون الشبكة الداخلية، والشركاء يحتاجون وصولًا محدودًا ومنظمًا إلى موارد مشتركة.",
       "المطابقة الرسمية هي: Guests ← Public network؛ Employees ← Private network؛ Business Partners ← Extranet. هكذا لا يحصل الضيف أو الشريك على وصول داخلي أوسع من الحاجة."
@@ -192,7 +192,7 @@
     "note": "Guests عام، Employees خاص، Partners عبر Extranet."
   },
   "q-025": {
-    "translation": "تثبت Windows 10 على Workstation جديد لا يحتوي بعد على نظام تشغيل. حدّد صح أو خطأ: يمكنك إضافة Keyboard Layout ثانٍ أثناء التثبيت؛ تحتاج Microsoft account لضم الكمبيوتر إلى Domain؛ يمكنك تغيير إعداد الخصوصية الخاص بـAdvertising ID.",
+    "translation": "تثبت Windows 10 على Workstation جديد لا يحتوي بعد على نظام تشغيل. حدّد صح أو خطأ لكل عبارة عن تثبيت Windows. ملاحظة: ستحصل على درجة جزئية عن كل اختيار صحيح. العبارات: يمكنك إضافة Keyboard Layout ثانٍ أثناء التثبيت؛ تحتاج Microsoft account لضم الكمبيوتر إلى Domain؛ يمكنك تغيير إعداد الخصوصية الخاص بـAdvertising ID.",
     "explanation": [
       "تتيح تجربة إعداد Windows اختيار تخطيط لوحة مفاتيح إضافي وضبط بعض خيارات الخصوصية مثل Advertising ID. أما الانضمام إلى Domain فلا يشترط Microsoft account، بل يعتمد على حساب وصلاحيات مناسبة للبيئة.",
       "الإجابات الرسمية بالترتيب هي: صح، خطأ، صح. إذن يمكن ضبط لوحة المفاتيح وAdvertising ID أثناء الإعداد، ولا يلزم Microsoft account للانضمام إلى Domain."
