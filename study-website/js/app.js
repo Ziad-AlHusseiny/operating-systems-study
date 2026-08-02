@@ -448,7 +448,7 @@ export function questionListMarkup(
   }).join("")}</div>`;
 }
 
-function bankMarkup() {
+export function bankMarkup() {
   const filtered = filterQuestions(app.questions, {
     ...app.filters,
     bookmarked: app.filters.focus === "bookmarked",
@@ -458,7 +458,7 @@ function bankMarkup() {
   });
   return `${heading("Question Bank", `Browse ${app.questions.length} unique questions covering all ${app.bank.sourceEntryCount} source entries.`)}
     ${bankFiltersMarkup()}
-    <section class="section-block section-block--flat"><div class="section-header"><h2>${filtered.length} questions</h2><span>Official PDF content only</span></div>${questionListMarkup(filtered)}</section>`;
+    <section class="section-block section-block--flat"><div class="section-header"><h2>${filtered.length} questions</h2><span>Questions and official answers come from the PDFs. Arabic explanations are generated study guidance and are labeled separately.</span></div>${questionListMarkup(filtered)}</section>`;
 }
 
 function explanationFiltersMarkup() {

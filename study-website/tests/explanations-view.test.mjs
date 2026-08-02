@@ -38,6 +38,7 @@ globalThis.fetch = () => new Promise(() => {});
 const appModule = await import("../js/app.js");
 const {
   app,
+  bankMarkup,
   explanationDisclosure,
   questionListMarkup,
   resultsMarkup,
@@ -61,6 +62,7 @@ const integrationExplanation = {
 
 function configureIntegrationState({ includeExplanation = true } = {}) {
   app.questions = [integrationQuestion];
+  app.bank = { sourceEntryCount: 1 };
   app.questionMap = new Map([[integrationQuestion.id, integrationQuestion]]);
   app.explanations = includeExplanation
     ? { [integrationQuestion.id]: integrationExplanation }
@@ -210,4 +212,14 @@ test("the disclosure uses native expanded state and soft-renders missing guidanc
   assert.doesNotMatch(html, /aria-expanded/);
   assert.match(html, /class="explanation-unavailable"/);
   assert.match(html, /Arabic explanation is unavailable/);
+});
+
+test("Question Bank distinguishes official PDF content from generated Arabic guidance", () => {
+  configureIntegrationState();
+
+  const html = bankMarkup();
+
+  assert.match(html, /Questions and official answers come from the PDFs\./);
+  assert.match(html, /Arabic explanations are generated study guidance and are labeled separately\./);
+  assert.doesNotMatch(html, />Official PDF content only</);
 });
