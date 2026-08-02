@@ -1517,6 +1517,57 @@ svg {
   margin: 6px 0;
 }
 
+.explanation-disclosure {
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.explanation-disclosure > summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: var(--primary-ink);
+  cursor: pointer;
+  font-weight: 750;
+  list-style: none;
+}
+
+.explanation-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.explanation-disclosure > summary::after {
+  margin-left: auto;
+  color: var(--muted);
+  content: "+";
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.explanation-disclosure[open] > summary {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.explanation-disclosure[open] > summary::after {
+  content: "\2212";
+}
+
+.explanation-disclosure > summary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--focus) 65%, transparent);
+  outline-offset: -3px;
+}
+
+.explanation-disclosure > .arabic-explanation {
+  padding: 14px;
+}
+
 .review-warning {
   margin-top: 14px;
   border-radius: 10px;
@@ -1962,6 +2013,10 @@ svg {
   background: color-mix(in srgb, var(--surface-strong) 72%, var(--surface));
 }
 
+:root[data-theme="dark"] .explanation-disclosure {
+  background: color-mix(in srgb, var(--surface-strong) 45%, var(--surface));
+}
+
 @media (max-width: 1100px) {
   .explanation-filter-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2024,6 +2079,15 @@ svg {
   .arabic-explanation p {
     font-size: 14px;
     line-height: 1.9;
+  }
+
+  .explanation-disclosure > summary {
+    min-height: 48px;
+    padding: 11px 13px;
+  }
+
+  .explanation-disclosure > .arabic-explanation {
+    padding: 12px;
   }
 
   .explanations-more {

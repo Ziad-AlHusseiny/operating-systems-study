@@ -54,7 +54,7 @@ mobileMoreSlot.addEventListener("click", (event) => {
   }
 });
 
-const app = {
+export const app = {
   bank: null,
   questions: [],
   questionMap: new Map(),
@@ -69,6 +69,13 @@ const app = {
   visibleExplanationCount: 15,
   timer: null,
 };
+
+export function explanationDisclosure(question, { open = false } = {}) {
+  return `<details class="explanation-disclosure"${open ? " open" : ""}>
+    <summary>Arabic Explanation</summary>
+    ${renderArabicExplanation(question, app.explanations?.[question.id] ?? null)}
+  </details>`;
+}
 
 function icon(name) {
   const paths = {
@@ -276,7 +283,7 @@ function applySavedResponse(question, response) {
   }
 }
 
-function sessionMarkup(session) {
+export function sessionMarkup(session) {
   if (!session.questionIds.length) {
     return `${heading("No matching questions")}<div class="empty-state"><strong>Change the filters and try again.</strong><a class="btn btn--primary" href="#/${session.mode}">Back to setup</a></div>`;
   }
@@ -290,7 +297,11 @@ function sessionMarkup(session) {
       <section class="question-workspace">
         <div class="question-progress"><div class="progress-track"><div class="progress-track__fill" style="--progress:${Math.round(((session.index + 1) / session.questionIds.length) * 100)}%"></div></div></div>
         ${renderQuestion(question)}
-        <div data-answer-feedback>${!isExam && saved ? renderAnswerReview(question, saved.response) : ""}</div>
+        <div data-answer-feedback>${
+          !isExam && saved
+            ? `${renderAnswerReview(question, saved.response)}${explanationDisclosure(question, { open: true })}`
+            : ""
+        }</div>
         <footer class="question-footer">
           <div class="question-footer__group">
             <button class="btn btn--secondary" data-action="previous" ${session.index === 0 ? "disabled" : ""}>Previous</button>
@@ -315,7 +326,7 @@ function sessionMarkup(session) {
     </div>`;
 }
 
-function resultsMarkup(session) {
+export function resultsMarkup(session) {
   const { stats } = session;
   const topicRows = sessionBreakdown(session, "topic");
   const sourceRows = sessionBreakdown(session, "source");
@@ -347,7 +358,7 @@ function resultsMarkup(session) {
       <div class="revision-list">${session.questionIds.map((id, index) => {
         const question = questionForSession(session, id);
         const answer = session.answers[id];
-        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${answer ? (answer.correct ? "Correct" : "Wrong") : "Skipped"}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}</details>`;
+        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${answer ? (answer.correct ? "Correct" : "Wrong") : "Skipped"}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}${explanationDisclosure(question)}</details>`;
       }).join("")}</div>
     </section>`;
 }
@@ -406,7 +417,7 @@ function bankFiltersMarkup() {
   </form>`;
 }
 
-function questionListMarkup(
+export function questionListMarkup(
   questions,
   emptyCopy = "No questions match these filters.",
   { showProgress = false } = {}
@@ -425,6 +436,7 @@ function questionListMarkup(
       <div class="bank-row__details">
         ${renderQuestion(question)}
         ${renderAnswerReview(question, showProgress && progress ? progress.lastAnswer : null)}
+        ${explanationDisclosure(question)}
         ${
           showProgress && progress
             ? `<p class="attempt-note"><strong>Attempts:</strong> ${progress.attempts} • <strong>Incorrect attempts:</strong> ${progress.incorrectAttempts}</p>`
