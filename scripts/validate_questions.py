@@ -25,6 +25,29 @@ SUPPORTED_TYPES = {
     "source-review",
 }
 
+SOURCE_KEY_REVIEW_NOTES = {
+    "q-015": (
+        "Marked answer preserved: both cited pages show Local administrator for both "
+        "blanks, but that account type does not identify the System Information field "
+        "that determines domain-join capability. Review the source key before use."
+    ),
+    "q-087": (
+        "Marked answer preserved: the source marks System restore, but System Restore "
+        "does not roll Windows back to a previous feature version and may remove an app "
+        "installed after the restore point. No option cleanly satisfies the full stem."
+    ),
+    "q-093": (
+        "Marked answer preserved as True, True, False, but a Microsoft account is not an "
+        "inherent requirement for Windows Hello facial recognition. The first marked "
+        "statement requires review."
+    ),
+    "q-094": (
+        "Marked answer preserved: the source marks Ease of Access and Apps even though "
+        "the stem asks for one option and Apps is not where Narrator is configured. "
+        "Review the source key before use."
+    ),
+}
+
 META_LINE = re.compile(
     r"^(?:Page|Pages)\s+\d|^(?:New Test Bank\s*[·•-]?\s*)?Question\s+\d+"
     r"$|^STEM$|^QUESTION\s*&\s*ANSWER(?:\s+Image from question)?$|^\d{1,3}$",
@@ -297,7 +320,12 @@ def manual_override(entry: dict[str, Any], lines: list[str]) -> dict[str, Any] |
             ("VGA", "Video"),
         ])
     if page == 16:
-        question = matching_question(entry, prompt, [
+        question = matching_question(entry, (
+            "Your manager wants you to add a computer to the domain. You have already "
+            "created the computer account in your Active Directory. To determine whether "
+            "the computer can be added to the domain, you open the System Information "
+            "window shown."
+        ), [
             ("Information indicating whether the computer can join a domain", "Local administrator"),
             ("Account type required to join the computer to the domain", "Local administrator"),
         ])
@@ -469,6 +497,21 @@ def manual_override(entry: dict[str, Any], lines: list[str]) -> dict[str, Any] |
         question["type"] = "source-review"
         question["correctAnswer"] = "Click Scan for hardware changes from the Action menu"
         question["sourceImage"] = "./assets/source-pages/bank-page-95.jpg"
+        return question
+    if page == 97:
+        question = base_question(
+            entry,
+            "For each statement about facial recognition setup in Windows 10, select "
+            "True or False. Note: You will receive partial credit for each correct selection.",
+        )
+        question["type"] = "true-false-group"
+        question["statements"] = [
+            "A Microsoft account is necessary to configure facial recognition for sign up",
+            "A compatible infrared (IR) camera needed to set up facial",
+            "If facial recognition setup fails the user will be automatically logged in with the saved password",
+        ]
+        question["answerLabels"] = ["True", "False"]
+        question["correctAnswer"] = [True, True, False]
         return question
     if page == 100:
         return matching_question(entry, prompt, [
@@ -647,8 +690,13 @@ def validate_question(question: dict[str, Any]) -> list[str]:
     if not question["sources"]:
         errors.append("missing source")
     if question["needsReview"]:
-        if question["correctAnswer"] is not None:
-            errors.append("review item must not contain a guessed answer")
+        if (
+            question["correctAnswer"] is not None
+            and question["id"] not in SOURCE_KEY_REVIEW_NOTES
+        ):
+            errors.append(
+                "review item may only retain a marked answer after visual verification"
+            )
         if not question["reviewNotes"]:
             errors.append("review item needs a review note")
     elif question["correctAnswer"] is None:
@@ -659,6 +707,14 @@ def validate_question(question: dict[str, Any]) -> list[str]:
         elif question["correctAnswer"] >= len(question["options"]):
             errors.append("MCQ answer index is out of range")
     return errors
+
+
+def apply_source_key_reviews(questions: list[dict[str, Any]]) -> None:
+    by_id = {question["id"]: question for question in questions}
+    for question_id, note in SOURCE_KEY_REVIEW_NOTES.items():
+        question = by_id[question_id]
+        question["needsReview"] = True
+        question["reviewNotes"] = note
 
 
 def create_report(
@@ -715,6 +771,7 @@ def create_report(
         "- Run `python scripts/build_explanations.py` from the project root to merge the parts, require exact canonical-ID coverage, validate Arabic fields, and regenerate `study-website/data/explanations-ar.json`.",
         "- Correct guidance in the matching content-part entry without changing the canonical prompt, official answer, or source references.",
         "- Never select an answer for an unresolved official-source conflict. Preserve `needsReview`, the source references, and the unscored behavior.",
+        "- When a visibly marked source key is conceptually contradictory, preserve the marked answer for traceability, set `needsReview`, document the uncertainty, and keep the item unscored.",
     ])
     lines.extend([
         "",
@@ -733,6 +790,7 @@ def create_report(
         "- Preserved source wording, including apparent grammar and spelling errors, unless a correction was required to join OCR-split words.",
         "- Normalized connector capitalization only inside structured answer controls (for example DisplayPort).",
         "- Kept all official answers unchanged; conflicting official answers were not resolved by guessing.",
+        "- Preserved visibly marked but conceptually contradictory keys for traceability; these items are flagged for review and remain unscored.",
     ])
     if matching_notes:
         lines.extend(["", "## Match review notes", ""])
@@ -752,6 +810,7 @@ def build_artifacts(raw_path: Path = RAW_PATH) -> tuple[dict[str, Any], str]:
     answer_conflicts, matching_notes = attach_pretest_sources(
         questions, bank_entries, bank_by_page, pretest_entries
     )
+    apply_source_key_reviews(questions)
 
     errors: list[str] = []
     for question in questions:

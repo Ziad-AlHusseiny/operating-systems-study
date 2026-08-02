@@ -237,7 +237,7 @@ function setupMarkup(mode) {
         </div>
         <label class="checkbox-row"><input type="checkbox" name="shuffle" checked> Shuffle question order</label>
         ${!isExam ? `<label class="checkbox-row"><input type="checkbox" name="shuffleChoices"> Shuffle choices for single and multiple choice questions</label>` : ""}
-        <label class="checkbox-row"><input type="checkbox" name="excludeReview" ${isExam ? "checked" : ""}> Exclude the one unresolved source-conflict item</label>
+        <label class="checkbox-row"><input type="checkbox" name="excludeReview" ${isExam ? "checked" : ""}> Exclude questions marked for answer review</label>
         <button class="btn btn--primary" type="submit">${isExam ? "Start Mock Exam" : "Start Practice"}</button>
       </form>
     </section>`;

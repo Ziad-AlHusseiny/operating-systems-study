@@ -54,12 +54,21 @@ test("every scored question has a valid official answer", async () => {
   }
 });
 
-test("unresolved content is clearly reported instead of guessed", async () => {
+test("reviewed content preserves marked keys but clearly identifies unresolved items", async () => {
   const data = await loadData();
-  for (const question of data.questions.filter((q) => q.needsReview)) {
-    assert.equal(question.correctAnswer, null);
+  const reviewed = data.questions.filter((question) => question.needsReview);
+  for (const question of reviewed) {
     assert.ok(question.reviewNotes.trim().length > 0);
   }
+
+  assert.deepEqual(
+    reviewed.filter((question) => question.correctAnswer === null).map((question) => question.id),
+    ["q-103"]
+  );
+  assert.deepEqual(
+    reviewed.filter((question) => question.correctAnswer !== null).map((question) => question.id),
+    ["q-015", "q-087", "q-093", "q-094"]
+  );
 });
 
 test("question validation checks committed artifacts without rewriting them", async () => {
@@ -75,7 +84,7 @@ test("question validation checks committed artifacts without rewriting them", as
   const report = await readFile(extractionReportUrl, "utf8");
   assert.equal(
     stdout.trim(),
-    "Validated 103 canonical questions (1 need review); committed artifacts are current."
+    "Validated 103 canonical questions (5 need review); committed artifacts are current."
   );
   assert.equal(afterData.mtimeMs, beforeData.mtimeMs);
   assert.equal(afterReport.mtimeMs, beforeReport.mtimeMs);

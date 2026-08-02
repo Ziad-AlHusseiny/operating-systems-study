@@ -653,7 +653,7 @@
     {
       "id": "q-015",
       "type": "matching",
-      "prompt": "Your manager wants you to add a computer to the domain_ You have already created the computer account In your Active Directory To determine whether the computer can be added to the domain, you open the System Information window showm Which information in the system information window indicate whether the computer can join a domain Local administrator What account type required to join computer to the domain Local administrator",
+      "prompt": "Your manager wants you to add a computer to the domain. You have already created the computer account in your Active Directory. To determine whether the computer can be added to the domain, you open the System Information window shown.",
       "topic": "Accounts and Permissions",
       "options": [
         "Local administrator"
@@ -688,8 +688,8 @@
         }
       ],
       "explanation": "",
-      "needsReview": false,
-      "reviewNotes": "",
+      "needsReview": true,
+      "reviewNotes": "Marked answer preserved: both cited pages show Local administrator for both blanks, but that account type does not identify the System Information field that determines domain-join capability. Review the source key before use.",
       "sourceImage": "./assets/source-pages/bank-page-16.jpg",
       "duplicateSources": [
         {
@@ -3675,8 +3675,8 @@
         }
       ],
       "explanation": "",
-      "needsReview": false,
-      "reviewNotes": "",
+      "needsReview": true,
+      "reviewNotes": "Marked answer preserved: the source marks System restore, but System Restore does not roll Windows back to a previous feature version and may remove an app installed after the restore point. No option cleanly satisfies the full stem.",
       "sourceImage": ""
     },
     {
@@ -3835,11 +3835,11 @@
     {
       "id": "q-093",
       "type": "true-false-group",
-      "prompt": "For each statement about facial recognition setup in Windows 10, select True or False Note You",
+      "prompt": "For each statement about facial recognition setup in Windows 10, select True or False. Note: You will receive partial credit for each correct selection.",
       "topic": "General",
       "options": [],
       "statements": [
-        "WII receive part credit for each correct selection A Microsoft account is necessary to configure facial recognition for sign up",
+        "A Microsoft account is necessary to configure facial recognition for sign up",
         "A compatible infrared (IR) camera needed to set up facial",
         "If facial recognition setup fails the user will be automatically logged in with the saved password"
       ],
@@ -3858,8 +3858,8 @@
         }
       ],
       "explanation": "",
-      "needsReview": false,
-      "reviewNotes": "",
+      "needsReview": true,
+      "reviewNotes": "Marked answer preserved as True, True, False, but a Microsoft account is not an inherent requirement for Windows Hello facial recognition. The first marked statement requires review.",
       "sourceImage": "",
       "answerLabels": [
         "True",
@@ -3892,8 +3892,8 @@
         }
       ],
       "explanation": "",
-      "needsReview": false,
-      "reviewNotes": "",
+      "needsReview": true,
+      "reviewNotes": "Marked answer preserved: the source marks Ease of Access and Apps even though the stem asks for one option and Apps is not where Narrator is configured. Review the source key before use.",
       "sourceImage": ""
     },
     {

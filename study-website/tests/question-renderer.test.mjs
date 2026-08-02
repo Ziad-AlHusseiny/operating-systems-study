@@ -51,6 +51,16 @@ test("scores multi-select as a set", () => {
   assert.equal(scoreResponse(question, [1, 2]).correct, false);
 });
 
+test("does not score a marked answer when the question needs review", () => {
+  assert.deepEqual(
+    scoreResponse(
+      { type: "mcq", correctAnswer: 3, needsReview: true },
+      3
+    ),
+    { correct: null, earned: 0, possible: 0 }
+  );
+});
+
 test("scores ordering by exact official order", () => {
   const question = { type: "ordering", correctAnswer: ["a", "b", "c"] };
   assert.equal(scoreResponse(question, ["a", "b", "c"]).correct, true);
@@ -148,7 +158,7 @@ test("suppresses the generated-guidance label when explicitly disabled", () => {
   assert.match(html, /class="explanation-translation"/);
 });
 
-test("renders a source-conflict warning instead of a correct-answer region", () => {
+test("renders an answer-review warning instead of a correct-answer region", () => {
   const html = renderArabicExplanation(
     {
       type: "source-review",
@@ -164,7 +174,7 @@ test("renders a source-conflict warning instead of a correct-answer region", () 
   );
 
   assert.match(html, /class="explanation-conflict"/);
-  assert.match(html, /Source conflict/);
+  assert.match(html, /Answer review warning/);
   assert.match(html, /The official sources disagree\./);
   assert.doesNotMatch(html, /class="explanation-official-answer"/);
   assert.doesNotMatch(html, /Correct answer/);

@@ -98,7 +98,7 @@ The editable explanation content is split into four files:
 
 To correct an Arabic translation, explanation paragraph, or revision note, edit only the matching question ID in its content-part file and run `python scripts/build_explanations.py`. Do not edit the generated `study-website/data/explanations-ar.json` directly, and do not change the canonical prompt, answer, or source references in `questions.json` to make guidance text agree with an assumption.
 
-When correcting official source data, update the extraction or validation logic, preserve the exact PDF source reference, and run `python scripts/validate_questions.py` before rebuilding explanations. If the official PDFs disagree, keep `needsReview: true`, leave the official answer unresolved, describe both sources without choosing one, and keep the item unscored. Do not resolve conflicts by guessing or by copying generated guidance into official question data.
+When correcting official source data, update the extraction or validation logic, preserve the exact PDF source reference, and run `python scripts/validate_questions.py` before rebuilding explanations. If the official PDFs disagree, keep `needsReview: true`, leave the official answer unresolved, describe both sources without choosing one, and keep the item unscored. If a visually marked key is conceptually contradictory, preserve that marked answer for traceability, set `needsReview: true`, document the uncertainty, and keep the item unscored. Do not resolve review items by guessing or by copying generated guidance into official question data.
 
 ## Deploy
 
@@ -111,5 +111,5 @@ The `study-website` folder can be published as-is to any static host:
 ## Known limitations
 
 - OCR preserves some grammar, capitalization, and spelling problems visible in the supplied PDFs.
-- The two PDFs disagree on one backup-answer item. It remains available for revision but is excluded from mock exams by default and is never scored.
+- The two PDFs disagree on one backup-answer item, and four additional visibly marked keys are conceptually contradictory. All five items remain available for revision, are excluded from mock exams by default, and are never scored.
 - Progress belongs to one browser profile unless exported and imported elsewhere.
