@@ -6,6 +6,7 @@ import {
   exportState,
   importState,
   loadState,
+  normalizeStateForQuestions,
   recordAttempt,
   resetState,
   saveState,
@@ -119,4 +120,122 @@ test("unscored source-review answers remain in skipped totals", () => {
     { correct: stats.correct, wrong: stats.wrong, skipped: stats.skipped },
     { correct: 0, wrong: 0, skipped: 1 }
   );
+});
+
+test("normalizes legacy review scoring while preserving unrelated progress and bookmarks", () => {
+  const questions = [
+    { id: "q-scored", needsReview: false },
+    { id: "q-review", needsReview: true, reviewNotes: "Review the marked key." },
+  ];
+  const legacySession = {
+    mode: "practice",
+    questionIds: ["q-scored", "q-review"],
+    answers: {
+      "q-scored": { response: 1, correct: true, earned: 1, possible: 1 },
+      "q-review": { response: 2, correct: false, earned: 0, possible: 1 },
+    },
+    questionOverrides: {
+      "q-review": { id: "q-review", correctAnswer: 2, needsReview: false },
+    },
+    stats: { correct: 1, wrong: 1, skipped: 0, answered: 2, accuracy: 50, durationSeconds: 30 },
+  };
+  const legacy = {
+    ...createDefaultState(),
+    progress: {
+      "q-scored": { status: "correct", attempts: 1 },
+      "q-review": { status: "wrong", attempts: 3, incorrectAttempts: 2 },
+    },
+    bookmarks: ["q-scored", "q-review"],
+    history: [
+      { questionId: "q-scored", correct: true },
+      { questionId: "q-review", selectedAnswer: 2, correct: false },
+    ],
+    sessions: [legacySession],
+    exams: [{ ...legacySession, mode: "exam" }],
+    activePractice: legacySession,
+    activeExam: { ...legacySession, mode: "exam" },
+  };
+
+  const normalized = normalizeStateForQuestions(legacy, questions);
+
+  assert.deepEqual(normalized.progress, {
+    "q-scored": { status: "correct", attempts: 1 },
+  });
+  assert.deepEqual(normalized.bookmarks, ["q-scored", "q-review"]);
+  assert.equal(normalized.history[0].correct, true);
+  assert.equal(normalized.history[1].correct, null);
+  assert.equal(normalized.history[1].selectedAnswer, 2);
+  assert.equal(normalized.activeExam, null);
+  for (const session of [normalized.sessions[0], normalized.exams[0], normalized.activePractice]) {
+    assert.deepEqual(session.answers["q-review"], {
+      response: 2,
+      correct: null,
+      earned: 0,
+      possible: 0,
+    });
+    assert.equal(session.questionOverrides["q-review"].needsReview, true);
+    assert.equal(session.questionOverrides["q-review"].reviewNotes, "Review the marked key.");
+    assert.deepEqual(
+      {
+        correct: session.stats.correct,
+        wrong: session.stats.wrong,
+        skipped: session.stats.skipped,
+        answered: session.stats.answered,
+        accuracy: session.stats.accuracy,
+      },
+      { correct: 1, wrong: 0, skipped: 1, answered: 1, accuracy: 100 }
+    );
+  }
+  assert.equal(legacy.progress["q-review"].status, "wrong");
+});
+
+test("normalizes imported version-one legacy progress against current review flags", () => {
+  const reviewIds = ["q-015", "q-087", "q-093", "q-094", "q-103"];
+  const legacy = {
+    ...createDefaultState(),
+    progress: Object.fromEntries([
+      ...reviewIds.map((questionId) => [questionId, { status: "correct", attempts: 1 }]),
+      ["q-001", { status: "wrong", attempts: 1 }],
+    ]),
+    bookmarks: [...reviewIds, "q-001"],
+  };
+
+  const imported = importState(JSON.stringify(legacy));
+  const normalized = normalizeStateForQuestions(imported, [
+    ...reviewIds.map((id) => ({ id, needsReview: true })),
+    { id: "q-001", needsReview: false },
+  ]);
+
+  assert.equal(normalized.version, 1);
+  for (const questionId of reviewIds) {
+    assert.equal(normalized.progress[questionId], undefined);
+  }
+  assert.equal(normalized.progress["q-001"].status, "wrong");
+  assert.deepEqual(normalized.bookmarks, [...reviewIds, "q-001"]);
+});
+
+test("statistics ignore stale scored progress for current review questions", () => {
+  const questions = [
+    { id: "q-scored", topic: "Shared", needsReview: false },
+    { id: "q-review", topic: "Shared", needsReview: true },
+  ];
+  const state = {
+    progress: {
+      "q-scored": { status: "correct" },
+      "q-review": { status: "wrong" },
+    },
+  };
+
+  assert.deepEqual(getDashboardStats(questions, state), {
+    total: 1,
+    answered: 1,
+    correct: 1,
+    wrong: 0,
+    unanswered: 0,
+    accuracy: 100,
+    completion: 100,
+  });
+  assert.deepEqual(getPerformanceBreakdown(questions, state, "topic"), [
+    { name: "Shared", total: 1, answered: 1, correct: 1, wrong: 0, accuracy: 100 },
+  ]);
 });

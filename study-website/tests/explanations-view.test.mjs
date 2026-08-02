@@ -225,6 +225,28 @@ test("Question Bank distinguishes official PDF content from generated Arabic gui
   assert.doesNotMatch(html, />Official PDF content only</);
 });
 
+test("Question Bank labels review items as review despite stale wrong progress", () => {
+  const reviewed = {
+    ...integrationQuestion,
+    id: "q-reviewed-bank",
+    needsReview: true,
+    reviewNotes: "Review this marked key.",
+  };
+  app.state = {
+    ...app.state,
+    bookmarks: [],
+    progress: {
+      [reviewed.id]: { status: "wrong", attempts: 4, incorrectAttempts: 3, lastAnswer: 0 },
+    },
+  };
+
+  const html = questionListMarkup([reviewed], "", { showProgress: true });
+
+  assert.match(html, /<span class="tag tag--review">review<\/span>/);
+  assert.doesNotMatch(html, /tag--wrong/);
+  assert.doesNotMatch(html, /Incorrect attempts/);
+});
+
 test("Mock Exam setup states that review items are always excluded", () => {
   assert.equal(typeof setupMarkup, "function");
   const html = setupMarkup("exam");

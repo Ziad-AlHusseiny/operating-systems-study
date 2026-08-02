@@ -1,3 +1,5 @@
+import { getSessionStats } from "./statistics.js";
+
 export const STORAGE_KEY = "its-study-progress-v1";
 export const STATE_VERSION = 1;
 
@@ -46,6 +48,94 @@ function normalizeState(value) {
     history: [...value.history],
     sessions: [...value.sessions],
     exams: [...value.exams],
+  };
+}
+
+function reviewAnswerForOverride(question, override) {
+  const choiceOrder = override.choiceOrder;
+  if (!Array.isArray(choiceOrder)) return question.correctAnswer;
+  if (question.type === "mcq" && Number.isInteger(question.correctAnswer)) {
+    return choiceOrder.indexOf(question.correctAnswer);
+  }
+  if (question.type === "multi-select" && Array.isArray(question.correctAnswer)) {
+    return question.correctAnswer
+      .map((index) => choiceOrder.indexOf(index))
+      .sort((left, right) => left - right);
+  }
+  return question.correctAnswer;
+}
+
+function sanitizeSession(session, reviewQuestions) {
+  if (!isPlainObject(session)) return session;
+  const answers = isPlainObject(session.answers) ? { ...session.answers } : {};
+  for (const [questionId, answer] of Object.entries(answers)) {
+    if (!reviewQuestions.has(questionId)) continue;
+    const savedAnswer = isPlainObject(answer) ? answer : { response: answer };
+    answers[questionId] = {
+      ...savedAnswer,
+      correct: null,
+      earned: 0,
+      possible: 0,
+    };
+  }
+
+  let questionOverrides = session.questionOverrides;
+  if (isPlainObject(questionOverrides)) {
+    questionOverrides = { ...questionOverrides };
+    for (const [questionId, override] of Object.entries(questionOverrides)) {
+      const question = reviewQuestions.get(questionId);
+      if (!question || !isPlainObject(override)) continue;
+      questionOverrides[questionId] = {
+        ...override,
+        correctAnswer: reviewAnswerForOverride(question, override),
+        needsReview: true,
+        reviewNotes: question.reviewNotes || "This answer key requires review.",
+      };
+    }
+  }
+
+  const sanitized = { ...session, answers };
+  if (questionOverrides !== undefined) sanitized.questionOverrides = questionOverrides;
+  if (isPlainObject(session.stats) || session.finishedAt != null) {
+    sanitized.stats = getSessionStats(
+      Array.isArray(session.questionIds) ? session.questionIds : [],
+      answers,
+      session.stats?.durationSeconds || 0
+    );
+  }
+  return sanitized;
+}
+
+export function normalizeStateForQuestions(state, questions) {
+  const current = normalizeState(validateState(state));
+  const reviewQuestions = new Map(
+    (questions || [])
+      .filter((question) => question?.needsReview)
+      .map((question) => [question.id, question])
+  );
+  if (!reviewQuestions.size) return current;
+
+  const progress = { ...current.progress };
+  for (const questionId of reviewQuestions.keys()) delete progress[questionId];
+
+  const sanitizeHistoryEntry = (entry) =>
+    isPlainObject(entry) && reviewQuestions.has(entry.questionId)
+      ? { ...entry, correct: null }
+      : entry;
+  const activeExamHasReview = current.activeExam?.questionIds?.some((questionId) =>
+    reviewQuestions.has(questionId)
+  );
+
+  return {
+    ...current,
+    progress,
+    history: current.history.map(sanitizeHistoryEntry),
+    sessions: current.sessions.map((session) => sanitizeSession(session, reviewQuestions)),
+    exams: current.exams.map((session) => sanitizeSession(session, reviewQuestions)),
+    activePractice: sanitizeSession(current.activePractice, reviewQuestions),
+    activeExam: activeExamHasReview
+      ? null
+      : sanitizeSession(current.activeExam, reviewQuestions),
   };
 }
 

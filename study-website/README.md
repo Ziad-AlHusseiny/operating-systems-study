@@ -70,7 +70,7 @@ Every Arabic explanation is labeled **Generated study guidance**. It supports st
 
 ## Progress data
 
-Progress is saved only in the current browser under `its-study-progress-v1`. Use **Progress Data → Export** to create a JSON backup and **Import** to restore a validated backup. Reset requires confirmation.
+Progress is saved only in the current browser under `its-study-progress-v1`. Use **Progress Data → Export** to create a JSON backup and **Import** to restore a validated backup. Saved and imported version-one data is reconciled with the current review flags: review items keep their bookmarks but lose old scored progress, and any in-progress Mock Exam containing a review item is cleared with a notice to start a new exam. Reset requires confirmation.
 
 ## Validate content and logic
 

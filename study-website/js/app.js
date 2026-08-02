@@ -31,6 +31,7 @@ import {
   exportState,
   importState,
   loadState,
+  normalizeStateForQuestions,
   recordAttempt,
   resetState,
   saveState,
@@ -100,6 +101,15 @@ function toast(message, error = false) {
 
 function persist(nextState = app.state) {
   app.state = saveState(nextState);
+}
+
+function applyQuestionStateNormalization(state) {
+  const reviewIds = new Set(
+    app.questions.filter((question) => question.needsReview).map((question) => question.id)
+  );
+  const clearedLegacyExam = state.activeExam?.questionIds?.some((id) => reviewIds.has(id));
+  persist(normalizeStateForQuestions(state, app.questions));
+  return Boolean(clearedLegacyExam);
 }
 
 function currentRoute() {
@@ -436,8 +446,8 @@ export function questionListMarkup(
 ) {
   if (!questions.length) return `<div class="empty-state"><strong>${escapeHtml(emptyCopy)}</strong></div>`;
   return `<div class="bank-list">${questions.map((question) => {
-    const status = app.state.progress[question.id]?.status || "unanswered";
-    const progress = app.state.progress[question.id];
+    const progress = question.needsReview ? null : app.state.progress[question.id];
+    const status = question.needsReview ? "review" : progress?.status || "unanswered";
     const sourceRefs = question.sources.map((source) => `${sourceLabel(source)} p.${source.page}`).join(" • ");
     return `<details class="bank-row">
       <summary>
@@ -583,7 +593,10 @@ function revisionMarkup() {
 function collectionMarkup(route) {
   const isMistakes = route === "mistakes";
   const selected = isMistakes
-    ? app.questions.filter((question) => app.state.progress[question.id]?.status === "wrong")
+    ? app.questions.filter(
+        (question) =>
+          !question.needsReview && app.state.progress[question.id]?.status === "wrong"
+      )
     : app.questions.filter((question) => app.state.bookmarks.includes(question.id));
   const actions = selected.length
     ? `<button class="btn btn--primary" data-action="start-focused" data-ids="${selected.map((question) => question.id).join(",")}">Practice this collection</button>`
@@ -910,8 +923,12 @@ fileInput.addEventListener("change", async () => {
   const file = fileInput.files[0];
   if (!file) return;
   try {
-    persist(importState(await file.text()));
-    toast("Progress imported.");
+    const clearedLegacyExam = applyQuestionStateNormalization(importState(await file.text()));
+    toast(
+      clearedLegacyExam
+        ? "Progress imported. A saved Mock Exam used review items and was cleared. Start a new Mock Exam."
+        : "Progress imported."
+    );
     render();
   } catch (error) {
     toast(error.message, true);
@@ -984,6 +1001,7 @@ async function start() {
     app.bank = bankResult.value;
     app.questions = app.bank.questions;
     app.questionMap = new Map(app.questions.map((question) => [question.id, question]));
+    const clearedLegacyExam = applyQuestionStateNormalization(app.state);
     if (explanationsResult.status === "fulfilled") {
       try {
         app.explanationPayload = validateExplanationPayload(
@@ -1001,6 +1019,9 @@ async function start() {
           : new Error("The explanation data could not be loaded.");
     }
     render();
+    if (clearedLegacyExam) {
+      toast("A saved Mock Exam used review items and was cleared. Start a new Mock Exam.");
+    }
   } catch (error) {
     main.innerHTML = `<div class="empty-state"><strong>The official question bank could not be loaded.</strong><p>${escapeHtml(error.message)} Run the website from a simple local server.</p></div>`;
   }

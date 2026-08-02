@@ -20,6 +20,23 @@ test("filters by source, type, and status together", () => {
   assert.deepEqual(result.map((question) => question.id), ["q1"]);
 });
 
+test("stale review progress never matches correct or wrong status filters", () => {
+  const questions = [
+    { id: "review", needsReview: true, prompt: "Review", topic: "One" },
+    { id: "scored", needsReview: false, prompt: "Scored", topic: "One" },
+  ];
+  for (const status of ["correct", "wrong"]) {
+    const progress = {
+      review: { status },
+      scored: { status },
+    };
+    assert.deepEqual(
+      filterQuestions(questions, { status, progress }).map((question) => question.id),
+      ["scored"]
+    );
+  }
+});
+
 test("search is case-insensitive and includes topic text", () => {
   const questions = [
     { id: "q1", prompt: "Configure a drive", topic: "Storage" },
