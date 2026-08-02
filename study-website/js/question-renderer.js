@@ -245,6 +245,50 @@ function describeAnswer(question, answer) {
   return String(answer);
 }
 
+export function renderArabicExplanation(question, explanation, options = {}) {
+  const guidanceLabel =
+    options.generatedStudyGuidance === false
+      ? ""
+      : `<p class="explanation-guidance-label">${escapeHtml("Generated study guidance — not an official source explanation")}</p>`;
+
+  if (!explanation) {
+    return `
+      <aside class="arabic-explanation" lang="ar" dir="rtl">
+        <p class="explanation-unavailable">${escapeHtml("Arabic explanation is unavailable for this question.")}</p>
+      </aside>`;
+  }
+
+  const answerRegion = question.needsReview
+    ? `<section class="explanation-conflict" role="alert">
+         <h3>${escapeHtml("Source conflict")}</h3>
+         <p>${escapeHtml(question.reviewNotes || "The official sources disagree, so no correct answer is shown.")}</p>
+       </section>`
+    : `<section class="explanation-official-answer">
+         <h3>${escapeHtml("Official answer")}</h3>
+         <p>${escapeHtml(describeAnswer(question, question.correctAnswer))}</p>
+       </section>`;
+
+  return `
+    <aside class="arabic-explanation" lang="ar" dir="rtl">
+      ${guidanceLabel}
+      <section class="explanation-translation">
+        <h3>${escapeHtml("Arabic translation")}</h3>
+        <p>${escapeHtml(explanation.translation)}</p>
+      </section>
+      ${answerRegion}
+      <section class="explanation-body">
+        <h3>${escapeHtml("Explanation")}</h3>
+        ${(explanation.explanation || [])
+          .map((paragraph) => `<p class="explanation-paragraph">${escapeHtml(paragraph)}</p>`)
+          .join("")}
+      </section>
+      <section class="explanation-note">
+        <h3>${escapeHtml("Revision note")}</h3>
+        <p>${escapeHtml(explanation.note)}</p>
+      </section>
+    </aside>`;
+}
+
 export function renderAnswerReview(question, response) {
   const result = scoreResponse(question, response);
   const official = describeAnswer(question, question.correctAnswer);
