@@ -24,7 +24,7 @@
     "note": "وقت صحيح = غيّر Time zone، ودخول دون إنترنت = Local account."
   },
   "q-056": {
-    "translation": "سيحضر صديقك جهاز ألعاب جديدًا، Xbox Series X أو PlayStation 5. أي كابل فيديو يجب أن يكون جاهزًا لتوصيل الجهاز بالتلفزيون من دون استخدام محوّل؟ يظهر USB-C ضمن نص السؤال، والخيارات المسجلة هي: DVI-DL، وHDMI، وVGA.",
+    "translation": "سيحضر صديقك جهاز ألعاب جديدًا، Xbox Series X أو PlayStation 5. أي كابل فيديو يجب أن يكون جاهزًا لتوصيل الجهاز بالتلفزيون من دون استخدام محوّل؟ الخيارات الواردة في السؤال: USB-C، وDVI-DL، وHDMI، وVGA.",
     "explanation": [
       "أجهزة الألعاب الحديثة وأجهزة التلفزيون تستخدم HDMI لنقل الفيديو والصوت رقميًا عبر كابل واحد، لذلك يمكن توصيل الجهاز مباشرة من دون Converter.",
       "الإجابة الصحيحة هي HDMI. أما DVI-DL وVGA فليسا المنفذين القياسيين المباشرين لهذه الأجهزة، وUSB-C ليس الاختيار الصحيح هنا."
@@ -112,7 +112,7 @@
     "note": "لإزالة تحديث مثبت، ابدأ من Windows Update history."
   },
   "q-067": {
-    "translation": "أبلغ مستخدم أن جهاز Windows 10 لديه لا يطبق إعدادات الأمان الجديدة التي نفذها قسم IT، ومنها متطلبات Password complexity وسياسات Screen timeout. تحتاج إلى تحديث الإعدادات يدويًا على الكمبيوتر. ماذا تفعل؟ الخيارات: فتح System Information واختيار Refresh؛ تشغيل الأمر gpupdate force من Command Prompt؛ فتح Local Security Policy واختيار Reload؛ تشغيل الأمر gpresult /h من Command Prompt.",
+    "translation": "أبلغ مستخدم أن جهاز Windows 10 لديه لا يطبق إعدادات الأمان الجديدة التي نفذها قسم IT، ومنها متطلبات Password complexity وسياسات Screen timeout. تحتاج إلى تحديث الإعدادات يدويًا على الكمبيوتر. ماذا تفعل؟ الخيارات كما وردت: فتح System Information واختيار Refresh from، أي «تحديث من» مع بقاء عبارة from بلا وجهة محددة؛ تشغيل الأمر gpupdate force من Command Prompt؛ فتح Local Security Policy واختيار Reload from، أي «إعادة التحميل من» مع بقاء عبارة from بلا وجهة محددة؛ تشغيل الأمر gpresult /h من Command Prompt، ثم ترد العبارة غير المترابطة the View menu the Action menu، أي «قائمة View ثم قائمة Action».",
     "explanation": [
       "الأمر gpupdate يطلب من Windows تحديث إعدادات Group Policy، وتضيف /force إعادة تطبيق كل السياسات بدلًا من الاكتفاء بالسياسات التي تغيرت.",
       "الإجابة الصحيحة هي Run the gpupdate force command from the command prompt، والصيغة العملية للأمر هي gpupdate /force. أما gpresult /h فينشئ تقريرًا عن السياسات المطبقة ولا يجبر الجهاز على تحديثها، والخيارات الرسومية المذكورة لا تنفذ هذا التحديث."
@@ -146,10 +146,10 @@
   "q-071": {
     "translation": "لكل عبارة عن استخدام تطبيق Microsoft Authenticator في Windows 10، اختر True أو False. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: يمكن لتطبيق Microsoft Authenticator إرسال Push notification للموافقة على محاولات تسجيل الدخول لكل من Local account وMicrosoft account؛ يمكنك استخدام التطبيق لتسجيل الدخول إذا نسيت كلمة المرور؛ يولد التطبيق Time-based one-time passwords كجزء من Multi-factor authentication.",
     "explanation": [
-      "Push notifications الخاصة بالموافقة ترتبط بحسابات وخدمات تدعم Microsoft Authenticator، وليست ميزة مصادقة لـLocal account في Windows، لذلك العبارة الأولى False. وفق الإجابات المطلوبة، يمكن استخدام التطبيق للمساعدة في تسجيل الدخول عند نسيان كلمة المرور، فتكون الثانية True.",
+      "Push notifications الخاصة بالموافقة ترتبط بحسابات وخدمات تدعم Microsoft Authenticator، وليست ميزة مصادقة لـLocal account في Windows، لذلك العبارة الأولى False. صياغة العبارة الثانية واسعة على نحو غير معتاد ولا تحدد آلية استرداد الحساب، لكنها تُعامل في هذا السؤال على أنها True: يمكن استخدام التطبيق للمساعدة في تسجيل الدخول عند نسيان كلمة المرور.",
       "كما يستطيع Microsoft Authenticator إنشاء رموز مؤقتة تتغير مع الوقت وتُستخدم عاملًا إضافيًا في MFA، لذلك العبارة الثالثة True. الإجابات بالترتيب: False، True، True."
     ],
-    "note": "احفظ ترتيب q-071 كما هو: False، ثم True، ثم True."
+    "note": "Authenticator يدعم رموز MFA واسترداد الحساب، لا Push approval لـLocal account؛ والترتيب الرسمي False، True، True."
   },
   "q-072": {
     "translation": "حدد هل تصف كل عبارة شبكة Private أم شبكة Public. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: Network discovery متوقف لمنع الأجهزة الأخرى على الشبكة من رؤية كمبيوترك؛ يُستخدم هذا Network profile عادة لشبكات المنزل أو المكتب التي تثق بأجهزتها؛ يُستخدم هذا Network profile عندما تتصل كضيف بشبكة لا تملك عليها User account. الخيارات لكل عبارة: Public، وPrivate.",
@@ -171,7 +171,7 @@
     "translation": "لكل عبارة عن Connectors، اختر True أو False. ستحصل على درجة جزئية لكل اختيار صحيح. العبارات: يمكن توصيل كابل DVI بمنفذ VGA من دون Adapter؛ يمكن توصيل كابل USB-C بمنفذ USB-A من دون Adapter؛ يمكن توصيل كابل USB 3.0 بمنفذ USB 1.0 من دون Adapter.",
     "explanation": [
       "موصل DVI لا يطابق منفذ VGA ماديًا، وموصل USB-C لا يطابق منفذ USB-A، لذلك يحتاج كل منهما إلى Adapter أو كابل مناسب ولا يمكن توصيله مباشرة بالمنفذ المذكور.",
-      "أما USB 3.0 ذي موصل USB-A القياسي فيدعم التوافق الخلفي ويمكن توصيله بمنفذ USB 1.0، لكنه يعمل بسرعة الإصدار الأقدم. الإجابات بالترتيب: False، False، True."
+      "أما العبارة الثالثة فتذكر إصداري USB 3.0 وUSB 1.0 بصورة عامة من دون تحديد شكل Connector؛ ويُعامل التوافق بين إصدارات USB في هذا السؤال على أنه True، من دون افتراض أن الموصل USB-A. الإجابات بالترتيب: False، False، True."
     ],
     "note": "DVI مع VGA: False، وUSB-C مع USB-A: False، وUSB 3.0 مع USB 1.0: True."
   },
@@ -202,8 +202,8 @@
   "q-078": {
     "translation": "يوجد File server يعمل بنظام Windows 10 اسمه FS1، وبه المجلد D:\\projects\\Training، وهذا المجلد مشارك باسم Training. لديك وصول إلى Shared folder، ويمكنك استخدام Remote Desktop للاتصال بـFS1. لكل عبارة اختر True أو False: يمكنك فتح ملف في \\\\FS1\\Training؛ يمكنك إنشاء ملف في \\\\FS1\\Training؛ يمكنك تعديل ملف داخل D:\\projects\\Training إذا اتصلت بـFS1 عبر Remote Desktop.",
     "explanation": [
-      "وفق الصلاحيات الفعلية في هذا السيناريو، الوصول إلى المشاركة يسمح بفتح ملف عبر المسار \\\\FS1\\Training، لكنه لا يمنح إنشاء ملف جديد. لذلك الإجابتان الأولى والثانية هما True ثم False.",
-      "امتلاك القدرة على الاتصال بالخادم عبر Remote Desktop لا يضيف تلقائيًا صلاحية تعديل ملفات المجلد محليًا؛ تظل File permissions مطبقة. لذلك العبارة الثالثة False، والترتيب الكامل هو: True، False، False."
+      "لا تحدد المعطيات مستوى File permissions بالتفصيل، لكن الإجابة الرسمية True ثم False للعبارتين الأوليين تفترض حالة وصول تسمح بفتح ملف عبر \\\\FS1\\Training ولا تسمح بإنشاء ملف جديد؛ أي حالة Read/open only.",
+      "Remote Desktop يغيّر طريقة الوصول إلى FS1 ولا يمنح Permission إضافية ولا يحوّل Read إلى Modify. لذلك تظل العبارة الثالثة False، ويكون الترتيب الرسمي الكامل: True، False، False."
     ],
     "note": "الوصول وRemote Desktop لا يساويان تعديلًا: True، False، False."
   }
