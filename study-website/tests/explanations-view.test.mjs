@@ -39,6 +39,7 @@ const appModule = await import("../js/app.js");
 const {
   app,
   bankMarkup,
+  dashboardMarkup,
   explanationDisclosure,
   questionListMarkup,
   resultsMarkup,
@@ -307,4 +308,33 @@ test("Exam results label reviewed answers unscored and omit them from breakdowns
   assert.doesNotMatch(html, /70 Question Pre-Test/);
   assert.match(html, /<strong>Scored Topic<\/strong>[\s\S]*1\/1 correct/);
   assert.match(html, /<strong>105 Question Bank<\/strong>[\s\S]*1\/1 correct/);
+});
+
+test("Dashboard shows 103 unique questions with a 98-question scoring denominator", () => {
+  assert.equal(typeof dashboardMarkup, "function");
+  app.questions = Array.from({ length: 103 }, (_, index) => ({
+    id: `q-${String(index + 1).padStart(3, "0")}`,
+    topic: "Topic",
+    needsReview: index >= 98,
+    sources: [{ collection: "bank-105", page: index + 1 }],
+  }));
+  app.bank = { sourceEntryCount: 175 };
+  app.state = {
+    ...app.state,
+    progress: {},
+    bookmarks: [],
+    sessions: [],
+    exams: [],
+    activePractice: null,
+    activeExam: null,
+  };
+
+  const html = dashboardMarkup();
+
+  assert.match(
+    html,
+    /Unique questions<\/span><strong class="metric-strip__value metric-value--primary">103<\/strong>/
+  );
+  assert.match(html, /0 of 98 scoreable questions answered\./);
+  assert.doesNotMatch(html, /0 of 98 unique questions answered\./);
 });

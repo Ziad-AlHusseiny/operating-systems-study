@@ -227,6 +227,7 @@ test("statistics ignore stale scored progress for current review questions", () 
   };
 
   assert.deepEqual(getDashboardStats(questions, state), {
+    uniqueTotal: 2,
     total: 1,
     answered: 1,
     correct: 1,
@@ -238,4 +239,18 @@ test("statistics ignore stale scored progress for current review questions", () 
   assert.deepEqual(getPerformanceBreakdown(questions, state, "topic"), [
     { name: "Shared", total: 1, answered: 1, correct: 1, wrong: 0, accuracy: 100 },
   ]);
+});
+
+test("dashboard statistics separate 103 unique questions from 98 scoreable questions", () => {
+  const questions = Array.from({ length: 103 }, (_, index) => ({
+    id: `q-${String(index + 1).padStart(3, "0")}`,
+    needsReview: index >= 98,
+  }));
+
+  const stats = getDashboardStats(questions, { progress: {} });
+
+  assert.equal(stats.uniqueTotal, 103);
+  assert.equal(stats.total, 98);
+  assert.equal(stats.unanswered, 98);
+  assert.equal(stats.completion, 0);
 });

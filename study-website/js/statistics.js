@@ -13,6 +13,7 @@ export function getDashboardStats(questions, state) {
   }
   const answered = correct + wrong;
   return {
+    uniqueTotal: questions.length,
     total: scoredQuestions.length,
     answered,
     correct,

@@ -132,7 +132,7 @@ function formatDuration(seconds = 0) {
   return `${minutes}:${String(remaining).padStart(2, "0")}`;
 }
 
-function dashboardMarkup() {
+export function dashboardMarkup() {
   const stats = getDashboardStats(app.questions, app.state);
   const recent = [...app.state.sessions, ...app.state.exams]
     .sort((a, b) => (b.finishedAt || 0) - (a.finishedAt || 0))
@@ -148,7 +148,7 @@ function dashboardMarkup() {
           <div class="progress-track" aria-label="${stats.completion}% complete">
             <div class="progress-track__fill" style="--progress: ${stats.completion}%"></div>
           </div>
-          <p class="metric-help">${stats.answered} of ${stats.total} unique questions answered.</p>
+          <p class="metric-help">${stats.answered} of ${stats.total} scoreable questions answered.</p>
         </div>
         <div class="progress-panel__section">
           <div class="metric-label">Accuracy</div>
@@ -157,7 +157,7 @@ function dashboardMarkup() {
         </div>
       </div>
       <div class="metric-strip">
-        <div class="metric-strip__item"><span class="metric-label">Unique questions</span><strong class="metric-strip__value metric-value--primary">${stats.total}</strong></div>
+        <div class="metric-strip__item"><span class="metric-label">Unique questions</span><strong class="metric-strip__value metric-value--primary">${stats.uniqueTotal}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Source entries</span><strong class="metric-strip__value">${app.bank.sourceEntryCount}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Answered</span><strong class="metric-strip__value">${stats.answered}</strong></div>
         <div class="metric-strip__item"><span class="metric-label">Correct</span><strong class="metric-strip__value metric-value--success">${stats.correct}</strong></div>
