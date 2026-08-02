@@ -192,7 +192,7 @@ function dashboardMarkup() {
     </section>`;
 }
 
-function setupMarkup(mode) {
+export function setupMarkup(mode) {
   const isExam = mode === "exam";
   const topics = [...new Set(app.questions.map((question) => question.topic))].sort();
   const types = [...new Set(app.questions.map((question) => question.type))].sort();
@@ -237,7 +237,11 @@ function setupMarkup(mode) {
         </div>
         <label class="checkbox-row"><input type="checkbox" name="shuffle" checked> Shuffle question order</label>
         ${!isExam ? `<label class="checkbox-row"><input type="checkbox" name="shuffleChoices"> Shuffle choices for single and multiple choice questions</label>` : ""}
-        <label class="checkbox-row"><input type="checkbox" name="excludeReview" ${isExam ? "checked" : ""}> Exclude questions marked for answer review</label>
+        ${
+          isExam
+            ? `<p class="setup-note">Review items are always excluded from Mock Exams.</p>`
+            : `<label class="checkbox-row"><input type="checkbox" name="excludeReview"> Exclude questions marked for answer review</label>`
+        }
         <button class="btn btn--primary" type="submit">${isExam ? "Start Mock Exam" : "Start Practice"}</button>
       </form>
     </section>`;
@@ -358,7 +362,14 @@ export function resultsMarkup(session) {
       <div class="revision-list">${session.questionIds.map((id, index) => {
         const question = questionForSession(session, id);
         const answer = session.answers[id];
-        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${answer ? (answer.correct ? "Correct" : "Wrong") : "Skipped"}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}${explanationDisclosure(question)}</details>`;
+        const resultLabel = !answer
+          ? "Skipped"
+          : answer.correct === null
+            ? "Unscored"
+            : answer.correct
+              ? "Correct"
+              : "Wrong";
+        return `<details class="revision-item"><summary><span>${index + 1}. ${escapeHtml(question.prompt)}</span><span class="tag">${resultLabel}</span></summary>${renderAnswerReview(question, answer?.response ?? null)}${explanationDisclosure(question)}</details>`;
       }).join("")}</div>
     </section>`;
 }
@@ -366,6 +377,8 @@ export function resultsMarkup(session) {
 function sessionBreakdown(session, dimension) {
   const groups = new Map();
   for (const id of session.questionIds) {
+    const answer = session.answers[id];
+    if (answer?.correct === null) continue;
     const question = questionForSession(session, id);
     const names =
       dimension === "source"
@@ -373,7 +386,6 @@ function sessionBreakdown(session, dimension) {
         : [question.topic || "General"];
     for (const name of names) {
       const group = groups.get(name) || { name, correct: 0, answered: 0 };
-      const answer = session.answers[id];
       if (answer) {
         group.answered += 1;
         if (answer.correct) group.correct += 1;
@@ -724,7 +736,7 @@ function startSession(form) {
     durationMinutes: Number(data.get("durationMinutes") || 0),
     shuffle: data.get("shuffle") === "on",
     shuffleChoices: data.get("shuffleChoices") === "on",
-    excludeReview: data.get("excludeReview") === "on",
+    excludeReview: mode === "exam" || data.get("excludeReview") === "on",
   });
   if (session.config.shuffleChoices) {
     session = {

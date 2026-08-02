@@ -110,6 +110,24 @@ test("answer review identifies the official answer without adding explanation", 
   assert.ok(!html.includes("Explanation"));
 });
 
+test("Practice feedback warns that a retained review key is unscored", () => {
+  const html = renderAnswerReview(
+    {
+      type: "mcq",
+      options: ["First", "Second"],
+      correctAnswer: 1,
+      needsReview: true,
+      reviewNotes: "The marked key is conceptually contradictory.",
+    },
+    1
+  );
+
+  assert.match(html, /class="answer-review is-unscored"/);
+  assert.match(html, /Answer review warning/);
+  assert.match(html, /Marked source answer/);
+  assert.doesNotMatch(html, /<h3>Correct<\/h3>/);
+});
+
 test("escapeHtml handles punctuation safely", () => {
   assert.equal(escapeHtml(`A&B < "C"`), "A&amp;B &lt; &quot;C&quot;");
 });

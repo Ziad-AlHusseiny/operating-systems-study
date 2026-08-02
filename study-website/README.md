@@ -111,5 +111,5 @@ The `study-website` folder can be published as-is to any static host:
 ## Known limitations
 
 - OCR preserves some grammar, capitalization, and spelling problems visible in the supplied PDFs.
-- The two PDFs disagree on one backup-answer item, and four additional visibly marked keys are conceptually contradictory. All five items remain available for revision, are excluded from mock exams by default, and are never scored.
+- The two PDFs disagree on one backup-answer item, and four additional visibly marked keys are conceptually contradictory. All five items remain available in Practice and Question Bank for revision, are always excluded from Mock Exams, and are never scored.
 - Progress belongs to one browser profile unless exported and imported elsewhere.

@@ -48,6 +48,16 @@ SOURCE_KEY_REVIEW_NOTES = {
     ),
 }
 
+SOURCE_KEY_REVIEW_ANSWERS = {
+    "q-015": {
+        "item-1": "Local administrator",
+        "item-2": "Local administrator",
+    },
+    "q-087": 3,
+    "q-093": [True, True, False],
+    "q-094": [1, 3],
+}
+
 META_LINE = re.compile(
     r"^(?:Page|Pages)\s+\d|^(?:New Test Bank\s*[·•-]?\s*)?Question\s+\d+"
     r"$|^STEM$|^QUESTION\s*&\s*ANSWER(?:\s+Image from question)?$|^\d{1,3}$",
@@ -681,6 +691,53 @@ def attach_pretest_sources(
     return conflicts, notes
 
 
+def validate_answer_shape(question: dict[str, Any]) -> list[str]:
+    answer = question.get("correctAnswer")
+    if answer is None:
+        return []
+
+    question_type = question.get("type")
+    errors: list[str] = []
+    if question_type == "mcq":
+        if not isinstance(answer, int) or isinstance(answer, bool):
+            errors.append("MCQ answer is not an index")
+        elif answer < 0 or answer >= len(question.get("options", [])):
+            errors.append("MCQ answer index is out of range")
+    elif question_type == "multi-select":
+        if (
+            not isinstance(answer, list)
+            or any(not isinstance(index, int) or isinstance(index, bool) for index in answer)
+            or len(answer) != len(set(answer))
+        ):
+            errors.append("multi-select answer must be a list of unique indexes")
+        elif any(index < 0 or index >= len(question.get("options", [])) for index in answer):
+            errors.append("multi-select answer index is out of range")
+    elif question_type == "true-false-group":
+        if not isinstance(answer, list) or any(not isinstance(value, bool) for value in answer):
+            errors.append("true-false answer must be a boolean list")
+        elif len(answer) != len(question.get("statements", [])):
+            errors.append("true-false answer count does not match statements")
+    elif question_type == "matching":
+        if not isinstance(answer, dict):
+            errors.append("matching answer must be an object")
+        else:
+            item_ids = {item["id"] for item in question.get("items", [])}
+            if set(answer) != item_ids:
+                errors.append("matching answer keys do not match item IDs")
+            if any(value not in question.get("options", []) for value in answer.values()):
+                errors.append("matching answer contains an unknown option")
+    elif question_type == "ordering":
+        if (
+            not isinstance(answer, list)
+            or len(answer) != len(question.get("items", []))
+            or set(answer) != set(question.get("items", []))
+        ):
+            errors.append("ordering answer must contain every item exactly once")
+    elif question_type == "source-review" and not isinstance(answer, str):
+        errors.append("source-review answer must be text")
+    return errors
+
+
 def validate_question(question: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if question["type"] not in SUPPORTED_TYPES:
@@ -692,20 +749,24 @@ def validate_question(question: dict[str, Any]) -> list[str]:
     if question["needsReview"]:
         if (
             question["correctAnswer"] is not None
-            and question["id"] not in SOURCE_KEY_REVIEW_NOTES
+            and question["id"] not in SOURCE_KEY_REVIEW_ANSWERS
         ):
             errors.append(
                 "review item may only retain a marked answer after visual verification"
+            )
+        elif (
+            question["correctAnswer"] is not None
+            and question["correctAnswer"]
+            != SOURCE_KEY_REVIEW_ANSWERS[question["id"]]
+        ):
+            errors.append(
+                "review answer does not match the visually verified marked answer"
             )
         if not question["reviewNotes"]:
             errors.append("review item needs a review note")
     elif question["correctAnswer"] is None:
         errors.append("missing official answer")
-    if question["type"] == "mcq" and not question["needsReview"]:
-        if not isinstance(question["correctAnswer"], int):
-            errors.append("MCQ answer is not an index")
-        elif question["correctAnswer"] >= len(question["options"]):
-            errors.append("MCQ answer index is out of range")
+    errors.extend(validate_answer_shape(question))
     return errors
 
 
@@ -763,6 +824,7 @@ def create_report(
         "- The generated guidance is clearly labeled in the site and remains separate from official PDF questions and answers.",
         "- Search covers English prompts plus Arabic translations, explanation paragraphs, and revision notes; source, topic, and type filters can be combined.",
         "- Guidance appears after Practice answers and inside Question Bank and Exam Result review disclosures, but never during an active Mock Exam.",
+        "- Review items remain available in Practice and Question Bank, are always excluded from Mock Exams, and stay unscored wherever they are shown.",
         "- The guidance does not resolve `q-103`; it describes the conflict and directs learners to pre-test PDF page 46 and 105-question bank PDF page 38.",
         "",
         "## Arabic guidance maintenance",

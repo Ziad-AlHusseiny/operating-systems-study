@@ -33,6 +33,7 @@
 - The generated guidance is clearly labeled in the site and remains separate from official PDF questions and answers.
 - Search covers English prompts plus Arabic translations, explanation paragraphs, and revision notes; source, topic, and type filters can be combined.
 - Guidance appears after Practice answers and inside Question Bank and Exam Result review disclosures, but never during an active Mock Exam.
+- Review items remain available in Practice and Question Bank, are always excluded from Mock Exams, and stay unscored wherever they are shown.
 - The guidance does not resolve `q-103`; it describes the conflict and directs learners to pre-test PDF page 46 and 105-question bank PDF page 38.
 
 ## Arabic guidance maintenance

@@ -43,6 +43,7 @@ const {
   questionListMarkup,
   resultsMarkup,
   sessionMarkup,
+  setupMarkup,
 } = appModule;
 
 const integrationQuestion = {
@@ -222,4 +223,66 @@ test("Question Bank distinguishes official PDF content from generated Arabic gui
   assert.match(html, /Questions and official answers come from the PDFs\./);
   assert.match(html, /Arabic explanations are generated study guidance and are labeled separately\./);
   assert.doesNotMatch(html, />Official PDF content only</);
+});
+
+test("Mock Exam setup states that review items are always excluded", () => {
+  assert.equal(typeof setupMarkup, "function");
+  const html = setupMarkup("exam");
+
+  assert.match(html, /review items are always excluded from Mock Exams/i);
+  assert.doesNotMatch(html, /name="excludeReview"/);
+  assert.match(setupMarkup("practice"), /name="excludeReview"/);
+});
+
+test("Exam results label reviewed answers unscored and omit them from breakdowns", () => {
+  const scored = {
+    ...integrationQuestion,
+    id: "q-scored",
+    topic: "Scored Topic",
+    sources: [{ collection: "bank-105", page: 5 }],
+  };
+  const reviewedShared = {
+    ...integrationQuestion,
+    id: "q-reviewed-shared",
+    prompt: "Shared reviewed prompt",
+    topic: "Scored Topic",
+    needsReview: true,
+    reviewNotes: "Marked key requires review.",
+    sources: [{ collection: "bank-105", page: 6 }],
+  };
+  const reviewedOnly = {
+    ...integrationQuestion,
+    id: "q-reviewed-only",
+    prompt: "Only reviewed prompt",
+    topic: "Reviewed Topic",
+    needsReview: true,
+    reviewNotes: "Marked key requires review.",
+    sources: [{ collection: "pretest-70", page: 21 }],
+  };
+  app.questions = [scored, reviewedShared, reviewedOnly];
+  app.questionMap = new Map(app.questions.map((question) => [question.id, question]));
+  app.explanations = {
+    [scored.id]: integrationExplanation,
+    [reviewedShared.id]: integrationExplanation,
+    [reviewedOnly.id]: integrationExplanation,
+  };
+
+  const html = resultsMarkup({
+    mode: "exam",
+    questionIds: [scored.id, reviewedShared.id, reviewedOnly.id],
+    answers: {
+      [scored.id]: { response: 1, correct: true, earned: 1, possible: 1 },
+      [reviewedShared.id]: { response: 1, correct: null, earned: 0, possible: 0 },
+      [reviewedOnly.id]: { response: 1, correct: null, earned: 0, possible: 0 },
+    },
+    stats: { accuracy: 100, correct: 1, wrong: 0, skipped: 2, durationSeconds: 60 },
+  });
+
+  assert.match(html, /Shared reviewed prompt[\s\S]*<span class="tag">Unscored<\/span>/);
+  assert.match(html, /Only reviewed prompt[\s\S]*<span class="tag">Unscored<\/span>/);
+  assert.doesNotMatch(html, /reviewed prompt<\/span><span class="tag">Wrong<\/span>/i);
+  assert.doesNotMatch(html, /<strong>Reviewed Topic<\/strong>/);
+  assert.doesNotMatch(html, /70 Question Pre-Test/);
+  assert.match(html, /<strong>Scored Topic<\/strong>[\s\S]*1\/1 correct/);
+  assert.match(html, /<strong>105 Question Bank<\/strong>[\s\S]*1\/1 correct/);
 });

@@ -1,4 +1,5 @@
 import unittest
+from copy import deepcopy
 
 from scripts.validate_questions import build_artifacts, validate_question
 
@@ -19,6 +20,39 @@ class SourceKeyReviewTests(unittest.TestCase):
             "review item may only retain a marked answer after visual verification",
             validate_question(question),
         )
+
+    def test_rejects_changes_to_visually_verified_marked_answers(self) -> None:
+        payload, _ = build_artifacts()
+        questions = {question["id"]: question for question in payload["questions"]}
+        altered_answers = {
+            "q-015": {"item-1": "Local administrator"},
+            "q-087": 999,
+            "q-093": [True],
+            "q-094": [1, 999],
+        }
+
+        for question_id, answer in altered_answers.items():
+            with self.subTest(question_id=question_id):
+                question = deepcopy(questions[question_id])
+                question["correctAnswer"] = answer
+                errors = validate_question(question)
+                self.assertIn(
+                    "review answer does not match the visually verified marked answer",
+                    errors,
+                )
+
+        q087 = deepcopy(questions["q-087"])
+        q087["correctAnswer"] = 999
+        self.assertIn("MCQ answer index is out of range", validate_question(q087))
+        q015 = deepcopy(questions["q-015"])
+        q015["correctAnswer"] = {"item-1": "Local administrator"}
+        self.assertIn("matching answer keys do not match item IDs", validate_question(q015))
+        q093 = deepcopy(questions["q-093"])
+        q093["correctAnswer"] = [True]
+        self.assertIn("true-false answer count does not match statements", validate_question(q093))
+        q094 = deepcopy(questions["q-094"])
+        q094["correctAnswer"] = [1, 999]
+        self.assertIn("multi-select answer index is out of range", validate_question(q094))
 
     def test_preserves_visually_marked_answers_but_flags_contradictory_keys(self) -> None:
         payload, report = build_artifacts()
