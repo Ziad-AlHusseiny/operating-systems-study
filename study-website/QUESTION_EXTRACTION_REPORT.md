@@ -23,6 +23,12 @@
 - Questions requiring manual review: 1
 - `q-103` — Answer conflict: pre-test PDF page 46 highlights Differential, while the 105-question bank PDF page 38 marks Incremental. Sources: ITS OD 103 Pre-Test.pdf page 46
 
+## Arabic study guidance
+
+- A separate file, `data/explanations-ar.json`, contains 103 generated Arabic translations and study explanations, one for each canonical question.
+- This generated study guidance is not an official explanation from either source PDF and remains separate from the official question extraction.
+- The guidance does not resolve `q-103`; it describes the conflict and directs learners to review pre-test PDF page 46 and 105-question bank PDF page 38.
+
 ## Extraction quality
 
 - The 105-question PDF was extracted from selectable text.
