@@ -559,4 +559,3 @@ The documentation factory kit is complete when:
 - Markdown links and referenced paths are valid.
 - A self-review finds no undocumented placeholders, contradictory rules, or
   missing system-flow sections.
-
