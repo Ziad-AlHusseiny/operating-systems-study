@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "sources": [
+    {
+      "id": "source-01",
+      "fileName": "networking-handbook.pdf",
+      "format": "pdf",
+      "checksum": "sha256:example-networking-handbook",
+      "pages": 42,
+      "status": "accepted",
+      "locations": [{"locationType": "page", "location": 12}]
+    },
+    {
+      "id": "source-02",
+      "fileName": "networking-lecture.pptx",
+      "format": "pptx",
+      "checksum": "sha256:example-networking-lecture",
+      "slides": 18,
+      "status": "accepted",
+      "locations": [{"locationType": "slide", "location": 5}]
+    }
+  ]
+}

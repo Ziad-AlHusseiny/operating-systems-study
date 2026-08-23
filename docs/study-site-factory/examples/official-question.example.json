@@ -1,0 +1,16 @@
+{
+  "id": "q-001",
+  "origin": "official",
+  "type": "mcq",
+  "prompt": "Which protocol automatically assigns IP configuration?",
+  "topic": "Networking",
+  "options": ["DNS", "DHCP", "HTTP", "SSH"],
+  "correctAnswer": 1,
+  "sourceRefs": [
+    {"sourceId": "source-01", "locationType": "page", "location": 12}
+  ],
+  "duplicateSources": [],
+  "officialExplanation": "",
+  "needsReview": false,
+  "reviewNotes": ""
+}

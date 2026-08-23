@@ -4,14 +4,79 @@ import unittest
 from pathlib import Path
 
 from scripts.validate_factory_kit import (
+    EXAMPLE_REQUIRED_KEYS,
+    REQUIRED_DOCS,
+    REQUIRED_EXAMPLES,
     collect_template_variables,
     validate_markdown_headings,
     validate_json_file,
     validate_required_files,
+    validate_kit,
 )
 
 
 class FactoryKitValidatorTests(unittest.TestCase):
+    def make_complete_kit(self, root, source_manifest, official_question):
+        for name in REQUIRED_DOCS:
+            (root / name).write_text("# placeholder\n", encoding="utf-8")
+        for name in REQUIRED_EXAMPLES:
+            payload = {}
+            if name == "examples/source-manifest.example.json":
+                payload = source_manifest
+            elif name == "examples/official-question.example.json":
+                payload = official_question
+            (root / name).parent.mkdir(parents=True, exist_ok=True)
+            (root / name).write_text(json.dumps(payload), encoding="utf-8")
+
+    def test_source_and_official_question_examples_have_required_keys(self):
+        root = Path("docs/study-site-factory")
+        for relative, required in EXAMPLE_REQUIRED_KEYS.items():
+            payload = json.loads(
+                (root / relative).read_text(encoding="utf-8")
+            )
+            self.assertTrue(required.issubset(payload))
+
+    def test_reports_missing_top_level_keys_in_required_examples(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.make_complete_kit(
+                root,
+                {"sources": []},
+                {
+                    "id": "q-001", "origin": "official", "type": "mcq",
+                    "prompt": "Prompt", "topic": "Topic", "correctAnswer": 0,
+                    "sourceRefs": [], "needsReview": False, "reviewNotes": "",
+                },
+            )
+            errors = validate_kit(root)
+        self.assertIn(
+            "examples/source-manifest.example.json: missing required top-level "
+            "keys: version",
+            errors,
+        )
+
+    def test_reports_invalid_source_reference_location_type(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.make_complete_kit(
+                root,
+                {"version": "1.0", "sources": []},
+                {
+                    "id": "q-001", "origin": "official", "type": "mcq",
+                    "prompt": "Prompt", "topic": "Topic", "correctAnswer": 0,
+                    "sourceRefs": [
+                        {"sourceId": "source-01", "locationType": "chapter", "location": 1}
+                    ],
+                    "needsReview": False, "reviewNotes": "",
+                },
+            )
+            errors = validate_kit(root)
+        self.assertIn(
+            "examples/official-question.example.json: sourceRefs[0]: invalid "
+            "locationType: chapter",
+            errors,
+        )
+
     def test_collects_uppercase_double_brace_variables(self):
         text = "{{PROJECT_TITLE}} {{STUDY_LANGUAGE}} {{PROJECT_TITLE}}"
         self.assertEqual(
