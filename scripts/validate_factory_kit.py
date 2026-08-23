@@ -1146,7 +1146,7 @@ def validate_id_text_items(value: object, path: str) -> tuple[list[str], list[st
 
 def validate_question_type_shape(payload: dict, name: str) -> list[str]:
     question_type = payload.get("type")
-    if question_type not in QUESTION_TYPES:
+    if not isinstance(question_type, str) or question_type not in QUESTION_TYPES:
         return [f"{name}: type: invalid value: {question_type}"]
     answer = payload.get("correctAnswer")
     errors = []
@@ -1227,10 +1227,11 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
             payload.get("items"), f"{name}: items"
         )
         errors.extend(item_errors)
-        if (
-            not isinstance(answer, list)
-            or len(answer) != len(item_ids)
-            or set(answer) != set(item_ids)
+        valid_answer_items = isinstance(answer, list) and all(
+            isinstance(value, str) and value.strip() for value in answer
+        )
+        if not valid_answer_items or (
+            len(answer) != len(item_ids) or set(answer) != set(item_ids)
         ):
             errors.append(
                 f"{name}: correctAnswer: must order every item ID exactly once"
@@ -1273,7 +1274,10 @@ def validate_official_question_example(payload: dict, name: str) -> list[str]:
 def validate_generated_question_example(payload: dict, name: str) -> list[str]:
     errors = validate_question_base(payload, name, "generated")
     question_type = payload.get("type")
-    if question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS:
+    if (
+        not isinstance(question_type, str)
+        or question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS
+    ):
         errors.append(
             f"{name}: type: generated questions support only mcq or true-false"
         )
@@ -1372,6 +1376,11 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
             exact=True,
         )
     )
+    candidates = None
+    candidate_errors = []
+    valid_candidates = False
+    match_class = None
+    valid_match_class = False
     if isinstance(duplicate, dict):
         for field in ("algorithmVersion", "normalizedPrompt"):
             errors.extend(
@@ -1379,17 +1388,21 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
                     duplicate.get(field), f"{name}: duplicateComparison.{field}"
                 )
             )
-        errors.extend(
-            validate_string_array(
-                duplicate.get("candidateIds"),
-                f"{name}: duplicateComparison.candidateIds",
-                unique=True,
-            )
-        )
-        if duplicate.get("matchClass") not in DUPLICATE_MATCH_CLASSES:
-            errors.append(f"{name}: duplicateComparison.matchClass: invalid value")
         candidates = duplicate.get("candidateIds")
-        if isinstance(candidates, list):
+        candidate_errors = validate_string_array(
+            candidates,
+            f"{name}: duplicateComparison.candidateIds",
+            unique=True,
+        )
+        errors.extend(candidate_errors)
+        valid_candidates = not candidate_errors
+        match_class = duplicate.get("matchClass")
+        valid_match_class = (
+            isinstance(match_class, str) and match_class in DUPLICATE_MATCH_CLASSES
+        )
+        if not valid_match_class:
+            errors.append(f"{name}: duplicateComparison.matchClass: invalid value")
+        if valid_candidates:
             if candidates != sorted(candidates):
                 errors.append(
                     f"{name}: duplicateComparison.candidateIds: must use "
@@ -1408,18 +1421,21 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
                     )
                     break
     disposition = payload.get("duplicateDisposition")
-    if disposition not in DUPLICATE_DISPOSITIONS:
+    valid_disposition = (
+        isinstance(disposition, str) and disposition in DUPLICATE_DISPOSITIONS
+    )
+    if not valid_disposition:
         errors.append(f"{name}: duplicateDisposition: invalid value: {disposition}")
     if isinstance(duplicate, dict):
-        match_class = duplicate.get("matchClass")
-        candidates = duplicate.get("candidateIds")
-        expected_disposition = {
-            "none": "retain",
-            "near": "needs-review",
-            "conflict": "needs-review",
-        }.get(match_class)
-        if match_class == "exact":
-            if not isinstance(candidates, list) or not candidates:
+        expected_disposition = None
+        if valid_match_class:
+            expected_disposition = {
+                "none": "retain",
+                "near": "needs-review",
+                "conflict": "needs-review",
+            }.get(match_class)
+        if match_class == "exact" and valid_candidates:
+            if not candidates:
                 errors.append(
                     f"{name}: duplicateComparison: exact match requires at least "
                     "one candidate"
@@ -1437,7 +1453,11 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
                         if question_id == min([question_id, *candidates])
                         else "reject-duplicate"
                     )
-        if expected_disposition and disposition != expected_disposition:
+        if (
+            expected_disposition
+            and valid_disposition
+            and disposition != expected_disposition
+        ):
             errors.append(
                 f"{name}: duplicateDisposition: must be {expected_disposition} for "
                 f"{match_class} match"
@@ -1487,21 +1507,22 @@ def validate_example_payload(name: str, payload: object) -> list[str]:
     required = EXAMPLE_REQUIRED_KEYS.get(name, set())
     allowed = required
     question_type = payload.get("type")
+    question_type_key = question_type if isinstance(question_type, str) else None
     if name == "examples/official-question.example.json":
         required = (
             QUESTION_BASE_REQUIRED_FIELDS
             | OFFICIAL_QUESTION_FIELDS
-            | QUESTION_TYPE_REQUIRED_FIELDS.get(question_type, set())
+            | QUESTION_TYPE_REQUIRED_FIELDS.get(question_type_key, set())
         )
-        allowed = required | QUESTION_TYPE_OPTIONAL_FIELDS.get(question_type, set())
+        allowed = required | QUESTION_TYPE_OPTIONAL_FIELDS.get(question_type_key, set())
     elif name == "examples/generated-question.example.json":
         required = (
             QUESTION_BASE_REQUIRED_FIELDS
             | GENERATED_QUESTION_COMMON_FIELDS
-            | GENERATED_QUESTION_TYPE_REQUIRED_FIELDS.get(question_type, set())
+            | GENERATED_QUESTION_TYPE_REQUIRED_FIELDS.get(question_type_key, set())
         )
         allowed = required
-        if question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS:
+        if question_type_key not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS:
             allowed = allowed | set().union(
                 *GENERATED_QUESTION_TYPE_REQUIRED_FIELDS.values(),
                 *QUESTION_TYPE_REQUIRED_FIELDS.values(),

@@ -804,6 +804,72 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
                 self.assertTrue(any(expected in error for error in errors), errors)
 
+    def test_malformed_question_and_duplicate_values_aggregate_without_raising(self):
+        cases = (
+            (
+                "duplicate candidates",
+                "generated-question.example.json",
+                lambda payload: payload["duplicateComparison"].update(
+                    {"candidateIds": [{}, {}]}
+                ),
+                "candidateIds: must contain only non-empty strings",
+            ),
+            (
+                "ordering answer",
+                "official-question.example.json",
+                lambda payload: (
+                    payload.pop("options"),
+                    payload.update(
+                        {
+                            "type": "ordering",
+                            "items": [
+                                {"id": "step-a", "text": "First"},
+                                {"id": "step-b", "text": "Second"},
+                            ],
+                            "correctAnswer": [{}, {}],
+                        }
+                    ),
+                ),
+                "correctAnswer: must order every item ID exactly once",
+            ),
+            (
+                "question type",
+                "official-question.example.json",
+                lambda payload: payload.update({"type": {}}),
+                "type: invalid value: {}",
+            ),
+            (
+                "duplicate match class",
+                "generated-question.example.json",
+                lambda payload: payload["duplicateComparison"].update(
+                    {"matchClass": {}}
+                ),
+                "duplicateComparison.matchClass: invalid value",
+            ),
+            (
+                "duplicate disposition",
+                "generated-question.example.json",
+                lambda payload: payload.update({"duplicateDisposition": {}}),
+                "duplicateDisposition: invalid value: {}",
+            ),
+        )
+        for case, relative, mutate, expected in cases:
+            with self.subTest(case=case):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "factory"
+                    shutil.copytree(Path("docs/study-site-factory"), root)
+                    path = root / "examples" / relative
+                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    mutate(payload)
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+
+                    try:
+                        errors = validate_kit(root)
+                    except (TypeError, AttributeError) as error:
+                        self.fail(f"validation raised instead of aggregating: {error}")
+
+                self.assertTrue(any(expected in error for error in errors), errors)
+
     def test_complete_factory_kit_passes(self):
         root = Path("docs/study-site-factory")
         self.assertEqual(validate_kit(root), [])
