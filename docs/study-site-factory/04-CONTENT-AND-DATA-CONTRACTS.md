@@ -105,7 +105,14 @@ Every reviewable record has `needsReview` and `reviewNotes`. Review decisions ar
 
 ## LocalStorage Progress
 
-LocalStorage uses key `study-site-progress:<projectId>` and a versioned object with exact required fields `version`, `projectId`, `updatedAt`, `lessonProgress`, `questionProgress`, `bookmarks`, and `mistakes`. `lessonProgress` maps `lesson-` IDs to `{status, lastVisitedAt}`; `questionProgress` maps `q-`/`gq-` IDs to `{attempts, correctAttempts, lastAnswer, lastAttemptAt}`. Unknown versions are preserved or migrated explicitly, never interpreted silently.
+The LocalStorage key is the literal prefix `study-site-progress:` followed
+immediately by the canonical `projectId` value (for example,
+`study-site-progress:network-fundamentals-study`). Its versioned object has
+exact required fields `version`, `projectId`, `updatedAt`, `lessonProgress`,
+`questionProgress`, `bookmarks`, and `mistakes`. `lessonProgress` maps `lesson-`
+IDs to `{status, lastVisitedAt}`; `questionProgress` maps `q-`/`gq-` IDs to
+`{attempts, correctAttempts, lastAnswer, lastAttemptAt}`. Unknown versions are
+preserved or migrated explicitly, never interpreted silently.
 
 ## Sessions and Results
 

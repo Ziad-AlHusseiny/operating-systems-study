@@ -584,6 +584,60 @@ class FactoryKitValidatorTests(unittest.TestCase):
         for artifact in artifacts:
             self.assertIn(artifact, text)
 
+    def test_deployment_monitoring_is_bound_to_verified_commit(self):
+        for relative in (
+            "09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"
+        ):
+            with self.subTest(relative=relative):
+                text = Path("docs/study-site-factory", relative).read_text(
+                    encoding="utf-8"
+                )
+                for contract in (
+                    "$ExpectedSha = (git rev-parse HEAD).Trim()",
+                    "git ls-remote --heads origin",
+                    "$RemoteSha -ne $ExpectedSha",
+                    "--event workflow_dispatch",
+                    "--json headSha,conclusion,jobs",
+                    "$Run.headSha -ne $ExpectedSha",
+                    "$Run.conclusion -ne \"success\"",
+                    "$RequiredJobs = @(\"build\", \"deploy\")",
+                ):
+                    self.assertIn(contract, text)
+
+    def test_public_verification_checks_every_published_json_payload(self):
+        for relative in (
+            "09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"
+        ):
+            with self.subTest(relative=relative):
+                text = Path("docs/study-site-factory", relative).read_text(
+                    encoding="utf-8"
+                )
+                for contract in (
+                    "$RequiredPayloads = @(Get-ChildItem $DataRoot -Recurse "
+                    "-Filter *.json -File)",
+                    "foreach ($LocalFile in $RequiredPayloads)",
+                    "$MapEntries = @($Value.PSObject.Properties",
+                    "$MapPropertyCount = @($Value.PSObject.Properties).Count",
+                    '"__stableId"',
+                    "$Response.StatusCode -ne 200",
+                    "$ContentType -notmatch",
+                    "ConvertFrom-Json",
+                    "$PublicRecords.Count -ne $LocalRecords.Count",
+                    "Sort-Object",
+                    "Compare-Object $LocalIds $PublicIds",
+                ):
+                    self.assertIn(contract, text)
+
+    def test_factory_docs_do_not_use_ad_hoc_placeholder_forms(self):
+        root = Path("docs/study-site-factory")
+        for path in root.glob("*.md"):
+            with self.subTest(path=path):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotRegex(
+                    text,
+                    r"replace-with-[A-Za-z0-9_-]+|<[^>\r\n]+>",
+                )
+
     def test_prd_excludes_review_items_from_every_mock_exam_pool(self):
         text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
             encoding="utf-8"

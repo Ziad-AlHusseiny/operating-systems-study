@@ -265,20 +265,125 @@ For every row, exercise and record:
   for the push, monitor the new run, and repeat Gate 8. Never use destructive
   reset or force-push rollback.
 
-Example GitHub Actions, HTTP, and public-count checks:
+Example commit-bound GitHub Actions, HTML, and complete JSON checks follow. The
+workflow-dispatch command remains authorized-only; every other value is read
+from validated configuration or computed from the verified repository state.
 
 ```powershell
-$AuthorizedBranch = "replace-with-authorized-branch"
-$RunId = "replace-with-run-id"
+$ProjectConfig = Get-Content -Raw input/project-config.json | ConvertFrom-Json
+$ConfiguredRepository = [string]$ProjectConfig.deployment.repository
+$AuthorizedBranch = [string]$ProjectConfig.deployment.branch
+$PublicUrl = ([string]$ProjectConfig.deployment.publicUrl).TrimEnd("/") + "/"
+$ActualRepository = (gh repo view --json nameWithOwner --jq .nameWithOwner).Trim()
+if ($ActualRepository -ne $ConfiguredRepository) { throw "Configured repository does not match the current gh repository" }
+
+$ExpectedSha = (git rev-parse HEAD).Trim().ToLowerInvariant()
+if ($ExpectedSha -notmatch "^[0-9a-f]{40}$") { throw "Expected SHA is not a full commit SHA" }
+$RemoteRef = @(git ls-remote --heads origin "refs/heads/$AuthorizedBranch")
+if ($LASTEXITCODE -ne 0 -or $RemoteRef.Count -ne 1) { throw "Authorized remote branch was not found exactly once" }
+$RemoteSha = (($RemoteRef[0] -split "\s+")[0]).ToLowerInvariant()
+if ($RemoteSha -ne $ExpectedSha) { throw "Authorized remote branch is not at the Gate-7-approved commit" }
+
+$ExistingRuns = @(gh run list --workflow pages.yml --branch $AuthorizedBranch --event workflow_dispatch --limit 100 --json databaseId,headSha | ConvertFrom-Json)
+if ($LASTEXITCODE -ne 0) { throw "Could not snapshot existing workflow runs" }
+$ExistingRunIds = @($ExistingRuns | ForEach-Object { [string]$_.databaseId })
 gh workflow run pages.yml --ref $AuthorizedBranch
-gh run list --workflow pages.yml --branch $AuthorizedBranch --limit 5
+if ($LASTEXITCODE -ne 0) { throw "Workflow dispatch failed" }
+
+$RunId = $null
+$RunDeadline = (Get-Date).AddMinutes(2)
+do {
+    $CandidateRuns = @(gh run list --workflow pages.yml --branch $AuthorizedBranch --event workflow_dispatch --limit 100 --json databaseId,headSha | ConvertFrom-Json | Where-Object {
+        $_.headSha -eq $ExpectedSha -and [string]$_.databaseId -notin $ExistingRunIds
+    })
+    if ($LASTEXITCODE -ne 0) { throw "Could not query the dispatched workflow run" }
+    if ($CandidateRuns.Count -gt 1) { throw "More than one new workflow run matches the approved commit" }
+    if ($CandidateRuns.Count -eq 1) { $RunId = [string]$CandidateRuns[0].databaseId; break }
+    Start-Sleep -Seconds 3
+} while ((Get-Date) -lt $RunDeadline)
+if ([string]::IsNullOrWhiteSpace($RunId)) { throw "No new workflow-dispatch run matched the approved commit" }
+
 gh run watch $RunId --exit-status
-$PublicUrl = "https://example.github.io/project/"
-(Invoke-WebRequest $PublicUrl).StatusCode
-(Invoke-WebRequest "${PublicUrl}data/questions.json").StatusCode
-$PublicQuestions = Invoke-RestMethod "${PublicUrl}data/questions.json"
-$LocalQuestions = Get-Content -Raw study-website/data/questions.json | ConvertFrom-Json
-if ($PublicQuestions.Count -ne $LocalQuestions.Count) { throw "Public question count mismatch" }
+if ($LASTEXITCODE -ne 0) { throw "Workflow run failed" }
+$Run = gh run view $RunId --json headSha,conclusion,jobs | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw "Could not read workflow run evidence" }
+if ($Run.headSha -ne $ExpectedSha) { throw "Workflow run used a different commit" }
+if ($Run.conclusion -ne "success") { throw "Workflow conclusion was not success" }
+$RequiredJobs = @("build", "deploy")
+foreach ($JobName in $RequiredJobs) {
+    $MatchingJobs = @($Run.jobs | Where-Object { $_.name -eq $JobName })
+    if ($MatchingJobs.Count -ne 1 -or $MatchingJobs[0].conclusion -ne "success") {
+        throw "Required workflow job did not succeed: $JobName"
+    }
+}
+
+function Get-PayloadRecords {
+    param([object]$Payload, [string]$PayloadName)
+    if ($Payload -is [System.Array]) { $Payload; return }
+    $FoundCollection = $false
+    foreach ($Collection in $Payload.PSObject.Properties) {
+        $Value = $Collection.Value
+        if ($Value -is [System.Array]) {
+            $FoundCollection = $true
+            foreach ($Record in @($Value)) { $Record }
+            continue
+        }
+        if ($Value -is [System.Management.Automation.PSCustomObject]) {
+            $MapEntries = @($Value.PSObject.Properties | Where-Object {
+                $_.Name -match "^(?:source|module|objective|lesson|q|gq)-.+$"
+            })
+            $MapPropertyCount = @($Value.PSObject.Properties).Count
+            if ($MapEntries.Count -gt 0 -and $MapEntries.Count -eq $MapPropertyCount) {
+                $FoundCollection = $true
+                foreach ($Entry in $MapEntries) {
+                    [pscustomobject]@{ "__stableId" = $Entry.Name; "__record" = $Entry.Value }
+                }
+            }
+        }
+    }
+    if (-not $FoundCollection) { throw "$PayloadName has no supported top-level record collection" }
+}
+
+function Get-StableId {
+    param([object]$Record, [string]$PayloadName)
+    foreach ($Field in @("__stableId", "id", "sourceId", "questionId", "lessonId", "moduleId", "objectiveId")) {
+        $Property = $Record.PSObject.Properties[$Field]
+        if ($null -ne $Property -and -not [string]::IsNullOrWhiteSpace([string]$Property.Value)) {
+            return [string]$Property.Value
+        }
+    }
+    throw "$PayloadName contains a record without a stable ID"
+}
+
+$HtmlResponse = Invoke-WebRequest -Uri $PublicUrl
+if ($HtmlResponse.StatusCode -ne 200) { throw "Public HTML did not return HTTP 200" }
+$HtmlContentType = [string]$HtmlResponse.Headers["Content-Type"]
+if ($HtmlContentType -notmatch "(?i)^text/html(?:\s*;|$)") { throw "Public root is not HTML" }
+
+$DataRoot = (Resolve-Path study-website/data).Path
+$RequiredPayloads = @(Get-ChildItem $DataRoot -Recurse -Filter *.json -File)
+if ($RequiredPayloads.Count -eq 0) { throw "No required published JSON payloads were found" }
+foreach ($LocalFile in $RequiredPayloads) {
+    $RelativePath = [IO.Path]::GetRelativePath($DataRoot, $LocalFile.FullName).Replace("\", "/")
+    $PayloadUrl = [Uri]::new([Uri]$PublicUrl, "data/$RelativePath").AbsoluteUri
+    $Response = Invoke-WebRequest -Uri $PayloadUrl
+    if ($Response.StatusCode -ne 200) { throw "$RelativePath did not return HTTP 200" }
+    $ContentType = [string]$Response.Headers["Content-Type"]
+    if ($ContentType -notmatch "(?i)^application/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)") {
+        throw "$RelativePath did not return a JSON content type"
+    }
+    try {
+        $LocalPayload = Get-Content -Raw $LocalFile.FullName | ConvertFrom-Json -Depth 100 -NoEnumerate
+        $PublicPayload = $Response.Content | ConvertFrom-Json -Depth 100 -NoEnumerate
+    } catch { throw "$RelativePath could not be parsed as JSON: $($_.Exception.Message)" }
+    $LocalRecords = @(Get-PayloadRecords $LocalPayload $RelativePath)
+    $PublicRecords = @(Get-PayloadRecords $PublicPayload $RelativePath)
+    if ($PublicRecords.Count -ne $LocalRecords.Count) { throw "$RelativePath record count mismatch" }
+    $LocalIds = @($LocalRecords | ForEach-Object { Get-StableId $_ $RelativePath } | Sort-Object)
+    $PublicIds = @($PublicRecords | ForEach-Object { Get-StableId $_ $RelativePath } | Sort-Object)
+    if (@(Compare-Object $LocalIds $PublicIds).Count -ne 0) { throw "$RelativePath stable-ID mismatch" }
+}
+
 npx playwright test --config playwright.public.config.mjs --project=desktop --project=mobile
 ```
 

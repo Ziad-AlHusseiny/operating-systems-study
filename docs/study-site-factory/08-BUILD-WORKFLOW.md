@@ -13,15 +13,21 @@ gate, hash every durable output and commit the entry with the outputs. Status is
 one of `pending`, `in-progress`, `blocked`, or `complete`; `complete` means the
 named validation passed, not merely that files were written.
 
-A valid entry has this exact shape:
+A valid entry has this exact shape. Compute the two runtime hashes and write
+their values rather than retaining variable names in the ledger:
 
-```text
+```powershell
+$InputSha = (Get-FileHash input/materials/course.pdf -Algorithm SHA256).Hash.ToLowerInvariant()
+$OutputSha = (Get-FileHash reports/SOURCE_AUDIT_REPORT.md -Algorithm SHA256).Hash.ToLowerInvariant()
+$LedgerEntry = @"
 Stage 4: complete
-Inputs: input/materials/course.pdf sha256=<hash>
-Outputs: reports/SOURCE_AUDIT_REPORT.md sha256=<hash>
+Inputs: input/materials/course.pdf sha256=$InputSha
+Outputs: reports/SOURCE_AUDIT_REPORT.md sha256=$OutputSha
 Validation: passed
 Open reviews: source-01 page 18
 Next stage: 5
+"@
+$LedgerEntry | Add-Content progress-ledger.md
 ```
 
 List every input and output on its own continuation line when a stage has more

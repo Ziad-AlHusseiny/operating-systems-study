@@ -165,15 +165,57 @@ payloads, or browser artifacts.
    the workflow run ID/URL, deployed SHA, and times.
 6. Complete every public check below. A workflow success alone is insufficient.
 
-Typical monitoring commands, safe after a separately authorized publish action,
-are:
+The following commit-bound dispatch and monitoring commands are safe only after
+a separately authorized publish action. They compute the full expected SHA,
+prove the configured remote branch points to it, snapshot existing dispatches,
+and derive the new run ID rather than accepting one manually:
 
 ```powershell
-$AuthorizedBranch = "replace-with-authorized-branch"
-$RunId = "replace-with-run-id"
-gh run list --workflow pages.yml --branch $AuthorizedBranch --limit 5
+$ProjectConfig = Get-Content -Raw input/project-config.json | ConvertFrom-Json
+$ConfiguredRepository = [string]$ProjectConfig.deployment.repository
+$AuthorizedBranch = [string]$ProjectConfig.deployment.branch
+$ActualRepository = (gh repo view --json nameWithOwner --jq .nameWithOwner).Trim()
+if ($ActualRepository -ne $ConfiguredRepository) { throw "Configured repository does not match the current gh repository" }
+
+$ExpectedSha = (git rev-parse HEAD).Trim().ToLowerInvariant()
+if ($ExpectedSha -notmatch "^[0-9a-f]{40}$") { throw "Expected SHA is not a full commit SHA" }
+$RemoteRef = @(git ls-remote --heads origin "refs/heads/$AuthorizedBranch")
+if ($LASTEXITCODE -ne 0 -or $RemoteRef.Count -ne 1) { throw "Authorized remote branch was not found exactly once" }
+$RemoteSha = (($RemoteRef[0] -split "\s+")[0]).ToLowerInvariant()
+if ($RemoteSha -ne $ExpectedSha) { throw "Authorized remote branch is not at the Gate-7-approved commit" }
+
+$ExistingRuns = @(gh run list --workflow pages.yml --branch $AuthorizedBranch --event workflow_dispatch --limit 100 --json databaseId,headSha | ConvertFrom-Json)
+if ($LASTEXITCODE -ne 0) { throw "Could not snapshot existing workflow runs" }
+$ExistingRunIds = @($ExistingRuns | ForEach-Object { [string]$_.databaseId })
+gh workflow run pages.yml --ref $AuthorizedBranch
+if ($LASTEXITCODE -ne 0) { throw "Workflow dispatch failed" }
+
+$RunId = $null
+$RunDeadline = (Get-Date).AddMinutes(2)
+do {
+    $CandidateRuns = @(gh run list --workflow pages.yml --branch $AuthorizedBranch --event workflow_dispatch --limit 100 --json databaseId,headSha | ConvertFrom-Json | Where-Object {
+        $_.headSha -eq $ExpectedSha -and [string]$_.databaseId -notin $ExistingRunIds
+    })
+    if ($LASTEXITCODE -ne 0) { throw "Could not query the dispatched workflow run" }
+    if ($CandidateRuns.Count -gt 1) { throw "More than one new workflow run matches the approved commit" }
+    if ($CandidateRuns.Count -eq 1) { $RunId = [string]$CandidateRuns[0].databaseId; break }
+    Start-Sleep -Seconds 3
+} while ((Get-Date) -lt $RunDeadline)
+if ([string]::IsNullOrWhiteSpace($RunId)) { throw "No new workflow-dispatch run matched the approved commit" }
+
 gh run watch $RunId --exit-status
-gh run view $RunId
+if ($LASTEXITCODE -ne 0) { throw "Workflow run failed" }
+$Run = gh run view $RunId --json headSha,conclusion,jobs | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw "Could not read workflow run evidence" }
+if ($Run.headSha -ne $ExpectedSha) { throw "Workflow run used a different commit" }
+if ($Run.conclusion -ne "success") { throw "Workflow conclusion was not success" }
+$RequiredJobs = @("build", "deploy")
+foreach ($JobName in $RequiredJobs) {
+    $MatchingJobs = @($Run.jobs | Where-Object { $_.name -eq $JobName })
+    if ($MatchingJobs.Count -ne 1 -or $MatchingJobs[0].conclusion -ne "success") {
+        throw "Required workflow job did not succeed: $JobName"
+    }
+}
 ```
 
 ## Public verification
@@ -195,15 +237,81 @@ each check.
    navigation, asset/base-path loading, no horizontal overflow, and zero
    relevant console exceptions or failed network requests.
 
-Example read-only HTTP and count checks:
+The read-only verification below checks HTML separately, then discovers every
+JSON file that the final static data directory publishes. It fails on status,
+content type, parsing, record-count, or stable-ID parity rather than checking a
+single named payload:
 
 ```powershell
-$PublicUrl = "https://example.github.io/project/"
-$RootResponse = Invoke-WebRequest $PublicUrl
-if ($RootResponse.StatusCode -ne 200 -or $RootResponse.Content -notmatch "<html") { throw "Public HTML verification failed" }
-$PublicQuestions = Invoke-RestMethod "${PublicUrl}data/questions.json"
-$LocalQuestions = Get-Content -Raw study-website/data/questions.json | ConvertFrom-Json
-if ($PublicQuestions.Count -ne $LocalQuestions.Count) { throw "Public question count mismatch" }
+$ProjectConfig = Get-Content -Raw input/project-config.json | ConvertFrom-Json
+$PublicUrl = ([string]$ProjectConfig.deployment.publicUrl).TrimEnd("/") + "/"
+
+function Get-PayloadRecords {
+    param([object]$Payload, [string]$PayloadName)
+    if ($Payload -is [System.Array]) { $Payload; return }
+    $FoundCollection = $false
+    foreach ($Collection in $Payload.PSObject.Properties) {
+        $Value = $Collection.Value
+        if ($Value -is [System.Array]) {
+            $FoundCollection = $true
+            foreach ($Record in @($Value)) { $Record }
+            continue
+        }
+        if ($Value -is [System.Management.Automation.PSCustomObject]) {
+            $MapEntries = @($Value.PSObject.Properties | Where-Object {
+                $_.Name -match "^(?:source|module|objective|lesson|q|gq)-.+$"
+            })
+            $MapPropertyCount = @($Value.PSObject.Properties).Count
+            if ($MapEntries.Count -gt 0 -and $MapEntries.Count -eq $MapPropertyCount) {
+                $FoundCollection = $true
+                foreach ($Entry in $MapEntries) {
+                    [pscustomobject]@{ "__stableId" = $Entry.Name; "__record" = $Entry.Value }
+                }
+            }
+        }
+    }
+    if (-not $FoundCollection) { throw "$PayloadName has no supported top-level record collection" }
+}
+
+function Get-StableId {
+    param([object]$Record, [string]$PayloadName)
+    foreach ($Field in @("__stableId", "id", "sourceId", "questionId", "lessonId", "moduleId", "objectiveId")) {
+        $Property = $Record.PSObject.Properties[$Field]
+        if ($null -ne $Property -and -not [string]::IsNullOrWhiteSpace([string]$Property.Value)) {
+            return [string]$Property.Value
+        }
+    }
+    throw "$PayloadName contains a record without a stable ID"
+}
+
+$HtmlResponse = Invoke-WebRequest -Uri $PublicUrl
+if ($HtmlResponse.StatusCode -ne 200) { throw "Public HTML did not return HTTP 200" }
+$HtmlContentType = [string]$HtmlResponse.Headers["Content-Type"]
+if ($HtmlContentType -notmatch "(?i)^text/html(?:\s*;|$)") { throw "Public root is not HTML" }
+
+$DataRoot = (Resolve-Path study-website/data).Path
+$RequiredPayloads = @(Get-ChildItem $DataRoot -Recurse -Filter *.json -File)
+if ($RequiredPayloads.Count -eq 0) { throw "No required published JSON payloads were found" }
+foreach ($LocalFile in $RequiredPayloads) {
+    $RelativePath = [IO.Path]::GetRelativePath($DataRoot, $LocalFile.FullName).Replace("\", "/")
+    $PayloadUrl = [Uri]::new([Uri]$PublicUrl, "data/$RelativePath").AbsoluteUri
+    $Response = Invoke-WebRequest -Uri $PayloadUrl
+    if ($Response.StatusCode -ne 200) { throw "$RelativePath did not return HTTP 200" }
+    $ContentType = [string]$Response.Headers["Content-Type"]
+    if ($ContentType -notmatch "(?i)^application/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)") {
+        throw "$RelativePath did not return a JSON content type"
+    }
+    try {
+        $LocalPayload = Get-Content -Raw $LocalFile.FullName | ConvertFrom-Json -Depth 100 -NoEnumerate
+        $PublicPayload = $Response.Content | ConvertFrom-Json -Depth 100 -NoEnumerate
+    } catch { throw "$RelativePath could not be parsed as JSON: $($_.Exception.Message)" }
+    $LocalRecords = @(Get-PayloadRecords $LocalPayload $RelativePath)
+    $PublicRecords = @(Get-PayloadRecords $PublicPayload $RelativePath)
+    if ($PublicRecords.Count -ne $LocalRecords.Count) { throw "$RelativePath record count mismatch" }
+    $LocalIds = @($LocalRecords | ForEach-Object { Get-StableId $_ $RelativePath } | Sort-Object)
+    $PublicIds = @($PublicRecords | ForEach-Object { Get-StableId $_ $RelativePath } | Sort-Object)
+    if (@(Compare-Object $LocalIds $PublicIds).Count -ne 0) { throw "$RelativePath stable-ID mismatch" }
+}
 ```
 
 ## Non-destructive rollback
@@ -213,8 +321,11 @@ rewriting, or force push. First preserve evidence and identify the exact bad
 published commit and the last known-good public commit. Then:
 
 ```powershell
-$BadCommitSha = "replace-with-bad-commit-sha"
-git revert $BadCommitSha
+# Precondition: HEAD is the exact bad published commit recorded in FINAL_QA_REPORT.md.
+$RollbackSha = (git rev-parse HEAD).Trim().ToLowerInvariant()
+if ($RollbackSha -notmatch "^[0-9a-f]{40}$") { throw "Rollback SHA is not a full commit SHA" }
+git show --no-patch --format=fuller $RollbackSha
+git revert $RollbackSha
 python -B -m unittest discover -s scripts -p "test_*.py" -v
 node --test study-website/tests/*.test.mjs
 git diff --check HEAD^ HEAD
@@ -229,18 +340,32 @@ remain in `FINAL_QA_REPORT.md`.
 
 ## Final handoff summary
 
-The final message and `reports/FINAL_QA_REPORT.md` must include every field:
+The final message and `reports/FINAL_QA_REPORT.md` must include every field.
+Populate the local values from the validated configuration, committed SHA,
+reports, and the commit-bound `$Run`; never leave variable names in the final
+record:
 
-```text
-Repository: <owner/name>
-Branch: <verified branch>
-Commit: <full SHA tested and, if authorized, deployed>
-Public URL: <verified URL or not deployed>
-Counts: sources=<n>, lessons=<n>, official=<n>, generated-mcq=<n>, generated-true-false=<n>, explanations=<n>, review-items=<n>
-Review items: <stable IDs, locations, disposition, owner; or none>
-Tests: <exact commands, tool versions, pass/fail totals, evidence paths>
-Workflow run: <run ID/URL and build/deploy conclusions; or not run — awaiting explicit authorization>
-Known limitations: <specific impact and workaround; or none>
+```powershell
+$Repository = [string]$ProjectConfig.deployment.repository
+$Branch = [string]$ProjectConfig.deployment.branch
+$Commit = (git rev-parse HEAD).Trim().ToLowerInvariant()
+$VerifiedUrl = if ($DeploymentVerified) { $PublicUrl } else { "not deployed" }
+$WorkflowRunSummary = if ($DeploymentVerified) {
+    "run $RunId; commit $($Run.headSha); build/deploy success"
+} else {
+    "not run — awaiting explicit authorization"
+}
+$HandoffSummary = @"
+Repository: $Repository
+Branch: $Branch
+Commit: $Commit
+Public URL: $VerifiedUrl
+Counts: $CountsSummary
+Review items: $ReviewItemSummary
+Tests: $TestSummary
+Workflow run: $WorkflowRunSummary
+Known limitations: $KnownLimitationsSummary
+"@
 ```
 
 Also state whether the worktree was clean, whether deterministic check mode
