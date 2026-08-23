@@ -20,6 +20,8 @@ project that must present generated content as official source material.
 Read the numbered documents in filename order. Start with the project input and
 configuration, then read only the stage-specific documents needed for the work.
 
+- [Beginner guide — How to use the kit](HOW-TO-USE-THE-KIT.md)
+
 - [00 — Quick start](00-QUICK-START.md)
 - [01 — Project input template](01-PROJECT-INPUT-TEMPLATE.md)
 - [02 — PRD template](02-PRD-TEMPLATE.md)
