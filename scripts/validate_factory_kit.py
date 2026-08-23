@@ -1389,10 +1389,17 @@ def generated_question_is_mock_exam_eligible(
     approval = review.get("approval")
     return (
         isinstance(approval, dict)
+        and set(approval) == REVIEW_APPROVAL_REQUIRED_KEYS
         and approval.get("status") == "completed"
         and approval.get("decision") == "approved"
         and approval.get("reviewedRecordId") == record_id
         and approval.get("reviewedContentVersion") == content_version
+        and all(
+            isinstance(approval.get(field), str) and approval[field].strip()
+            for field in ("reviewer", "reason", "notes")
+        )
+        and isinstance(approval.get("reviewedAt"), str)
+        and bool(UTC_DATETIME.fullmatch(approval["reviewedAt"]))
     )
 
 

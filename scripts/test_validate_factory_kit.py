@@ -430,6 +430,33 @@ class FactoryKitValidatorTests(unittest.TestCase):
             errors,
         )
 
+    def test_generated_only_project_config_accepts_one_enabled_question_type(self):
+        name = "examples/project-config.example.json"
+        for disabled, enabled in (
+            ("mcqPerLesson", "trueFalsePerLesson"),
+            ("trueFalsePerLesson", "mcqPerLesson"),
+        ):
+            with self.subTest(disabled=disabled):
+                payload = self.load_example(name)
+                payload["contentPolicy"]["mode"] = "generated-only"
+                payload["questionGeneration"][disabled] = 0
+                self.assertGreater(payload["questionGeneration"][enabled], 0)
+                self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_generated_only_project_config_rejects_disabling_both_question_types(self):
+        name = "examples/project-config.example.json"
+        payload = self.load_example(name)
+        payload["contentPolicy"]["mode"] = "generated-only"
+        payload["questionGeneration"]["mcqPerLesson"] = 0
+        payload["questionGeneration"]["trueFalsePerLesson"] = 0
+
+        errors = validate_example_payload(name, payload)
+
+        self.assertIn(
+            f"{name}: questionGeneration: at least one question type must be enabled",
+            errors,
+        )
+
     def test_source_only_project_config_accepts_no_generated_question_types(self):
         name = "examples/project-config.example.json"
         payload = self.load_example(name)
@@ -1738,6 +1765,12 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
         validated = self.make_generated_question("validated")
         human_reviewed = self.make_generated_question("human-reviewed")
+        human_reviewed["review"]["approval"]["notes"] = (
+            "Eligibility review completed."
+        )
+        draft = self.make_generated_question("draft")
+        needs_review = self.make_generated_question("needs-review")
+        rejected = self.make_generated_question("rejected")
 
         cases = (
             ("validated-open-gate", validated, False, False, True, True),
@@ -1747,6 +1780,12 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ("human-required-gate", human_reviewed, True, False, True, True),
             ("human-high-stakes", human_reviewed, False, True, True, True),
             ("non-scoreable", human_reviewed, False, False, False, False),
+            ("draft-open-gate", draft, False, False, True, False),
+            ("draft-high-stakes", draft, False, True, True, False),
+            ("needs-review-open-gate", needs_review, False, False, True, False),
+            ("needs-review-high-stakes", needs_review, False, True, True, False),
+            ("rejected-open-gate", rejected, False, False, True, False),
+            ("rejected-high-stakes", rejected, False, True, True, False),
         )
         for (
             label,
@@ -1767,6 +1806,61 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     expected,
                 )
 
+    def test_mock_exam_eligibility_requires_complete_human_approval(self):
+        eligible = factory_validator.generated_question_is_mock_exam_eligible
+        base = self.make_generated_question("human-reviewed")
+        base["review"]["approval"]["notes"] = "Eligibility review completed."
+        cases = []
+
+        missing_approval = copy.deepcopy(base)
+        missing_approval["review"].pop("approval")
+        cases.append(("missing-approval", missing_approval))
+
+        malformed_approval = copy.deepcopy(base)
+        malformed_approval["review"]["approval"] = []
+        cases.append(("malformed-approval", malformed_approval))
+
+        for field in (
+            "reviewedRecordId",
+            "reviewedContentVersion",
+            "status",
+            "decision",
+            "reviewer",
+            "reviewedAt",
+            "reason",
+            "notes",
+        ):
+            missing_field = copy.deepcopy(base)
+            del missing_field["review"]["approval"][field]
+            cases.append((f"missing-{field}", missing_field))
+
+        for field, malformed_value in (
+            ("reviewedRecordId", 7),
+            ("reviewedContentVersion", "not-a-version"),
+            ("status", "pending"),
+            ("decision", "needs-review"),
+            ("reviewer", ""),
+            ("reviewedAt", "not-a-date"),
+            ("reason", ""),
+            ("notes", ""),
+        ):
+            malformed_field = copy.deepcopy(base)
+            malformed_field["review"]["approval"][field] = malformed_value
+            cases.append((f"malformed-{field}", malformed_field))
+
+        for label, record in cases:
+            for high_stakes in (False, True):
+                with self.subTest(label=label, high_stakes=high_stakes):
+                    self.assertIs(
+                        eligible(
+                            record,
+                            generated_questions_require_human_review=False,
+                            high_stakes=high_stakes,
+                            is_scoreable=True,
+                        ),
+                        False,
+                    )
+
     def test_mock_exam_eligibility_rejects_invalid_record_states(self):
         eligible = getattr(
             factory_validator,
@@ -1774,6 +1868,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             lambda *args, **kwargs: True,
         )
         base = self.make_generated_question("human-reviewed")
+        base["review"]["approval"]["notes"] = "Eligibility review completed."
         cases = []
 
         stale_version = copy.deepcopy(base)
