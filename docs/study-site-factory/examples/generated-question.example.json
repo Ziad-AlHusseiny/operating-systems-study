@@ -38,14 +38,79 @@
   },
   "evidenceMap": [
     {
-      "claimId": "claim-dhcp-relay-path",
+      "claimId": "claim-prompt-dhcp-boundary",
+      "target": "prompt",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}],
+      "support": "direct"
+    },
+    {
+      "claimId": "claim-answer-relay",
+      "target": "correctAnswer",
       "sourceRefs": [
         {"sourceId": "source-01", "locationType": "page", "location": 12},
         {"sourceId": "source-02", "locationType": "slide", "location": 5}
       ],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-rationale-relay",
+      "target": "rationale",
+      "sourceRefs": [
+        {"sourceId": "source-01", "locationType": "page", "location": 12},
+        {"sourceId": "source-02", "locationType": "slide", "location": 5}
+      ],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-option-relay",
+      "target": "options[0]",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}],
       "support": "direct"
+    },
+    {
+      "claimId": "claim-option-dns",
+      "target": "options[1]",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-option-lease",
+      "target": "options[2]",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-option-arp",
+      "target": "options[3]",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-slot-relay",
+      "target": "distractorRationales[0]",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-slot-dns",
+      "target": "distractorRationales[1]",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-slot-lease",
+      "target": "distractorRationales[2]",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}],
+      "support": "derived"
+    },
+    {
+      "claimId": "claim-slot-arp",
+      "target": "distractorRationales[3]",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}],
+      "support": "derived"
     }
   ],
+  "contentVersion": "1.0.0",
   "qualityState": "approved",
   "reviewState": "approved",
   "duplicateComparison": {

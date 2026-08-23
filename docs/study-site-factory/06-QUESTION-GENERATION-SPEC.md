@@ -8,13 +8,15 @@ The authoring field `bloomLevel` is the generation profile's name for the canoni
 
 ## Default Generation Profile
 
-For every sufficiently supported lesson, generate exactly six MCQs and four True/False items. The combined generated set targets exactly 30% easy, 50% medium, and 20% hard, and exactly 25% remember, 50% apply, and 25% analyze. Apply percentages over the release batch using deterministic largest-remainder allocation; for equal Bloom remainders, alternate the extra `remember` and `analyze` slot by lesson order so neither category is systematically favored. The four True/False answers for each fully supported lesson are balanced: exactly two True and two False, with answer order varied deterministically.
+For every sufficiently supported lesson, generate exactly six MCQs and four True/False items. For `L` sufficiently supported lessons, the full target batch has `N = 10L` questions: difficulty counts are exactly `easy = 3L`, `medium = 5L`, and `hard = 2L`. The configured 30/50/20 difficulty percentages are therefore met exactly when there is no reported shortfall.
+
+The configured 25/50/25 Bloom percentages are targets subject to whole-question allocation. The only accepted deterministic allocation is `apply = 5L`, `remember = floor(5L / 2)`, and `analyze = N - apply - remember`. When `L` is even, this is exactly 25/50/25. When `L` is odd, `analyze` receives the single indivisible residual and exceeds `remember` by exactly one question; this one-item residual is permitted and must be recorded in the quota report. Any other residual, unreported residual, or deviation without a content shortfall fails generation QA. The four True/False answers for each fully supported lesson are balanced: exactly two True and two False, with answer order varied deterministically.
 
 “Sufficiently supported” means the lesson has accepted evidence that can support the prompt, answer, rationale, and every distractor or corrected statement without outside facts. Quotas are targets, never permission to invent content.
 
 ## Quota Shortfall Report
 
-If evidence cannot safely meet a quota, emit a shortfall rather than a weak question. The report records release ID, lesson ID, objective ID, requested and produced counts by type, difficulty, and `bloomLevel`; True/False answer balance; missing slots; checked `sourceRefs`; reason code; explanation; and review owner. Reason codes include `insufficient-evidence`, `answer-ambiguity`, `duplicate`, `translation-risk`, and `review-rejection`. Release QA compares the report with the generation profile and does not silently backfill from another objective or outside sources.
+If evidence cannot safely meet a quota, emit a shortfall rather than a weak question. The report records release ID, lesson ID, objective ID, requested and produced counts by type, difficulty, and `bloomLevel`; True/False answer balance; missing slots; checked `sourceRefs`; reason code; explanation; and review owner. It also always records `integerAllocationResidual` as `0` or `1`; a value of `1` names `analyze` as the recipient and states that `L` was odd. Reason codes include `insufficient-evidence`, `answer-ambiguity`, `duplicate`, `translation-risk`, and `review-rejection`. Release QA compares the report with the generation profile and does not silently backfill from another objective or outside sources.
 
 ## MCQ Rubric
 
@@ -44,7 +46,7 @@ Every True/False item must satisfy all of these checks:
 
 ## Evidence and Ambiguity
 
-Every generated question has at least one `sourceRef` and a non-empty canonical `evidenceMap` covering the prompt claim, correct answer, rationales, and option-specific claims. A reviewer must be able to reach each claim's exact location. Translation uses the configured study language; Arabic content is `lang="ar" dir="rtl"`, while protocol names, IP addresses, commands, and option labels are isolated LTR.
+Every generated question has at least one `sourceRef` and a non-empty canonical `evidenceMap`. Each evidence entry has a non-empty `claimId`, one exact `target`, non-empty `sourceRefs`, and `support` of `direct` or `derived`. For an MCQ, the map must contain exactly one entry for every claim-bearing target: `prompt`, `correctAnswer`, `rationale`, `options[0]` through `options[3]`, and `distractorRationales[0]` through `distractorRationales[3]`. A generic question-level entry cannot satisfy this requirement. A reviewer must be able to reach each claim's exact location. Translation uses the configured study language; Arabic content is `lang="ar" dir="rtl"`, while protocol names, IP addresses, commands, and option labels are isolated LTR.
 
 Reject an item for answer ambiguity when more than one option can be defended, the answer changes under a reasonable reading, a missing condition is required, the source conflicts, or translation changes the proposition. Do not repair ambiguity by making distractors absurd. Record the rejected item and provenance.
 
@@ -54,17 +56,17 @@ Run the deterministic canonical normalization and comparison from `04-CONTENT-AN
 
 ## Review States and Canonical Mapping
 
-`review.status` is one of `draft`, `validated`, `human-reviewed`, `needs-review`, or `rejected`:
+`review.status` is one of `draft`, `validated`, `human-reviewed`, `needs-review`, or `rejected`. Generated-question records must satisfy this complete cross-field truth table:
 
-| Authoring status | Meaning and canonical effect |
-| --- | --- |
-| `draft` | Incomplete; canonical `qualityState: draft`, `reviewState: unreviewed`. |
-| `validated` | Automated rubric checks passed; canonical `qualityState: validated`, still unreviewed. |
-| `human-reviewed` | A human decision exists; only a completed approved decision for the current version can set both canonical states to `approved`. |
-| `needs-review` | An unresolved evidence, ambiguity, translation, or duplicate issue; visibly unscored. |
-| `rejected` | Retained with provenance, excluded from all scored use. |
+| `review.status` | `qualityState` | `reviewState` | `needsReview` | `review.approval` |
+| --- | --- | --- | --- | --- |
+| `draft` | `draft` | `unreviewed` | `true` | Absent. |
+| `validated` | `validated` | `unreviewed` | `true` | Absent. |
+| `human-reviewed` | `approved` | `approved` | `false` | `status: completed`, `decision: approved`. |
+| `needs-review` | `needs-review` | `needs-review` | `true` | Completed human decision `needs-review`. |
+| `rejected` | `rejected` | `rejected` | `true` | Completed human decision `rejected`. |
 
-This workflow field never replaces immutable Review approval fields (`reviewedRecordId`, `reviewedContentVersion`, canonical `status`, `decision`, `reviewer`, `reviewedAt`, `reason`, and `notes`). A stale approval does not apply to edited content.
+For every present approval, `reviewedRecordId` equals the generated question `id`, and `reviewedContentVersion` equals its top-level `contentVersion`. The full immutable Review approval fields (`reviewedRecordId`, `reviewedContentVersion`, canonical `status`, `decision`, `reviewer`, `reviewedAt`, `reason`, and `notes`) remain required by the canonical contract. A rejected or needs-review human decision therefore cannot retain approved states, and a stale or differently bound approval does not apply to edited content.
 
 ## Route Eligibility
 

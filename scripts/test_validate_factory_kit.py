@@ -20,6 +20,62 @@ class FactoryKitValidatorTests(unittest.TestCase):
     source_ref = {
         "sourceId": "source-01", "locationType": "page", "location": 12
     }
+    evidence_targets = (
+        "prompt", "correctAnswer", "rationale",
+        "options[0]", "options[1]", "options[2]", "options[3]",
+        "distractorRationales[0]", "distractorRationales[1]",
+        "distractorRationales[2]", "distractorRationales[3]",
+    )
+
+    def make_generated_question(self, review_status="human-reviewed"):
+        states = {
+            "draft": ("draft", "unreviewed", True, None),
+            "validated": ("validated", "unreviewed", True, None),
+            "human-reviewed": ("approved", "approved", False, "approved"),
+            "needs-review": (
+                "needs-review", "needs-review", True, "needs-review"
+            ),
+            "rejected": ("rejected", "rejected", True, "rejected"),
+        }
+        quality, canonical_review, needs_review, decision = states[review_status]
+        review = {"status": review_status}
+        if decision is not None:
+            review["approval"] = {
+                "status": "completed",
+                "decision": decision,
+                "reviewedRecordId": "gq-review-001",
+                "reviewedContentVersion": "1.0.0",
+            }
+        return {
+            "id": "gq-review-001",
+            "origin": "generated",
+            "type": "mcq",
+            "prompt": "Prompt",
+            "options": ["A", "B", "C", "D"],
+            "correctAnswer": 0,
+            "rationale": "Rationale",
+            "distractorRationales": ["A", "B", "C", "D"],
+            "difficulty": "medium",
+            "bloomLevel": "apply",
+            "cognitiveLevel": "apply",
+            "learningObjectiveId": "objective-review-001",
+            "sourceRefs": [self.source_ref],
+            "evidenceMap": [
+                {
+                    "claimId": f"claim-{index}",
+                    "target": target,
+                    "sourceRefs": [self.source_ref],
+                    "support": "direct",
+                }
+                for index, target in enumerate(self.evidence_targets)
+            ],
+            "contentVersion": "1.0.0",
+            "qualityState": quality,
+            "reviewState": canonical_review,
+            "needsReview": needs_review,
+            "reviewNotes": "",
+            "review": review,
+        }
 
     def make_complete_kit(self, root, source_manifest, official_question):
         for name in REQUIRED_DOCS:
@@ -96,6 +152,55 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     errors,
                 )
 
+    def test_lesson_requires_canonical_compilation_fields(self):
+        self.assertTrue({
+            "objectiveIds", "body", "needsReview", "reviewNotes"
+        }.issubset(EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"]))
+
+    def test_lesson_rejects_canonical_body_or_objective_mapping_drift(self):
+        payload = {
+            "objectiveIds": ["objective-dhcp"],
+            "learningObjectives": [{"id": "objective-dns"}],
+            "explanation": ["First paragraph.", "Second paragraph."],
+            "body": "First paragraph. Second paragraph.",
+            "recap": ["One.", "Two.", "Three."],
+            "review": {"status": "draft"},
+        }
+
+        errors = validate_example_payload(
+            "examples/lesson.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/lesson.example.json: learningObjectives: IDs must "
+            "equal objectiveIds in the same order",
+            errors,
+        )
+        self.assertIn(
+            "examples/lesson.example.json: body: must equal explanation "
+            "paragraphs joined with two newlines",
+            errors,
+        )
+
+    def test_lesson_rejects_empty_canonical_objective_ids(self):
+        errors = validate_example_payload(
+            "examples/lesson.example.json",
+            {
+                "objectiveIds": [""],
+                "learningObjectives": [{"id": ""}],
+                "explanation": ["First paragraph.", "Second paragraph."],
+                "body": "First paragraph.\n\nSecond paragraph.",
+                "recap": ["One.", "Two.", "Three."],
+                "review": {"status": "draft"},
+            },
+        )
+
+        self.assertIn(
+            "examples/lesson.example.json: learningObjectives: IDs must "
+            "equal non-empty objectiveIds in the same order",
+            errors,
+        )
+
     def test_generated_mcq_rejects_invalid_shape_and_rubric_values(self):
         payload = {
             "origin": "official",
@@ -125,6 +230,126 @@ class FactoryKitValidatorTests(unittest.TestCase):
         ):
             with self.subTest(error=error):
                 self.assertIn(error, errors)
+
+    def test_generated_question_requires_complete_claim_evidence(self):
+        payload = self.make_generated_question()
+        payload["evidenceMap"] = [{
+            "claimId": "claim-prompt",
+            "target": "prompt",
+            "sourceRefs": [self.source_ref],
+            "support": "direct",
+        }]
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap: missing "
+            "claim targets: correctAnswer, distractorRationales[0], "
+            "distractorRationales[1], distractorRationales[2], "
+            "distractorRationales[3], options[0], options[1], options[2], "
+            "options[3], rationale",
+            errors,
+        )
+
+    def test_generated_question_rejects_empty_claim_evidence_map(self):
+        payload = self.make_generated_question()
+        payload["evidenceMap"] = []
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap: must be "
+            "a non-empty array",
+            errors,
+        )
+
+    def test_generated_question_rejects_non_string_claim_target(self):
+        payload = self.make_generated_question()
+        payload["evidenceMap"][0]["target"] = []
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "invalid claim target: []",
+            errors,
+        )
+
+    def test_generated_question_enforces_review_truth_table(self):
+        mutations = (
+            (
+                "draft", "qualityState", "approved",
+                "qualityState: must be draft when review.status is draft",
+            ),
+            (
+                "validated", "reviewState", "approved",
+                "reviewState: must be unreviewed when review.status is validated",
+            ),
+            (
+                "human-reviewed", "approval.decision", "rejected",
+                "review.approval.decision: must be approved when review.status is human-reviewed",
+            ),
+            (
+                "needs-review", "approval.decision", "approved",
+                "review.approval.decision: must be needs-review when review.status is needs-review",
+            ),
+            (
+                "rejected", "needsReview", False,
+                "needsReview: must be true when review.status is rejected",
+            ),
+        )
+        name = "examples/generated-question.example.json"
+        for status, field, invalid_value, expected_suffix in mutations:
+            with self.subTest(status=status, field=field):
+                valid = self.make_generated_question(status)
+                self.assertEqual(validate_example_payload(name, valid), [])
+                invalid = self.make_generated_question(status)
+                if field == "approval.decision":
+                    invalid["review"]["approval"]["decision"] = invalid_value
+                else:
+                    invalid[field] = invalid_value
+                errors = validate_example_payload(name, invalid)
+                self.assertIn(f"{name}: {expected_suffix}", errors)
+
+    def test_generated_question_review_binds_record_and_content_version(self):
+        payload = self.make_generated_question()
+        payload["review"]["approval"]["reviewedRecordId"] = "gq-other"
+        payload["review"]["approval"]["reviewedContentVersion"] = "0.9.0"
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/generated-question.example.json: "
+            "review.approval.reviewedRecordId: must equal id",
+            errors,
+        )
+        self.assertIn(
+            "examples/generated-question.example.json: "
+            "review.approval.reviewedContentVersion: must equal contentVersion",
+            errors,
+        )
+
+    def test_generated_question_review_requires_exact_boolean_needs_review(self):
+        payload = self.make_generated_question("draft")
+        payload["needsReview"] = 1
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        self.assertIn(
+            "examples/generated-question.example.json: needsReview: must be "
+            "true when review.status is draft",
+            errors,
+        )
 
     def test_explanation_requires_true_guidance_and_two_or_three_paragraphs(self):
         cases = (

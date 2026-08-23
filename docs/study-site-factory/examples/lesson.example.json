@@ -19,7 +19,7 @@
     "Routers do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.",
     "When a capture shows repeated DHCPDISCOVER messages but no DHCPOFFER, check whether the server is reachable through a configured relay before investigating services such as DNS that act after IP configuration is available."
   ],
-  "body": "A DHCP client broadcasts DHCPDISCOVER and expects DHCPOFFER. Across a routed boundary, a configured DHCP relay forwards the exchange between the client subnet and DHCP server.",
+  "body": "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.\n\nRouters do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.\n\nWhen a capture shows repeated DHCPDISCOVER messages but no DHCPOFFER, check whether the server is reachable through a configured relay before investigating services such as DNS that act after IP configuration is available.",
   "keyTerms": [
     {
       "term": "DHCP relay",
