@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "project": {
+    "title": "Network Fundamentals Study",
+    "shortTitle": "Network Study",
+    "slug": "network-fundamentals-study",
+    "description": "A source-backed study and exam website.",
+    "brandInitials": "NF",
+    "sourceLanguage": "en",
+    "studyLanguage": "ar"
+  },
+  "contentPolicy": {
+    "mode": "source-plus-generated",
+    "allowOutsideSources": false,
+    "generatedQuestionsRequireHumanReviewForExam": true
+  },
+  "questionGeneration": {
+    "mcqPerLesson": 6,
+    "trueFalsePerLesson": 4,
+    "difficultyPercent": {"easy": 30, "medium": 50, "hard": 20},
+    "bloomPercent": {"remember": 25, "apply": 50, "analyze": 25}
+  },
+  "exam": {"defaultCount": 25, "defaultMinutes": 30},
+  "deployment": {
+    "provider": "github-pages",
+    "repository": "OWNER/REPOSITORY",
+    "branch": "master",
+    "publicUrl": "https://OWNER.github.io/REPOSITORY/"
+  }
+}
