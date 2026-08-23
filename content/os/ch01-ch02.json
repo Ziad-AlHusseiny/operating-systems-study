@@ -8398,7 +8398,7 @@
         "Poll the device until ready, discard the saved PC, and start the application again.",
         "Use PC as the interrupt-vector index, run the ISR, and restart from the first user instruction."
       ],
-      "correctAnswer": 1,
+      "correctAnswer": 0,
       "rationale": "The processor completes the current instruction, saves state, dispatches through the interrupt vector, executes the ISR, and resumes from saved state.",
       "distractorRationales": [
         "This is the complete supported control-transfer sequence.",

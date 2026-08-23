@@ -48,6 +48,50 @@ SEMANTIC_STOP_WORDS = EVIDENCE_STOP_WORDS | {
     "answer", "correct", "described", "lecture", "option", "statement",
     "system", "what", "when",
 }
+VERIFIED_MCQ_ANSWER_KEY = {
+    "gq-os-ch01-part1-001": 1,
+    "gq-os-ch01-part1-002": 2,
+    "gq-os-ch01-part1-003": 0,
+    "gq-os-ch01-part1-004": 2,
+    "gq-os-ch01-part1-005": 3,
+    "gq-os-ch01-part1-006": 0,
+    "gq-os-ch01-part2-001": 2,
+    "gq-os-ch01-part2-002": 0,
+    "gq-os-ch01-part2-003": 2,
+    "gq-os-ch01-part2-004": 1,
+    "gq-os-ch01-part2-005": 1,
+    "gq-os-ch01-part2-006": 2,
+    "gq-os-ch01-part3-001": 1,
+    "gq-os-ch01-part3-002": 0,
+    "gq-os-ch01-part3-003": 0,
+    "gq-os-ch01-part3-004": 2,
+    "gq-os-ch01-part3-005": 1,
+    "gq-os-ch01-part3-006": 0,
+    "gq-os-ch01-part4-001": 0,
+    "gq-os-ch01-part4-002": 1,
+    "gq-os-ch01-part4-003": 1,
+    "gq-os-ch01-part4-004": 1,
+    "gq-os-ch01-part4-005": 0,
+    "gq-os-ch01-part4-006": 1,
+    "gq-os-ch02-part1-001": 1,
+    "gq-os-ch02-part1-002": 0,
+    "gq-os-ch02-part1-003": 1,
+    "gq-os-ch02-part1-004": 0,
+    "gq-os-ch02-part1-005": 1,
+    "gq-os-ch02-part1-006": 1,
+    "gq-os-ch02-part2-001": 0,
+    "gq-os-ch02-part2-002": 1,
+    "gq-os-ch02-part2-003": 1,
+    "gq-os-ch02-part2-004": 1,
+    "gq-os-ch02-part2-005": 1,
+    "gq-os-ch02-part2-006": 1,
+    "gq-os-ch02-part3-001": 0,
+    "gq-os-ch02-part3-002": 0,
+    "gq-os-ch02-part3-003": 2,
+    "gq-os-ch02-part3-004": 1,
+    "gq-os-ch02-part3-005": 1,
+    "gq-os-ch02-part3-006": 1,
+}
 
 
 class OSContentPartTests(unittest.TestCase):
@@ -342,6 +386,21 @@ class OSContentPartTests(unittest.TestCase):
             uniform_option_evidence += len(set(signatures)) == 1
         self.assertLessEqual(uniform_option_evidence, 8)
         self.assertLess(direct_option_claims, option_claims)
+
+    def test_mcq_answer_indexes_match_the_manually_verified_source_oracle(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        actual = {
+            question["id"]: question["correctAnswer"]
+            for question in part["questions"]
+            if question["type"] == "mcq"
+        }
+        self.assertEqual(set(actual), set(VERIFIED_MCQ_ANSWER_KEY))
+        for question_id, expected_answer in VERIFIED_MCQ_ANSWER_KEY.items():
+            self.assertEqual(
+                actual[question_id],
+                expected_answer,
+                f"{question_id} answer index drifted from the source-verified oracle",
+            )
 
     def test_analyze_items_require_multistep_reasoning_signals(self):
         part = self.load_part("content/os/ch01-ch02.json")
