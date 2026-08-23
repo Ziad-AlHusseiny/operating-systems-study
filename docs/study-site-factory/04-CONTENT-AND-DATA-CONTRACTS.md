@@ -6,15 +6,28 @@ All records are JSON objects with exact required fields for their type; consumer
 
 ## Project Configuration
 
-| Field | Type | Rule |
+`project-config.json` has exactly the approved nested shape shown by
+`examples/project-config.example.json`. It has no top-level `projectId` field.
+`project.slug` is the unique, immutable project identifier; every downstream
+field named `projectId` must equal that slug.
+
+| Top-level field | Type | Exact rule |
 | --- | --- | --- |
-| `version` | string | Contract version. |
-| `projectId` | string | Unique project identifier. |
-| `title` | string | Learner-facing project title. |
-| `studyLanguage` | string | BCP 47 language tag. |
-| `contentPolicy` | object | Requires `officialOnly`, `generatedQuestionsEnabled`, and `reviewRequired`. |
-| `sourceFiles` | array | Configured input file paths and expected formats. |
-| `modules` | array | Ordered `module-` IDs. |
+| `version` | integer | Exactly `1`. |
+| `project` | object | Exactly `title`, `shortTitle`, `slug`, `description`, `brandInitials`, `sourceLanguage`, and `studyLanguage`. All are non-empty strings; both languages are BCP 47 tags, and `slug` is lowercase words separated by single hyphens. |
+| `contentPolicy` | object | Exactly `mode`, `allowOutsideSources`, and `generatedQuestionsRequireHumanReviewForExam`. |
+| `questionGeneration` | object | Exactly `mcqPerLesson`, `trueFalsePerLesson`, `difficultyPercent`, and `bloomPercent`. |
+| `exam` | object | Exactly positive-integer `defaultCount` and `defaultMinutes`. |
+| `deployment` | object | Exactly `provider`, `repository`, `branch`, and `publicUrl`. |
+
+`contentPolicy.mode` is exactly `source-only`, `source-plus-generated`, or
+`generated-only`; its other two fields are Booleans.
+`questionGeneration.mcqPerLesson` and `trueFalsePerLesson` are positive
+integers. `difficultyPercent` has exactly numeric `easy`, `medium`, and `hard`
+fields, while `bloomPercent` has exactly numeric `remember`, `apply`, and
+`analyze` fields. Each percentage is from 0 through 100 and each object totals
+exactly 100. `deployment.provider` is `github-pages`, `repository` uses
+`OWNER/REPOSITORY`, `branch` is non-empty, and `publicUrl` is an HTTP(S) URL.
 
 ## Source Manifest and `sourceRef`
 
@@ -106,19 +119,20 @@ Every reviewable record has `needsReview` and `reviewNotes`. Review decisions ar
 ## LocalStorage Progress
 
 The LocalStorage key is the literal prefix `study-site-progress:` followed
-immediately by the canonical `projectId` value (for example,
+immediately by the canonical `project.slug` value (for example,
 `study-site-progress:network-fundamentals-study`). Its versioned object has
 exact required fields `version`, `projectId`, `updatedAt`, `lessonProgress`,
 `questionProgress`, `bookmarks`, and `mistakes`. `lessonProgress` maps `lesson-`
 IDs to `{status, lastVisitedAt}`; `questionProgress` maps `q-`/`gq-` IDs to
 `{attempts, correctAttempts, lastAnswer, lastAttemptAt}`. Unknown versions are
-preserved or migrated explicitly, never interpreted silently.
+preserved or migrated explicitly, never interpreted silently. The stored
+`projectId` is a compatibility field whose value must equal `project.slug`.
 
 ## Sessions and Results
 
 | Record | Exact required fields | Rules |
 | --- | --- | --- |
-| Session | `id`, `projectId`, `mode`, `questionIds`, `startedAt`, `status` | `questionIds` contain only eligible, scoreable question IDs. |
+| Session | `id`, `projectId`, `mode`, `questionIds`, `startedAt`, `status` | `projectId` equals `project.slug`; `questionIds` contain only eligible, scoreable question IDs. |
 | Result | `id`, `sessionId`, `questionId`, `answer`, `isCorrect`, `scored`, `answeredAt` | `scored` is false for review items; `isCorrect` is null when unscored. |
 
 Sessions and results retain the exact question IDs and answer payloads used at the time. They may report accuracy only from records where `scored` is true.

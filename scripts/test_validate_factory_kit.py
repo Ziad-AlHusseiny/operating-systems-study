@@ -1,3 +1,4 @@
+import copy
 import json
 import shutil
 import tempfile
@@ -11,6 +12,7 @@ from scripts.validate_factory_kit import (
     collect_declared_variables,
     collect_template_variables,
     validate_generated_evidence_map,
+    validate_internal_links,
     validate_markdown_headings,
     validate_example_payload,
     validate_json_file,
@@ -20,15 +22,407 @@ from scripts.validate_factory_kit import (
 
 
 class FactoryKitValidatorTests(unittest.TestCase):
-    source_ref = {
-        "sourceId": "source-01", "locationType": "page", "location": 12
+    canonical_example_fields = {
+        "examples/project-config.example.json": (
+            "version",
+            "project",
+            "contentPolicy",
+            "questionGeneration",
+            "exam",
+            "deployment",
+        ),
+        "examples/source-manifest.example.json": ("version", "sources"),
+        "examples/lesson.example.json": (
+            "id",
+            "moduleId",
+            "objectiveIds",
+            "title",
+            "learningObjectives",
+            "summary",
+            "explanation",
+            "body",
+            "keyTerms",
+            "workedExamples",
+            "commonMistakes",
+            "examTips",
+            "recap",
+            "sourceRefs",
+            "linkedQuestionIds",
+            "needsReview",
+            "reviewNotes",
+            "review",
+        ),
+        "examples/official-question.example.json": (
+            "id",
+            "origin",
+            "type",
+            "prompt",
+            "topic",
+            "options",
+            "correctAnswer",
+            "sourceRefs",
+            "duplicateSources",
+            "officialExplanation",
+            "needsReview",
+            "reviewNotes",
+        ),
+        "examples/generated-question.example.json": (
+            "id",
+            "origin",
+            "type",
+            "prompt",
+            "topic",
+            "options",
+            "correctAnswer",
+            "rationale",
+            "distractorRationales",
+            "difficulty",
+            "bloomLevel",
+            "cognitiveLevel",
+            "learningObjectiveId",
+            "sourceRefs",
+            "generationMethod",
+            "generatedExplanationId",
+            "provenance",
+            "evidenceMap",
+            "contentVersion",
+            "qualityState",
+            "reviewState",
+            "duplicateComparison",
+            "duplicateDisposition",
+            "needsReview",
+            "reviewNotes",
+            "review",
+        ),
+        "examples/explanation.example.json": (
+            "id",
+            "questionId",
+            "language",
+            "generatedStudyGuidance",
+            "translation",
+            "explanation",
+            "body",
+            "note",
+            "sourceRefs",
+            "needsReview",
+            "reviewNotes",
+            "review",
+        ),
     }
+    nested_canonical_fields = {
+        "examples/project-config.example.json": (
+            ("project", "title"),
+            ("project", "shortTitle"),
+            ("project", "slug"),
+            ("project", "description"),
+            ("project", "brandInitials"),
+            ("project", "sourceLanguage"),
+            ("project", "studyLanguage"),
+            ("contentPolicy", "mode"),
+            ("contentPolicy", "allowOutsideSources"),
+            ("contentPolicy", "generatedQuestionsRequireHumanReviewForExam"),
+            ("questionGeneration", "mcqPerLesson"),
+            ("questionGeneration", "trueFalsePerLesson"),
+            ("questionGeneration", "difficultyPercent"),
+            ("questionGeneration", "difficultyPercent", "easy"),
+            ("questionGeneration", "difficultyPercent", "medium"),
+            ("questionGeneration", "difficultyPercent", "hard"),
+            ("questionGeneration", "bloomPercent"),
+            ("questionGeneration", "bloomPercent", "remember"),
+            ("questionGeneration", "bloomPercent", "apply"),
+            ("questionGeneration", "bloomPercent", "analyze"),
+            ("exam", "defaultCount"),
+            ("exam", "defaultMinutes"),
+            ("deployment", "provider"),
+            ("deployment", "repository"),
+            ("deployment", "branch"),
+            ("deployment", "publicUrl"),
+        ),
+        "examples/source-manifest.example.json": (
+            ("sources", 0, "id"),
+            ("sources", 0, "fileName"),
+            ("sources", 0, "format"),
+            ("sources", 0, "checksum"),
+            ("sources", 0, "pages"),
+            ("sources", 0, "status"),
+            ("sources", 0, "locations"),
+            ("sources", 0, "locations", 0, "locationType"),
+            ("sources", 0, "locations", 0, "location"),
+            ("sources", 1, "slides"),
+        ),
+        "examples/lesson.example.json": (
+            ("learningObjectives", 0, "id"),
+            ("learningObjectives", 0, "text"),
+            ("learningObjectives", 0, "sourceRefs"),
+            ("keyTerms", 0, "term"),
+            ("keyTerms", 0, "definition"),
+            ("keyTerms", 0, "sourceRefs"),
+            ("workedExamples", 0, "title"),
+            ("workedExamples", 0, "body"),
+            ("workedExamples", 0, "sourceRefs"),
+            ("commonMistakes", 0, "misconception"),
+            ("commonMistakes", 0, "correction"),
+            ("commonMistakes", 0, "sourceRefs"),
+            ("examTips", 0, "body"),
+            ("examTips", 0, "sourceRefs"),
+            ("review", "status"),
+            ("review", "approval"),
+            ("review", "approval", "reviewedRecordId"),
+            ("review", "approval", "reviewedContentVersion"),
+            ("review", "approval", "status"),
+            ("review", "approval", "decision"),
+            ("review", "approval", "reviewer"),
+            ("review", "approval", "reviewedAt"),
+            ("review", "approval", "reason"),
+            ("review", "approval", "notes"),
+        ),
+        "examples/official-question.example.json": (
+            ("sourceRefs", 0, "sourceId"),
+            ("sourceRefs", 0, "locationType"),
+            ("sourceRefs", 0, "location"),
+        ),
+        "examples/generated-question.example.json": (
+            ("provenance", "sourceRefs"),
+            ("provenance", "modelVersion"),
+            ("provenance", "promptVersion"),
+            ("evidenceMap", 0, "claimId"),
+            ("evidenceMap", 0, "target"),
+            ("evidenceMap", 0, "sourceRefs"),
+            ("evidenceMap", 0, "support"),
+            ("duplicateComparison", "algorithmVersion"),
+            ("duplicateComparison", "normalizedPrompt"),
+            ("duplicateComparison", "candidateIds"),
+            ("duplicateComparison", "matchClass"),
+            ("review", "status"),
+            ("review", "approval"),
+            ("review", "approval", "reviewedRecordId"),
+            ("review", "approval", "reviewedContentVersion"),
+            ("review", "approval", "status"),
+            ("review", "approval", "decision"),
+            ("review", "approval", "reviewer"),
+            ("review", "approval", "reviewedAt"),
+            ("review", "approval", "reason"),
+            ("review", "approval", "notes"),
+        ),
+        "examples/explanation.example.json": (
+            ("review", "status"),
+            ("review", "approval"),
+            ("review", "approval", "reviewedRecordId"),
+            ("review", "approval", "reviewedContentVersion"),
+            ("review", "approval", "status"),
+            ("review", "approval", "decision"),
+            ("review", "approval", "reviewer"),
+            ("review", "approval", "reviewedAt"),
+            ("review", "approval", "reason"),
+            ("review", "approval", "notes"),
+        ),
+    }
+    source_ref = {"sourceId": "source-01", "locationType": "page", "location": 12}
     evidence_targets = (
-        "prompt", "correctAnswer", "rationale",
-        "options[0]", "options[1]", "options[2]", "options[3]",
-        "distractorRationales[0]", "distractorRationales[1]",
-        "distractorRationales[2]", "distractorRationales[3]",
+        "prompt",
+        "correctAnswer",
+        "rationale",
+        "options[0]",
+        "options[1]",
+        "options[2]",
+        "options[3]",
+        "distractorRationales[0]",
+        "distractorRationales[1]",
+        "distractorRationales[2]",
+        "distractorRationales[3]",
     )
+
+    def load_example(self, name):
+        return json.loads(
+            Path("docs/study-site-factory", name).read_text(encoding="utf-8")
+        )
+
+    def remove_nested_field(self, payload, path):
+        container = payload
+        for part in path[:-1]:
+            container = container[part]
+        del container[path[-1]]
+
+    def test_every_example_rejects_each_missing_top_level_field(self):
+        for name, fields in self.canonical_example_fields.items():
+            for field in fields:
+                with self.subTest(name=name, field=field):
+                    payload = self.load_example(name)
+                    del payload[field]
+                    errors = validate_example_payload(name, payload)
+                    self.assertIn(
+                        f"{name}: missing required top-level keys: {field}",
+                        errors,
+                    )
+
+    def test_every_nested_canonical_field_is_required(self):
+        for name, paths in self.nested_canonical_fields.items():
+            for field_path in paths:
+                with self.subTest(name=name, field_path=field_path):
+                    payload = self.load_example(name)
+                    self.remove_nested_field(payload, field_path)
+                    self.assertTrue(
+                        validate_example_payload(name, payload),
+                        f"accepted missing canonical field {name}:{field_path}",
+                    )
+
+    def test_project_config_enforces_types_enums_and_percent_totals(self):
+        mutations = (
+            (("version",), "1"),
+            (("project", "slug"), "Not A Slug"),
+            (("project", "sourceLanguage"), ""),
+            (("contentPolicy", "mode"), "hybrid"),
+            (("contentPolicy", "allowOutsideSources"), "false"),
+            (("contentPolicy", "generatedQuestionsRequireHumanReviewForExam"), 1),
+            (("questionGeneration", "mcqPerLesson"), 0),
+            (("questionGeneration", "difficultyPercent", "hard"), 19),
+            (("questionGeneration", "bloomPercent", "remember"), "25"),
+            (("exam", "defaultMinutes"), 0),
+            (("deployment", "provider"), "automatic"),
+            (("deployment", "repository"), "missing-slash"),
+            (("deployment", "publicUrl"), "ftp://example.test"),
+        )
+        name = "examples/project-config.example.json"
+        for field_path, invalid_value in mutations:
+            with self.subTest(field_path=field_path):
+                payload = self.load_example(name)
+                container = payload
+                for part in field_path[:-1]:
+                    container = container[part]
+                container[field_path[-1]] = invalid_value
+                self.assertTrue(validate_example_payload(name, payload))
+
+    def test_project_config_rejects_unknown_nested_fields(self):
+        name = "examples/project-config.example.json"
+        for field_path in ((), ("project",), ("questionGeneration",)):
+            with self.subTest(field_path=field_path):
+                payload = self.load_example(name)
+                container = payload
+                for part in field_path:
+                    container = container[part]
+                container["unexpected"] = True
+                self.assertTrue(validate_example_payload(name, payload))
+
+    def test_every_example_rejects_unknown_top_level_fields(self):
+        for name in self.canonical_example_fields:
+            with self.subTest(name=name):
+                payload = self.load_example(name)
+                payload["unexpected"] = True
+                self.assertTrue(validate_example_payload(name, payload))
+
+    def test_source_and_evidence_collections_must_be_non_empty(self):
+        mutations = (
+            ("examples/source-manifest.example.json", ("sources",)),
+            ("examples/lesson.example.json", ("sourceRefs",)),
+            ("examples/official-question.example.json", ("sourceRefs",)),
+            ("examples/generated-question.example.json", ("sourceRefs",)),
+            ("examples/generated-question.example.json", ("evidenceMap",)),
+            (
+                "examples/generated-question.example.json",
+                ("provenance", "sourceRefs"),
+            ),
+            ("examples/explanation.example.json", ("sourceRefs",)),
+        )
+        for name, field_path in mutations:
+            with self.subTest(name=name, field_path=field_path):
+                payload = self.load_example(name)
+                container = payload
+                for part in field_path[:-1]:
+                    container = container[part]
+                container[field_path[-1]] = []
+                self.assertTrue(validate_example_payload(name, payload))
+
+    def test_question_examples_enforce_type_specific_fields(self):
+        name = "examples/official-question.example.json"
+        mutations = (
+            ("options", ["A", "B", "C"]),
+            ("correctAnswer", 4),
+            ("type", "essay"),
+        )
+        for field, value in mutations:
+            with self.subTest(field=field):
+                payload = self.load_example(name)
+                payload[field] = value
+                self.assertTrue(validate_example_payload(name, payload))
+
+    def test_complete_validation_rejects_broken_example_identity_links(self):
+        mutations = (
+            (
+                "generated-question.example.json",
+                ("generatedExplanationId",),
+                "explanation-missing",
+                "generatedExplanationId does not resolve",
+            ),
+            (
+                "explanation.example.json",
+                ("questionId",),
+                "gq-missing",
+                "questionId does not resolve",
+            ),
+            (
+                "lesson.example.json",
+                ("linkedQuestionIds",),
+                ["q-missing"],
+                "linkedQuestionIds[0] does not resolve",
+            ),
+            (
+                "official-question.example.json",
+                ("sourceRefs", 0, "sourceId"),
+                "source-missing",
+                "sourceId does not resolve",
+            ),
+        )
+        for relative, field_path, value, expected in mutations:
+            with self.subTest(relative=relative, field_path=field_path):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "factory"
+                    shutil.copytree(Path("docs/study-site-factory"), root)
+                    path = root / "examples" / relative
+                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    container = payload
+                    for part in field_path[:-1]:
+                        container = container[part]
+                    container[field_path[-1]] = value
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+
+                    errors = validate_kit(root)
+
+                self.assertTrue(
+                    any(expected in error for error in errors),
+                    f"missing linkage error {expected}: {errors}",
+                )
+
+    def test_generated_explanation_must_describe_its_owning_question(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            path = root / "examples" / "explanation.example.json"
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            payload["questionId"] = "q-001"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+
+            errors = validate_kit(root)
+
+        self.assertTrue(
+            any(
+                "explanation does not describe generated question" in error
+                for error in errors
+            )
+        )
+
+    def test_duplicate_candidate_ids_must_be_lexicographically_sorted(self):
+        name = "examples/generated-question.example.json"
+        payload = self.load_example(name)
+        payload["duplicateComparison"]["candidateIds"] = ["q-002", "q-001"]
+
+        errors = validate_example_payload(name, payload)
+
+        self.assertTrue(
+            any(
+                "candidateIds: must use lexicographic order" in error
+                for error in errors
+            )
+        )
 
     def test_complete_factory_kit_passes(self):
         root = Path("docs/study-site-factory")
@@ -36,21 +430,19 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
     def test_all_template_variables_are_declared(self):
         root = Path("docs/study-site-factory")
-        declared = collect_declared_variables(
-            root / "01-PROJECT-INPUT-TEMPLATE.md"
+        declared = collect_declared_variables(root / "01-PROJECT-INPUT-TEMPLATE.md")
+        used = set().union(
+            *(
+                collect_template_variables(path.read_text(encoding="utf-8"))
+                for path in root.glob("*.md")
+            )
         )
-        used = set().union(*(
-            collect_template_variables(path.read_text(encoding="utf-8"))
-            for path in root.glob("*.md")
-        ))
         self.assertEqual(used - declared, set())
 
     def test_bare_variable_names_are_not_declarations(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "input.md"
-            path.write_text(
-                "| `PROJECT_TITLE` | Bare name. |\n", encoding="utf-8"
-            )
+            path.write_text("| `PROJECT_TITLE` | Bare name. |\n", encoding="utf-8")
             self.assertEqual(collect_declared_variables(path), set())
 
     def test_complete_validation_reports_undeclared_template_variables(self):
@@ -62,9 +454,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
             errors = validate_kit(root)
 
-        self.assertIn(
-            "undeclared template variable: UNDECLARED_FACTORY_VALUE", errors
-        )
+        self.assertIn("undeclared template variable: UNDECLARED_FACTORY_VALUE", errors)
 
     def test_complete_validation_reports_broken_relative_links(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -99,9 +489,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
                 errors = validate_kit(root)
 
-            self.assertIn(
-                f"{root / 'README.md'}: unfinished marker: {marker}", errors
-            )
+            self.assertIn(f"{root / 'README.md'}: unfinished marker: {marker}", errors)
 
     def test_complete_validation_reports_missing_required_headings(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -117,55 +505,93 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
         self.assertIn(f"{path}: missing heading: Product Goal", errors)
 
+    def test_extra_root_markdown_receives_every_document_safety_check(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            path = root / "EXTRA.md"
+            path.write_text(
+                "{{UNDECLARED_EXTRA}}\n[Missing](missing-extra.md)\n" + "T" + "ODO\n",
+                encoding="utf-8",
+            )
+
+            errors = validate_kit(root)
+
+        self.assertIn("undeclared template variable: UNDECLARED_EXTRA", errors)
+        self.assertIn(f"{path}: broken relative link: missing-extra.md", errors)
+        self.assertIn(f"{path}: unfinished marker: {'T' + 'ODO'}", errors)
+
+    def test_internal_links_enforce_root_containment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            root = parent / "repository"
+            root.mkdir()
+            (root / "inside.md").write_text("# Inside\n", encoding="utf-8")
+            (parent / "outside.md").write_text("# Outside\n", encoding="utf-8")
+            (root / "nested").mkdir()
+            path = root / "nested" / "links.md"
+            targets = (
+                "../inside.md",
+                "../../outside.md",
+                "C:/Windows/System32/drivers/etc/hosts",
+                "\\\\server\\share\\file.md",
+                "/Windows/System32/drivers/etc/hosts",
+            )
+            path.write_text(
+                "\n".join(f"[Target]({target})" for target in targets),
+                encoding="utf-8",
+            )
+
+            errors = validate_internal_links(root, [path])
+
+        self.assertNotIn(f"{path}: unsafe link target: ../inside.md", errors)
+        for target in targets[1:]:
+            with self.subTest(target=target):
+                self.assertIn(f"{path}: unsafe link target: {target}", errors)
+
+    def test_invalid_utf8_markdown_is_reported_and_validation_continues(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            path = root / "01-PROJECT-INPUT-TEMPLATE.md"
+            path.write_bytes(b"\xff\xfe")
+
+            try:
+                errors = validate_kit(root)
+            except UnicodeError as error:
+                self.fail(f"validation raised instead of aggregating: {error}")
+
+        self.assertTrue(
+            any(
+                str(path) in error and "cannot read Markdown" in error
+                for error in errors
+            )
+        )
+
     def make_generated_question(self, review_status="human-reviewed"):
         states = {
             "draft": ("draft", "unreviewed", True, None),
             "validated": ("validated", "unreviewed", True, None),
             "human-reviewed": ("approved", "approved", False, "approved"),
-            "needs-review": (
-                "needs-review", "needs-review", True, "needs-review"
-            ),
+            "needs-review": ("needs-review", "needs-review", True, "needs-review"),
             "rejected": ("rejected", "rejected", True, "rejected"),
         }
         quality, canonical_review, needs_review, decision = states[review_status]
+        payload = self.load_example("examples/generated-question.example.json")
         review = {"status": review_status}
         if decision is not None:
-            review["approval"] = {
-                "status": "completed",
-                "decision": decision,
-                "reviewedRecordId": "gq-review-001",
-                "reviewedContentVersion": "1.0.0",
+            approval = copy.deepcopy(payload["review"]["approval"])
+            approval["decision"] = decision
+            review["approval"] = approval
+        payload.update(
+            {
+                "qualityState": quality,
+                "reviewState": canonical_review,
+                "needsReview": needs_review,
+                "review": review,
             }
-        return {
-            "id": "gq-review-001",
-            "origin": "generated",
-            "type": "mcq",
-            "prompt": "Prompt",
-            "options": ["A", "B", "C", "D"],
-            "correctAnswer": 0,
-            "rationale": "Rationale",
-            "distractorRationales": ["A", "B", "C", "D"],
-            "difficulty": "medium",
-            "bloomLevel": "apply",
-            "cognitiveLevel": "apply",
-            "learningObjectiveId": "objective-review-001",
-            "sourceRefs": [self.source_ref],
-            "evidenceMap": [
-                {
-                    "claimId": f"claim-{index}",
-                    "target": target,
-                    "sourceRefs": [self.source_ref],
-                    "support": "direct",
-                }
-                for index, target in enumerate(self.evidence_targets)
-            ],
-            "contentVersion": "1.0.0",
-            "qualityState": quality,
-            "reviewState": canonical_review,
-            "needsReview": needs_review,
-            "reviewNotes": "",
-            "review": review,
-        }
+        )
+        return payload
 
     def validate_mutated_evidence_source_refs(self, source_refs):
         payload = self.make_generated_question()
@@ -190,16 +616,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
         root = Path("docs/study-site-factory")
         for relative, required in EXAMPLE_REQUIRED_KEYS.items():
             with self.subTest(relative=relative):
-                payload = json.loads(
-                    (root / relative).read_text(encoding="utf-8")
-                )
+                payload = json.loads((root / relative).read_text(encoding="utf-8"))
                 self.assertTrue(required.issubset(payload))
 
     def test_generated_mcq_example_has_complete_answer_contract(self):
         payload = json.loads(
             Path(
-                "docs/study-site-factory/examples/"
-                "generated-question.example.json"
+                "docs/study-site-factory/examples/generated-question.example.json"
             ).read_text(encoding="utf-8")
         )
 
@@ -211,9 +634,11 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertGreaterEqual(len(payload["sourceRefs"]), 1)
 
     def test_lesson_rejects_explanation_outside_two_to_five_paragraphs(self):
-        for explanation in (["Only one."], ["One.", "", "Three."], [
-            "One.", "Two.", "Three.", "Four.", "Five.", "Six."
-        ]):
+        for explanation in (
+            ["Only one."],
+            ["One.", "", "Three."],
+            ["One.", "Two.", "Three.", "Four.", "Five.", "Six."],
+        ):
             with self.subTest(explanation=explanation):
                 errors = validate_example_payload(
                     "examples/lesson.example.json",
@@ -230,10 +655,11 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 )
 
     def test_lesson_rejects_recap_outside_three_to_seven_points(self):
-        for recap in (["One.", "Two."], ["One.", "", "Three."], [
-            "One.", "Two.", "Three.", "Four.", "Five.", "Six.",
-            "Seven.", "Eight."
-        ]):
+        for recap in (
+            ["One.", "Two."],
+            ["One.", "", "Three."],
+            ["One.", "Two.", "Three.", "Four.", "Five.", "Six.", "Seven.", "Eight."],
+        ):
             with self.subTest(recap=recap):
                 errors = validate_example_payload(
                     "examples/lesson.example.json",
@@ -250,9 +676,11 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 )
 
     def test_lesson_requires_canonical_compilation_fields(self):
-        self.assertTrue({
-            "objectiveIds", "body", "needsReview", "reviewNotes"
-        }.issubset(EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"]))
+        self.assertTrue(
+            {"objectiveIds", "body", "needsReview", "reviewNotes"}.issubset(
+                EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"]
+            )
+        )
 
     def test_lesson_rejects_canonical_body_or_objective_mapping_drift(self):
         payload = {
@@ -264,9 +692,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "review": {"status": "draft"},
         }
 
-        errors = validate_example_payload(
-            "examples/lesson.example.json", payload
-        )
+        errors = validate_example_payload("examples/lesson.example.json", payload)
 
         self.assertIn(
             "examples/lesson.example.json: learningObjectives: IDs must "
@@ -330,12 +756,14 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
     def test_generated_question_requires_complete_claim_evidence(self):
         payload = self.make_generated_question()
-        payload["evidenceMap"] = [{
-            "claimId": "claim-prompt",
-            "target": "prompt",
-            "sourceRefs": [self.source_ref],
-            "support": "direct",
-        }]
+        payload["evidenceMap"] = [
+            {
+                "claimId": "claim-prompt",
+                "target": "prompt",
+                "sourceRefs": [self.source_ref],
+                "support": "direct",
+            }
+        ]
 
         errors = validate_example_payload(
             "examples/generated-question.example.json", payload
@@ -395,9 +823,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
 
     def test_generated_evidence_rejects_non_object_source_reference(self):
-        errors = self.validate_mutated_evidence_source_refs(
-            ["not-a-reference"]
-        )
+        errors = self.validate_mutated_evidence_source_refs(["not-a-reference"])
         self.assertIn(
             "examples/generated-question.example.json: evidenceMap[0]: "
             "sourceRefs[0]: source reference must be an object",
@@ -414,11 +840,15 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
 
     def test_generated_evidence_rejects_invalid_source_location_type(self):
-        errors = self.validate_mutated_evidence_source_refs([{
-            "sourceId": "source-01",
-            "locationType": "chapter",
-            "location": 12,
-        }])
+        errors = self.validate_mutated_evidence_source_refs(
+            [
+                {
+                    "sourceId": "source-01",
+                    "locationType": "chapter",
+                    "location": 12,
+                }
+            ]
+        )
         self.assertIn(
             "examples/generated-question.example.json: evidenceMap[0]: "
             "sourceRefs[0]: invalid locationType: chapter",
@@ -428,23 +858,33 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def test_generated_question_enforces_review_truth_table(self):
         mutations = (
             (
-                "draft", "qualityState", "approved",
+                "draft",
+                "qualityState",
+                "approved",
                 "qualityState: must be draft when review.status is draft",
             ),
             (
-                "validated", "reviewState", "approved",
+                "validated",
+                "reviewState",
+                "approved",
                 "reviewState: must be unreviewed when review.status is validated",
             ),
             (
-                "human-reviewed", "approval.decision", "rejected",
+                "human-reviewed",
+                "approval.decision",
+                "rejected",
                 "review.approval.decision: must be approved when review.status is human-reviewed",
             ),
             (
-                "needs-review", "approval.decision", "approved",
+                "needs-review",
+                "approval.decision",
+                "approved",
                 "review.approval.decision: must be needs-review when review.status is needs-review",
             ),
             (
-                "rejected", "needsReview", False,
+                "rejected",
+                "needsReview",
+                False,
                 "needsReview: must be true when review.status is rejected",
             ),
         )
@@ -538,10 +978,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 "review": {"status": "approved"},
             },
             "examples/generated-question.example.json": {
-                "origin": "generated", "type": "mcq",
-                "options": ["A", "B", "C", "D"], "correctAnswer": 0,
+                "origin": "generated",
+                "type": "mcq",
+                "options": ["A", "B", "C", "D"],
+                "correctAnswer": 0,
                 "distractorRationales": ["A", "B", "C", "D"],
-                "difficulty": "medium", "bloomLevel": "apply",
+                "difficulty": "medium",
+                "bloomLevel": "apply",
                 "sourceRefs": [self.source_ref],
                 "review": {"status": "approved"},
             },
@@ -555,9 +998,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
         for name, payload in fixtures.items():
             with self.subTest(name=name):
                 errors = validate_example_payload(name, payload)
-                self.assertIn(
-                    f"{name}: review.status: invalid value: approved", errors
-                )
+                self.assertIn(f"{name}: review.status: invalid value: approved", errors)
 
     def test_reports_missing_top_level_keys_in_required_examples(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -566,9 +1007,15 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 root,
                 {"sources": []},
                 {
-                    "id": "q-001", "origin": "official", "type": "mcq",
-                    "prompt": "Prompt", "topic": "Topic", "correctAnswer": 0,
-                    "sourceRefs": [], "needsReview": False, "reviewNotes": "",
+                    "id": "q-001",
+                    "origin": "official",
+                    "type": "mcq",
+                    "prompt": "Prompt",
+                    "topic": "Topic",
+                    "correctAnswer": 0,
+                    "sourceRefs": [],
+                    "needsReview": False,
+                    "reviewNotes": "",
                 },
             )
             errors = validate_kit(root)
@@ -585,12 +1032,21 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 root,
                 {"version": "1.0", "sources": []},
                 {
-                    "id": "q-001", "origin": "official", "type": "mcq",
-                    "prompt": "Prompt", "topic": "Topic", "correctAnswer": 0,
+                    "id": "q-001",
+                    "origin": "official",
+                    "type": "mcq",
+                    "prompt": "Prompt",
+                    "topic": "Topic",
+                    "correctAnswer": 0,
                     "sourceRefs": [
-                        {"sourceId": "source-01", "locationType": "chapter", "location": 1}
+                        {
+                            "sourceId": "source-01",
+                            "locationType": "chapter",
+                            "location": 1,
+                        }
                     ],
-                    "needsReview": False, "reviewNotes": "",
+                    "needsReview": False,
+                    "reviewNotes": "",
                 },
             )
             errors = validate_kit(root)
@@ -623,26 +1079,35 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
     def test_prd_contains_complete_product_contract(self):
         path = Path("docs/study-site-factory/02-PRD-TEMPLATE.md")
-        errors = validate_markdown_headings(path, (
-            "Product Goal",
-            "Users and Jobs",
-            "Content Modes",
-            "Functional Requirements",
-            "Material Requirements",
-            "Question Requirements",
-            "Persistence",
-            "Non-Functional Requirements",
-            "Acceptance Criteria",
-        ))
+        errors = validate_markdown_headings(
+            path,
+            (
+                "Product Goal",
+                "Users and Jobs",
+                "Content Modes",
+                "Functional Requirements",
+                "Material Requirements",
+                "Question Requirements",
+                "Persistence",
+                "Non-Functional Requirements",
+                "Acceptance Criteria",
+            ),
+        )
         self.assertEqual(errors, [])
 
     def test_ux_document_contains_every_route(self):
         path = Path("docs/study-site-factory/07-UX-AND-SYSTEM-FLOW.md")
         text = path.read_text(encoding="utf-8")
         routes = (
-            "Dashboard", "Material", "Practice", "Mock Exam",
-            "Question Bank", "Question Explanations", "Revision Summary",
-            "Mistakes", "Bookmarks",
+            "Dashboard",
+            "Material",
+            "Practice",
+            "Mock Exam",
+            "Question Bank",
+            "Question Explanations",
+            "Revision Summary",
+            "Mistakes",
+            "Bookmarks",
         )
         for route in routes:
             self.assertIn(route, text)
@@ -666,17 +1131,17 @@ class FactoryKitValidatorTests(unittest.TestCase):
         path = Path("docs/study-site-factory/08-BUILD-WORKFLOW.md")
         text = path.read_text(encoding="utf-8")
         artifacts = (
-            "SOURCE_AUDIT_REPORT.md", "CONTENT_COVERAGE_REPORT.md",
-            "QUESTION_QUALITY_REPORT.md", "FINAL_QA_REPORT.md",
+            "SOURCE_AUDIT_REPORT.md",
+            "CONTENT_COVERAGE_REPORT.md",
+            "QUESTION_QUALITY_REPORT.md",
+            "FINAL_QA_REPORT.md",
             "progress-ledger.md",
         )
         for artifact in artifacts:
             self.assertIn(artifact, text)
 
     def test_deployment_monitoring_is_bound_to_verified_commit(self):
-        for relative in (
-            "09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"
-        ):
+        for relative in ("09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"):
             with self.subTest(relative=relative):
                 text = Path("docs/study-site-factory", relative).read_text(
                     encoding="utf-8"
@@ -688,15 +1153,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     "--event workflow_dispatch",
                     "--json headSha,conclusion,jobs",
                     "$Run.headSha -ne $ExpectedSha",
-                    "$Run.conclusion -ne \"success\"",
-                    "$RequiredJobs = @(\"build\", \"deploy\")",
+                    '$Run.conclusion -ne "success"',
+                    '$RequiredJobs = @("build", "deploy")',
                 ):
                     self.assertIn(contract, text)
 
     def test_public_verification_checks_every_published_json_payload(self):
-        for relative in (
-            "09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"
-        ):
+        for relative in ("09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"):
             with self.subTest(relative=relative):
                 text = Path("docs/study-site-factory", relative).read_text(
                     encoding="utf-8"
@@ -728,29 +1191,32 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 )
 
     def test_final_handoff_assigns_all_runtime_values_before_use(self):
-        text = Path(
-            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md").read_text(
+            encoding="utf-8"
+        )
         section = text.split("## Final handoff summary", 1)[1]
         block = section.split("```powershell", 1)[1].split("```", 1)[0]
 
         for name in (
-            "DeploymentVerified", "CountsSummary", "ReviewItemSummary",
-            "TestSummary", "KnownLimitationsSummary",
+            "DeploymentVerified",
+            "CountsSummary",
+            "ReviewItemSummary",
+            "TestSummary",
+            "KnownLimitationsSummary",
         ):
             with self.subTest(name=name):
                 reference = f"${name}"
                 assignment = f"{reference} ="
                 self.assertIn(assignment, block)
                 self.assertEqual(block.find(reference), block.find(assignment))
-                self.assertIn(reference, block[block.find(assignment) + len(
-                    assignment
-                ):])
+                self.assertIn(
+                    reference, block[block.find(assignment) + len(assignment) :]
+                )
 
     def test_final_handoff_compares_every_committed_evidence_path_to_head(self):
-        text = Path(
-            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md").read_text(
+            encoding="utf-8"
+        )
         section = text.split("## Final handoff summary", 1)[1]
         block = section.split("```powershell", 1)[1].split("```", 1)[0]
 
@@ -790,8 +1256,14 @@ class FactoryKitValidatorTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("## Material Sections", text)
         for field in (
-            "`summaries`", "`terms`", "`examples`", "`mistakes`",
-            "`examTips`", "`recaps`", "`sourceRefs`", "`linkedQuestionIds`",
+            "`summaries`",
+            "`terms`",
+            "`examples`",
+            "`mistakes`",
+            "`examTips`",
+            "`recaps`",
+            "`sourceRefs`",
+            "`linkedQuestionIds`",
         ):
             self.assertIn(field, text)
 
@@ -801,8 +1273,12 @@ class FactoryKitValidatorTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("## Generated Question Quality and Duplication", text)
         for field in (
-            "`difficulty`", "`cognitiveLevel`", "`evidenceMap`",
-            "`qualityState`", "`reviewState`", "`duplicateComparison`",
+            "`difficulty`",
+            "`cognitiveLevel`",
+            "`evidenceMap`",
+            "`qualityState`",
+            "`reviewState`",
+            "`duplicateComparison`",
             "`duplicateDisposition`",
         ):
             self.assertIn(field, text)
@@ -815,12 +1291,19 @@ class FactoryKitValidatorTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("| Review approval |", text)
         for field in (
-            "`status`", "`decision`", "`reviewer`", "`reviewedAt`",
-            "`reason`", "`notes`", "`reviewedRecordId`",
+            "`status`",
+            "`decision`",
+            "`reviewer`",
+            "`reviewedAt`",
+            "`reason`",
+            "`notes`",
+            "`reviewedRecordId`",
             "`reviewedContentVersion`",
         ):
             self.assertIn(field, text)
-        self.assertIn("only when both `qualityState` and `reviewState` are `approved`", text)
+        self.assertIn(
+            "only when both `qualityState` and `reviewState` are `approved`", text
+        )
 
 
 if __name__ == "__main__":
