@@ -107,6 +107,19 @@ def validate_source_reference(reference: object, path: str) -> list[str]:
     return errors
 
 
+def validate_source_reference_list(
+    value: object, path: str, *, require_non_empty: bool = False
+) -> list[str]:
+    if not isinstance(value, list) or (require_non_empty and not value):
+        requirement = "a non-empty array" if require_non_empty else "an array"
+        return [f"{path}: must be {requirement}"]
+    return [
+        error
+        for index, reference in enumerate(value)
+        for error in validate_source_reference(reference, f"{path}[{index}]")
+    ]
+
+
 def validate_source_references(payload: object, path: str) -> list[str]:
     if isinstance(payload, list):
         return [
@@ -121,13 +134,7 @@ def validate_source_references(payload: object, path: str) -> list[str]:
     for key, value in payload.items():
         key_path = f"{path}: {key}"
         if key == "sourceRefs":
-            if not isinstance(value, list):
-                errors.append(f"{key_path}: must be an array")
-            else:
-                for index, reference in enumerate(value):
-                    errors.extend(
-                        validate_source_reference(reference, f"{key_path}[{index}]")
-                    )
+            errors.extend(validate_source_reference_list(value, key_path))
         elif key == "sourceRef":
             errors.extend(validate_source_reference(value, key_path))
         errors.extend(validate_source_references(value, key_path))
@@ -221,8 +228,11 @@ def validate_generated_evidence_map(payload: dict, name: str) -> list[str]:
             errors.append(f"{path}: invalid claim target: {target}")
         if not isinstance(evidence.get("claimId"), str) or not evidence["claimId"].strip():
             errors.append(f"{path}: claimId must be a non-empty string")
-        if not evidence.get("sourceRefs"):
-            errors.append(f"{path}: sourceRefs must be a non-empty array")
+        errors.extend(validate_source_reference_list(
+            evidence.get("sourceRefs"),
+            f"{path}: sourceRefs",
+            require_non_empty=True,
+        ))
         if evidence.get("support") not in {"direct", "derived"}:
             errors.append(f"{path}: support must be direct or derived")
 
@@ -379,7 +389,12 @@ def validate_example_payload(name: str, payload: object) -> list[str]:
     }
     if name in generated_validators:
         errors.extend(generated_validators[name](payload, name))
-    errors.extend(validate_source_references(payload, name))
+    source_payload = payload
+    if name == "examples/generated-question.example.json":
+        source_payload = {
+            key: value for key, value in payload.items() if key != "evidenceMap"
+        }
+    errors.extend(validate_source_references(source_payload, name))
     return errors
 
 

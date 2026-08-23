@@ -8,6 +8,7 @@ from scripts.validate_factory_kit import (
     REQUIRED_DOCS,
     REQUIRED_EXAMPLES,
     collect_template_variables,
+    validate_generated_evidence_map,
     validate_markdown_headings,
     validate_example_payload,
     validate_json_file,
@@ -76,6 +77,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "reviewNotes": "",
             "review": review,
         }
+
+    def validate_mutated_evidence_source_refs(self, source_refs):
+        payload = self.make_generated_question()
+        payload["evidenceMap"][0]["sourceRefs"] = source_refs
+        return validate_generated_evidence_map(
+            payload, "examples/generated-question.example.json"
+        )
 
     def make_complete_kit(self, root, source_manifest, official_question):
         for name in REQUIRED_DOCS:
@@ -278,6 +286,53 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertIn(
             "examples/generated-question.example.json: evidenceMap[0]: "
             "invalid claim target: []",
+            errors,
+        )
+
+    def test_generated_evidence_rejects_non_list_source_refs(self):
+        errors = self.validate_mutated_evidence_source_refs("not-a-list")
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "sourceRefs: must be a non-empty array",
+            errors,
+        )
+
+    def test_generated_evidence_rejects_empty_source_refs(self):
+        errors = self.validate_mutated_evidence_source_refs([])
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "sourceRefs: must be a non-empty array",
+            errors,
+        )
+
+    def test_generated_evidence_rejects_non_object_source_reference(self):
+        errors = self.validate_mutated_evidence_source_refs(
+            ["not-a-reference"]
+        )
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "sourceRefs[0]: source reference must be an object",
+            errors,
+        )
+
+    def test_generated_evidence_rejects_missing_source_reference_fields(self):
+        errors = self.validate_mutated_evidence_source_refs([{}])
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "sourceRefs[0]: missing required keys: location, locationType, "
+            "sourceId",
+            errors,
+        )
+
+    def test_generated_evidence_rejects_invalid_source_location_type(self):
+        errors = self.validate_mutated_evidence_source_refs([{
+            "sourceId": "source-01",
+            "locationType": "chapter",
+            "location": 12,
+        }])
+        self.assertIn(
+            "examples/generated-question.example.json: evidenceMap[0]: "
+            "sourceRefs[0]: invalid locationType: chapter",
             errors,
         )
 
