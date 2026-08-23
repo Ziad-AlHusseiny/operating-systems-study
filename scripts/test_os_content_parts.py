@@ -1,0 +1,336 @@
+import hashlib
+import json
+import re
+import unittest
+import unicodedata
+from collections import Counter
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+EXTRACTION_PATH = ROOT / "extraction" / "os-pages.json"
+MANIFEST_PATH = ROOT / "content" / "source-manifest.json"
+
+PART_KEYS = {"version", "modules", "lessons", "questions", "explanations"}
+MODULE_KEYS = {"id", "title", "order", "objectiveIds", "sourceRefs"}
+LESSON_KEYS = {
+    "id", "moduleId", "objectiveIds", "title", "contentVersion",
+    "materialSectionIds", "learningObjectives", "materialSections",
+    "needsReview", "reviewNotes", "review",
+}
+OBJECTIVE_KEYS = {"id", "moduleId", "text", "order", "sourceRefs"}
+SECTION_KEYS = {
+    "id", "order", "title", "origin", "label", "generatedStudyGuidance",
+    "summary", "explanation", "body", "keyTerms", "workedExamples",
+    "commonMistakes", "examTips", "recap", "sourceRefs",
+    "linkedQuestionIds", "needsReview", "reviewNotes",
+}
+QUESTION_COMMON_KEYS = {
+    "id", "origin", "type", "prompt", "topic", "correctAnswer", "rationale",
+    "difficulty", "bloomLevel", "cognitiveLevel", "learningObjectiveId",
+    "sourceRefs", "generationMethod", "generatedExplanationId", "provenance",
+    "evidenceMap", "contentVersion", "qualityState", "reviewState",
+    "duplicateComparison", "duplicateDisposition", "needsReview", "reviewNotes",
+    "review",
+}
+EXPLANATION_KEYS = {
+    "id", "questionId", "language", "generatedStudyGuidance", "translation",
+    "explanation", "body", "note", "contentVersion", "sourceRefs",
+    "needsReview", "reviewNotes", "review",
+}
+ARABIC_RE = re.compile(r"[\u0600-\u06ff]")
+
+
+class OSContentPartTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.extraction = json.loads(EXTRACTION_PATH.read_text(encoding="utf-8"))
+        cls.manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+
+    def load_part(self, relative_path):
+        return json.loads((ROOT / relative_path).read_text(encoding="utf-8"))
+
+    def existing_parts(self):
+        content_dir = ROOT / "content" / "os"
+        if not content_dir.exists():
+            return []
+        return [json.loads(path.read_text(encoding="utf-8")) for path in sorted(content_dir.glob("*.json"))]
+
+    def assert_all_teaching_pages_covered(self, part, source_ids):
+        expected = {
+            (page["sourceId"], page["page"])
+            for page in self.extraction["pages"]
+            if page["sourceId"] in source_ids and page["classification"] == "teaching"
+        }
+        actual = {
+            (ref["sourceId"], ref["location"])
+            for lesson in part["lessons"]
+            for section in lesson["materialSections"]
+            for ref in section["sourceRefs"]
+            if ref["sourceId"] in source_ids and ref["locationType"] == "page"
+        }
+        self.assertEqual(actual, expected)
+
+    def iter_source_refs(self, value):
+        if isinstance(value, dict):
+            if {"sourceId", "locationType", "location"}.issubset(value):
+                yield value
+            for child in value.values():
+                yield from self.iter_source_refs(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from self.iter_source_refs(child)
+
+    def normalized_prompt(self, value):
+        value = unicodedata.normalize("NFKC", value).strip().casefold()
+        value = "".join(character if not unicodedata.category(character).startswith("P") else " " for character in value)
+        return re.sub(r"\s+", " ", value).strip()
+
+    def questions_for_lesson(self, part, lesson_id):
+        prefix = lesson_id.replace("lesson-", "gq-") + "-"
+        return [question for question in part["questions"] if question["id"].startswith(prefix)]
+
+    def test_chapters_one_and_two_have_seven_traceable_lessons(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        self.assertEqual([module["id"] for module in part["modules"]], ["module-os-ch01", "module-os-ch02"])
+        expected_lessons = [
+            ("lesson-os-ch01-part1", "os-lec-01"),
+            ("lesson-os-ch01-part2", "os-lec-02"),
+            ("lesson-os-ch01-part3", "os-lec-03"),
+            ("lesson-os-ch01-part4", "os-lec-04"),
+            ("lesson-os-ch02-part1", "os-lec-05"),
+            ("lesson-os-ch02-part2", "os-lec-06"),
+            ("lesson-os-ch02-part3", "os-lec-07"),
+        ]
+        self.assertEqual([lesson["id"] for lesson in part["lessons"]], [item[0] for item in expected_lessons])
+        for lesson, (_, source_id) in zip(part["lessons"], expected_lessons):
+            lesson_source_ids = {
+                source_ref["sourceId"]
+                for source_ref in self.iter_source_refs(lesson)
+            }
+            self.assertEqual(lesson_source_ids, {source_id})
+        self.assert_all_teaching_pages_covered(part, {f"os-lec-{n:02d}" for n in range(1, 8)})
+
+    def test_every_generated_question_has_separate_arabic_guidance(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        explanations = {item["questionId"]: item for item in part["explanations"]}
+        self.assertEqual(len(part["questions"]), 70)
+        for question in part["questions"]:
+            self.assertEqual(question["origin"], "generated")
+            self.assertIn(question["id"], explanations)
+            self.assertIn(len(explanations[question["id"]]["explanation"]), (2, 3))
+
+    def test_part_and_authoring_records_use_exact_canonical_shapes(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        self.assertEqual(set(part), PART_KEYS)
+        self.assertEqual(part["version"], "1.0")
+        for module in part["modules"]:
+            self.assertEqual(set(module), MODULE_KEYS)
+            self.assertTrue(module["id"].startswith("module-"))
+        for lesson in part["lessons"]:
+            self.assertEqual(set(lesson), LESSON_KEYS)
+            self.assertTrue(lesson["id"].startswith("lesson-"))
+            self.assertEqual(lesson["contentVersion"], "1.0.0")
+            self.assertEqual(lesson["materialSectionIds"], [section["id"] for section in lesson["materialSections"]])
+            self.assertEqual(lesson["objectiveIds"], [objective["id"] for objective in lesson["learningObjectives"]])
+            for objective in lesson["learningObjectives"]:
+                self.assertEqual(set(objective), OBJECTIVE_KEYS)
+                self.assertTrue(objective["id"].startswith("objective-"))
+                self.assertEqual(objective["moduleId"], lesson["moduleId"])
+                self.assertGreaterEqual(len(objective["sourceRefs"]), 1)
+            self.assertGreaterEqual(len(lesson["learningObjectives"]), 3)
+            origins = set()
+            for expected_order, section in enumerate(lesson["materialSections"], 1):
+                self.assertEqual(set(section), SECTION_KEYS)
+                self.assertTrue(section["id"].startswith("material-section-"))
+                self.assertEqual(section["order"], expected_order)
+                origins.add(section["origin"])
+                expected_label = "Source material" if section["origin"] == "source" else "Generated study guidance"
+                self.assertEqual(section["label"], expected_label)
+                self.assertEqual(section["generatedStudyGuidance"], section["origin"] == "generated")
+                self.assertIn(len(section["explanation"]), range(2, 6))
+                self.assertEqual(section["body"], "\n\n".join(section["explanation"]))
+                self.assertIn(len(section["recap"]), range(3, 8))
+                self.assertGreaterEqual(len(section["sourceRefs"]), 1)
+                for item in section["keyTerms"]:
+                    self.assertEqual(set(item), {"term", "definition", "sourceRefs"})
+                    self.assertTrue(item["sourceRefs"])
+                for item in section["workedExamples"]:
+                    self.assertEqual(set(item), {"title", "body", "sourceRefs"})
+                    self.assertTrue(item["sourceRefs"])
+                for item in section["commonMistakes"]:
+                    self.assertEqual(set(item), {"misconception", "correction", "sourceRefs"})
+                    self.assertTrue(item["sourceRefs"])
+                for item in section["examTips"]:
+                    self.assertEqual(set(item), {"body", "sourceRefs"})
+                    self.assertTrue(item["sourceRefs"])
+            self.assertEqual(origins, {"source", "generated"})
+            for field in ("keyTerms", "workedExamples", "commonMistakes", "examTips"):
+                self.assertTrue(any(section[field] for section in lesson["materialSections"]), f"{lesson['id']} lacks {field}")
+
+    def test_source_references_resolve_within_teaching_page_bounds(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        sources = {source["id"]: source for source in self.manifest["sources"]}
+        classifications = {
+            (page["sourceId"], page["page"]): page["classification"]
+            for page in self.extraction["pages"]
+        }
+        all_refs = list(self.iter_source_refs(part))
+        self.assertTrue(all_refs)
+        for source_ref in all_refs:
+            self.assertEqual(set(source_ref), {"sourceId", "locationType", "location"})
+            self.assertIn(source_ref["sourceId"], sources)
+            self.assertEqual(source_ref["locationType"], "page")
+            self.assertIn(source_ref["location"], range(1, sources[source_ref["sourceId"]]["pages"] + 1))
+            self.assertEqual(classifications[(source_ref["sourceId"], source_ref["location"])], "teaching")
+
+    def test_module_objectives_and_lesson_question_links_resolve_in_order(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        question_ids = {question["id"] for question in part["questions"]}
+        for module in part["modules"]:
+            module_lessons = [lesson for lesson in part["lessons"] if lesson["moduleId"] == module["id"]]
+            expected_objectives = [objective["id"] for lesson in module_lessons for objective in lesson["learningObjectives"]]
+            self.assertEqual(module["objectiveIds"], expected_objectives)
+            orders = [objective["order"] for lesson in module_lessons for objective in lesson["learningObjectives"]]
+            self.assertEqual(orders, list(range(1, len(orders) + 1)))
+        for lesson in part["lessons"]:
+            owned_question_ids = {question["id"] for question in self.questions_for_lesson(part, lesson["id"])}
+            self.assertEqual(len(owned_question_ids), 10)
+            for section in lesson["materialSections"]:
+                self.assertEqual(len(section["linkedQuestionIds"]), len(set(section["linkedQuestionIds"])))
+                self.assertTrue(set(section["linkedQuestionIds"]).issubset(owned_question_ids))
+                self.assertTrue(set(section["linkedQuestionIds"]).issubset(question_ids))
+            self.assertEqual(
+                {question_id for section in lesson["materialSections"] for question_id in section["linkedQuestionIds"]},
+                owned_question_ids,
+            )
+
+    def test_question_counts_quotas_and_deterministic_true_false_patterns(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        self.assertEqual(Counter(question["type"] for question in part["questions"]), {"mcq": 42, "true-false": 28})
+        patterns = ["TTFF", "TFTF", "TFFT", "FTTF", "FTFT", "FFTT"]
+        true_false_answers = []
+        for lesson in part["lessons"]:
+            questions = self.questions_for_lesson(part, lesson["id"])
+            expected_ids = [lesson["id"].replace("lesson-", "gq-") + f"-{number:03d}" for number in range(1, 11)]
+            self.assertEqual([question["id"] for question in questions], expected_ids)
+            self.assertEqual(Counter(question["type"] for question in questions), {"mcq": 6, "true-false": 4})
+            self.assertEqual(Counter(question["difficulty"] for question in questions), {"easy": 3, "medium": 5, "hard": 2})
+            self.assertEqual(Counter(question["bloomLevel"] for question in questions), {"remember": 3, "apply": 5, "analyze": 2})
+            self.assertTrue(all(question["bloomLevel"] == question["cognitiveLevel"] for question in questions))
+            true_false = sorted((question for question in questions if question["type"] == "true-false"), key=lambda item: item["id"])
+            digest = hashlib.sha256(f"operating-systems-study\n{lesson['id']}".encode("utf-8")).hexdigest()
+            expected_pattern = patterns[int(digest[:8], 16) % len(patterns)]
+            actual_pattern = "".join("T" if question["correctAnswer"] else "F" for question in true_false)
+            self.assertEqual(actual_pattern, expected_pattern)
+            true_false_answers.extend(question["correctAnswer"] for question in true_false)
+        self.assertEqual(Counter(true_false_answers), {True: 14, False: 14})
+
+    def test_generated_questions_use_exact_answer_evidence_and_provenance_shapes(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        lesson_objectives = {
+            lesson["id"]: set(lesson["objectiveIds"])
+            for lesson in part["lessons"]
+        }
+        for question in part["questions"]:
+            lesson_id = "lesson-" + question["id"].removeprefix("gq-").rsplit("-", 1)[0]
+            self.assertIn(question["learningObjectiveId"], lesson_objectives[lesson_id])
+            self.assertEqual(question["origin"], "generated")
+            self.assertEqual(question["generationMethod"], "source-grounded-authoring-v1")
+            self.assertEqual(question["contentVersion"], "1.0.0")
+            self.assertEqual(set(question["provenance"]), {"sourceRefs", "modelVersion", "promptVersion"})
+            self.assertEqual(question["provenance"]["sourceRefs"], question["sourceRefs"])
+            self.assertTrue(question["provenance"]["modelVersion"])
+            self.assertEqual(question["provenance"]["promptVersion"], "os-question-generation-1.0")
+            self.assertEqual(set(question["duplicateComparison"]), {"algorithmVersion", "normalizedPrompt", "candidateIds", "matchClass"})
+            self.assertEqual(question["duplicateComparison"]["normalizedPrompt"], self.normalized_prompt(question["prompt"]))
+            self.assertEqual(question["duplicateComparison"]["candidateIds"], [])
+            self.assertEqual(question["duplicateComparison"]["matchClass"], "none")
+            if question["type"] == "mcq":
+                self.assertEqual(set(question), QUESTION_COMMON_KEYS | {"options", "distractorRationales"})
+                self.assertEqual(len(question["options"]), 4)
+                self.assertEqual(len(set(question["options"])), 4)
+                self.assertEqual(len(question["distractorRationales"]), 4)
+                self.assertIs(type(question["correctAnswer"]), int)
+                self.assertIn(question["correctAnswer"], range(4))
+                expected_targets = {"prompt", "correctAnswer", "rationale"}
+                expected_targets |= {f"options[{index}]" for index in range(4)}
+                expected_targets |= {f"distractorRationales[{index}]" for index in range(4)}
+            else:
+                self.assertEqual(set(question), QUESTION_COMMON_KEYS | {"correctedStatement"})
+                self.assertIs(type(question["correctAnswer"]), bool)
+                self.assertNotIn("options", question)
+                self.assertNotIn("distractorRationales", question)
+                if question["correctAnswer"]:
+                    self.assertIsNone(question["correctedStatement"])
+                else:
+                    self.assertIsInstance(question["correctedStatement"], str)
+                    self.assertTrue(question["correctedStatement"].strip())
+                expected_targets = {"prompt", "correctAnswer", "rationale"}
+                if question["correctedStatement"] is not None:
+                    expected_targets.add("correctedStatement")
+            self.assertEqual([item["target"] for item in question["evidenceMap"]], list(dict.fromkeys(item["target"] for item in question["evidenceMap"])))
+            self.assertEqual({item["target"] for item in question["evidenceMap"]}, expected_targets)
+            for claim in question["evidenceMap"]:
+                self.assertEqual(set(claim), {"claimId", "target", "sourceRefs", "support"})
+                self.assertTrue(claim["claimId"])
+                self.assertTrue(claim["sourceRefs"])
+                self.assertIn(claim["support"], {"direct", "derived"})
+
+    def test_prompts_are_unique_and_validated_review_states_are_consistent(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        normalized = [question["duplicateComparison"]["normalizedPrompt"] for question in part["questions"]]
+        self.assertEqual(len(normalized), len(set(normalized)))
+        for lesson in part["lessons"]:
+            self.assertFalse(lesson["needsReview"])
+            self.assertEqual(lesson["reviewNotes"], "")
+            self.assertEqual(lesson["review"], {"status": "validated"})
+            for section in lesson["materialSections"]:
+                self.assertFalse(section["needsReview"])
+                self.assertEqual(section["reviewNotes"], "")
+        for question in part["questions"]:
+            self.assertEqual(question["qualityState"], "validated")
+            self.assertEqual(question["reviewState"], "unreviewed")
+            self.assertEqual(question["duplicateDisposition"], "retain")
+            self.assertFalse(question["needsReview"])
+            self.assertEqual(question["reviewNotes"], "")
+            self.assertEqual(question["review"], {"status": "validated"})
+            self.assertNotIn("approval", question["review"])
+
+    def test_arabic_explanations_use_exact_shape_and_match_questions(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        self.assertEqual(len(part["explanations"]), 70)
+        self.assertEqual(len({item["id"] for item in part["explanations"]}), 70)
+        for item in part["explanations"]:
+            self.assertEqual(set(item), EXPLANATION_KEYS)
+            self.assertEqual(item["id"], f"explanation-{item['questionId']}-ar")
+            self.assertEqual(questions[item["questionId"]]["generatedExplanationId"], item["id"])
+            self.assertEqual(item["language"], "ar")
+            self.assertTrue(item["generatedStudyGuidance"])
+            self.assertTrue(ARABIC_RE.search(item["translation"]))
+            self.assertIn(len(item["explanation"]), (2, 3))
+            self.assertTrue(all(ARABIC_RE.search(paragraph) for paragraph in item["explanation"]))
+            self.assertTrue(item["body"].strip())
+            self.assertIn("مراجعة مولدة", item["note"])
+            self.assertIn("الامتحان", item["note"])
+            self.assertEqual(item["contentVersion"], "1.0.0")
+            self.assertEqual(item["sourceRefs"], questions[item["questionId"]]["sourceRefs"])
+            self.assertFalse(item["needsReview"])
+            self.assertEqual(item["reviewNotes"], "")
+            self.assertEqual(item["review"], {"status": "validated"})
+
+    def test_generated_guidance_is_arabic_and_prohibited_official_claims_are_absent(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        for lesson in part["lessons"]:
+            for section in lesson["materialSections"]:
+                if section["origin"] == "generated":
+                    self.assertTrue(ARABIC_RE.search(section["summary"]))
+                    self.assertTrue(all(ARABIC_RE.search(paragraph) for paragraph in section["explanation"]))
+        serialized = json.dumps(part, ensure_ascii=False).casefold()
+        for prohibited in ("official exam question", "official question", "from the exam", "past-paper question", "certified", "guaranteed to appear"):
+            self.assertNotIn(prohibited, serialized)
+
+
+if __name__ == "__main__":
+    unittest.main()
