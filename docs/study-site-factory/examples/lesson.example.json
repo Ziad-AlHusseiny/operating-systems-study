@@ -3,9 +3,11 @@
   "moduleId": "module-network-services",
   "objectiveIds": ["objective-dhcp-across-subnets"],
   "title": "DHCP Address Assignment Across Subnets",
-  "origin": "generated",
-  "generatedStudyGuidance": true,
   "contentVersion": "1.0.0",
+  "materialSectionIds": [
+    "material-section-dhcp-source",
+    "material-section-dhcp-guidance"
+  ],
   "learningObjectives": [
     {
       "id": "objective-dhcp-across-subnets",
@@ -16,59 +18,108 @@
       ]
     }
   ],
-  "summary": "DHCP assigns client IP configuration through a broadcast-based exchange, so clients and servers separated by a router need a relay path for the initial messages.",
-  "explanation": [
-    "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.",
-    "Routers do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.",
-    "When a capture shows repeated DHCPDISCOVER messages but no DHCPOFFER, check whether the server is reachable through a configured relay before investigating services such as DNS that act after IP configuration is available."
-  ],
-  "body": "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.\n\nRouters do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.\n\nWhen a capture shows repeated DHCPDISCOVER messages but no DHCPOFFER, check whether the server is reachable through a configured relay before investigating services such as DNS that act after IP configuration is available.",
-  "keyTerms": [
+  "materialSections": [
     {
-      "term": "DHCP relay",
-      "definition": "A router or relay-agent function that forwards DHCP messages between a client subnet and a DHCP server on another subnet.",
-      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
-    },
-    {
-      "term": "DHCPOFFER",
-      "definition": "The DHCP server message that offers IP configuration to a requesting client.",
-      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
-    }
-  ],
-  "workedExamples": [
-    {
-      "title": "No offer across a router",
-      "body": "A client broadcasts DHCPDISCOVER on one subnet while the DHCP server is active on another. Configure the client-facing router interface as a DHCP relay to forward the exchange.",
+      "id": "material-section-dhcp-source",
+      "order": 1,
+      "title": "DHCP relay source material",
+      "origin": "source",
+      "label": "Source material",
+      "generatedStudyGuidance": false,
+      "summary": "DHCP assigns client IP configuration through a broadcast-based exchange, so clients and servers separated by a router need a relay path for the initial messages.",
+      "explanation": [
+        "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.",
+        "Routers do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client."
+      ],
+      "body": "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.\n\nRouters do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.",
+      "keyTerms": [
+        {
+          "term": "DHCP relay",
+          "definition": "A router or relay-agent function that forwards DHCP messages between a client subnet and a DHCP server on another subnet.",
+          "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
+        }
+      ],
+      "workedExamples": [
+        {
+          "title": "No offer across a router",
+          "body": "A client broadcasts DHCPDISCOVER on one subnet while the DHCP server is active on another. Configure the client-facing router interface as a DHCP relay to forward the exchange.",
+          "sourceRefs": [
+            {"sourceId": "source-01", "locationType": "page", "location": 12},
+            {"sourceId": "source-02", "locationType": "slide", "location": 5}
+          ]
+        }
+      ],
+      "commonMistakes": [
+        {
+          "misconception": "Changing DNS settings will make the missing DHCPOFFER arrive.",
+          "correction": "DNS does not forward the DHCP broadcast; verify the DHCP relay path between subnets.",
+          "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
+        }
+      ],
+      "examTips": [
+        {
+          "body": "Repeated DHCPDISCOVER messages with no DHCPOFFER across a router point to the DHCP server or relay path, not name resolution.",
+          "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
+        }
+      ],
+      "recap": [
+        "DHCP clients begin by broadcasting DHCPDISCOVER.",
+        "A remote DHCP server cannot receive the local broadcast without a relay path.",
+        "A DHCP relay forwards messages between the client subnet and the remote server."
+      ],
       "sourceRefs": [
         {"sourceId": "source-01", "locationType": "page", "location": 12},
         {"sourceId": "source-02", "locationType": "slide", "location": 5}
-      ]
-    }
-  ],
-  "commonMistakes": [
+      ],
+      "linkedQuestionIds": ["q-001"],
+      "needsReview": false,
+      "reviewNotes": ""
+    },
     {
-      "misconception": "Changing DNS settings will make the missing DHCPOFFER arrive.",
-      "correction": "DNS does not forward the DHCP broadcast; verify the DHCP relay path between subnets.",
-      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
+      "id": "material-section-dhcp-guidance",
+      "order": 2,
+      "title": "DHCP relay study guidance",
+      "origin": "generated",
+      "label": "Generated study guidance",
+      "generatedStudyGuidance": true,
+      "summary": "Trace the client, relay, and server path in that order when diagnosing repeated discovery messages without an offer.",
+      "explanation": [
+        "Identify the broadcast-domain boundary first, then verify that the client-facing router interface has the relay configuration described by the source material.",
+        "Follow the forwarded request to the configured server and trace the response back through the same relay path before investigating later services such as DNS."
+      ],
+      "body": "Identify the broadcast-domain boundary first, then verify that the client-facing router interface has the relay configuration described by the source material.\n\nFollow the forwarded request to the configured server and trace the response back through the same relay path before investigating later services such as DNS.",
+      "keyTerms": [
+        {
+          "term": "Relay path",
+          "definition": "The request-and-response path between the client subnet, relay, and remote DHCP server.",
+          "sourceRefs": [
+            {"sourceId": "source-01", "locationType": "page", "location": 12},
+            {"sourceId": "source-02", "locationType": "slide", "location": 5}
+          ]
+        }
+      ],
+      "workedExamples": [],
+      "commonMistakes": [],
+      "examTips": [
+        {
+          "body": "Repeated DHCPDISCOVER messages with no DHCPOFFER make the relay path the first diagnostic boundary.",
+          "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
+        }
+      ],
+      "recap": [
+        "Find the broadcast-domain boundary.",
+        "Verify the relay on the client-facing interface.",
+        "Trace the server response back through the relay."
+      ],
+      "sourceRefs": [
+        {"sourceId": "source-01", "locationType": "page", "location": 12},
+        {"sourceId": "source-02", "locationType": "slide", "location": 5}
+      ],
+      "linkedQuestionIds": ["gq-dhcp-apply-001"],
+      "needsReview": false,
+      "reviewNotes": ""
     }
   ],
-  "examTips": [
-    {
-      "body": "Repeated DHCPDISCOVER messages with no DHCPOFFER across a router point to the DHCP server or relay path, not name resolution.",
-      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
-    }
-  ],
-  "recap": [
-    "DHCP clients begin by broadcasting DHCPDISCOVER.",
-    "A remote DHCP server cannot receive the local broadcast without a relay path.",
-    "A DHCP relay forwards messages between the client subnet and the remote server.",
-    "Repeated discovery without an offer is evidence to inspect the server and relay path."
-  ],
-  "sourceRefs": [
-    {"sourceId": "source-01", "locationType": "page", "location": 12},
-    {"sourceId": "source-02", "locationType": "slide", "location": 5}
-  ],
-  "linkedQuestionIds": ["gq-dhcp-apply-001"],
   "needsReview": false,
   "reviewNotes": "",
   "review": {
@@ -80,7 +131,7 @@
       "decision": "approved",
       "reviewer": "reviewer-network-01",
       "reviewedAt": "2026-08-23T10:00:00Z",
-      "reason": "Lesson claims and mappings were checked against the cited locations.",
+      "reason": "Lesson claims, section origins, and mappings were checked against the cited locations.",
       "notes": ""
     }
   }

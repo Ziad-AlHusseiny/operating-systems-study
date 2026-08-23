@@ -6,17 +6,17 @@ The Material pipeline turns accepted source references, canonical `module-` and 
 
 ## Canonical Mapping
 
-The lesson authoring record is a readable input to the canonical Lesson and Material Section records. Compilation creates the canonical Lesson by copying `id`, `moduleId`, `objectiveIds`, `title`, `origin`, `generatedStudyGuidance`, `contentVersion`, `sourceRefs`, `needsReview`, and `reviewNotes` without alteration, then setting canonical `body` to the two-to-five `explanation` paragraphs joined in order with exactly two newline characters (`\n\n`). The authoring record stores that compiled `body` so validation can reject transformation drift. `learningObjectives` must be an ordered array of objective records, and `learningObjectives[].id` must equal `objectiveIds` in both values and order.
+The authoring record creates one canonical Lesson by copying `id`, `moduleId`, `objectiveIds`, `title`, `contentVersion`, `materialSectionIds`, `needsReview`, and `reviewNotes` without alteration. `learningObjectives` must be an ordered array of objective records, and `learningObjectives[].id` must equal `objectiveIds` in both values and order. The Lesson has no single `origin`, section body, or section evidence fields: those belong to its ordered `materialSections`, so the Lesson is not duplicated when a page needs both source material and generated guidance.
 
-Compilation also creates the canonical Material Section with the same learner-facing `title`, `origin`, `generatedStudyGuidance`, and `contentVersion`. It maps `summary` to one canonical `summaries` item, `keyTerms` to `terms`, `workedExamples` to `examples`, `commonMistakes` to `mistakes`, `examTips` to `examTips`, and each `recap` string to a canonical `recaps` item. Every compiled item inherits the section origin and inherits or narrows the lesson's non-empty `sourceRefs`; it never loses evidence. Missing canonical Lesson fields, a changed title, origin, guidance flag, or content version, an objective-order mismatch, or a `body` that is not the exact paragraph join is a validation failure.
+For each authoring entry in `materialSections`, compilation creates exactly one canonical Material Section in ascending `order`. It copies `id`, `order`, `title`, `origin`, `label`, `generatedStudyGuidance`, `sourceRefs`, `linkedQuestionIds`, `needsReview`, and `reviewNotes`; sets `lessonId` from the owning Lesson; and inherits the Lesson `contentVersion`. It maps `summary` to one `{body, sourceRefs}` item in `summaries`, `keyTerms` to `terms`, `workedExamples` to `examples`, `commonMistakes` to `mistakes`, `examTips` to `examTips`, and each `recap` string to a `{body, sourceRefs}` item in `recaps`. Each authoring section stores `body` as its two-to-five `explanation` paragraphs joined with exactly two newline characters (`\n\n`) so validation can reject transformation drift. Section IDs and order values are unique; `materialSectionIds` exactly indexes the section IDs in array order. A missing field, order drift, mixed origin/label/guidance semantics, objective mismatch, evidence loss, or body drift is a validation failure.
 
 `review.status` is an authoring workflow view with the values `draft`, `validated`, `human-reviewed`, `needs-review`, or `rejected`. It does not replace canonical `needsReview`/`reviewNotes` or an immutable Review approval record. `validated` means the automated evidence and content checks passed and therefore has `needsReview: false`; it does not claim human approval. A `human-reviewed` item is approved only when its nested approval has canonical `status: completed` and `decision: approved` for the current content version.
 
 ## Content Policy Modes
 
-- `source-only` permits only `origin: source` with `generatedStudyGuidance: false`. Its lesson text is quoted or carefully normalized from accepted source passages without new interpretation. If the source cannot supply required narrative content, render the documented unavailable or review-only state rather than synthesize it.
+- `source-only` permits only authoring sections with `origin: source`, label `Source material`, and `generatedStudyGuidance: false`. Its section text is quoted or carefully normalized from accepted source passages without new interpretation. If the source cannot supply required narrative content, render the documented unavailable or review-only state rather than synthesize it.
 - `source-plus-generated` permits separate source-derived and generated lesson sections. Every generated section uses `origin: generated`, `generatedStudyGuidance: true`, and the visible “Generated study guidance” label; it never replaces or inherits the source-content label.
-- `generated-only` uses `origin: generated` and `generatedStudyGuidance: true` for every lesson. Each claim remains evidence-backed, and no lesson or section is represented as official source content.
+- `generated-only` uses `origin: generated`, label `Generated study guidance`, and `generatedStudyGuidance: true` for every authoring section. Each claim remains evidence-backed, and no lesson or section is represented as official source content.
 
 One lesson section has one origin. When a lesson page contains both source-derived material and generated guidance, compile and render distinct labelled Material Sections so the two origins never mix silently.
 
@@ -30,13 +30,13 @@ The lesson index provides title, module, objective labels, estimated reading sta
 
 ## Lesson Page
 
-A lesson page renders, in order: title and objectives; one summary; explanation; key terms; supported worked examples; supported common mistakes; supported exam tips; recap; source references; and linked questions. The authoring limits are mandatory:
+A lesson page renders title and objectives once, then its compiled Material Sections in ascending `order`. Within each visibly labelled section it renders: summary; explanation; key terms; supported worked examples; supported common mistakes; supported exam tips; recap; source references; and linked questions. The authoring limits are mandatory for every section:
 
 - Summary is one short paragraph.
 - Explanation contains two to five focused, non-empty paragraphs.
 - Every key term has a non-empty definition and evidence.
 - Worked examples and common mistakes appear only when the accepted source supports them.
-- Every lesson has at least one source reference.
+- Every authoring section has at least one source reference.
 - Recap contains three to seven concise, non-empty points.
 - Empty `workedExamples`, `commonMistakes`, or `examTips` arrays are allowed only when the source cannot support that content, and the coverage report records the omitted field, lesson ID, checked sources, and reason.
 
@@ -48,9 +48,9 @@ Opening a lesson records `lastVisitedAt`; explicit learner actions set `lessonPr
 
 ## Search, Filters, and Linked Questions
 
-Search uses normalized title, objective text, summary, explanation, key terms, and recap in both source and study languages. Filters include module, objective, completion, bookmark, source-coverage state, and review state; filters compose with AND and report active constraints and result counts. Search must not treat hidden metadata or answer text as lesson content.
+Search uses normalized Lesson title and objective text plus every ordered section's summary, explanation, key terms, and recap in both source and study languages. Filters include module, objective, completion, bookmark, source-coverage state, and review state; filters compose with AND and report active constraints and result counts. Search must not treat hidden metadata or answer text as lesson content.
 
-`linkedQuestionIds` contains unique existing `q-` or `gq-` IDs in display order. Material may preview eligible Practice questions. Review items stay visibly unscored. Mock Exam links include only scoreable IDs under the canonical scoring boundary; a missing, rejected, duplicate, or stale ID is a validation error, not silently ignored.
+Each authoring section's `linkedQuestionIds` contains unique existing `q-` or `gq-` IDs in display order. Material may preview eligible Practice questions. Review items stay visibly unscored. Mock Exam links include only scoreable IDs under the canonical scoring boundary; a missing, rejected, duplicate, or stale ID is a validation error, not silently ignored.
 
 ## Study Language and Direction
 
@@ -70,7 +70,7 @@ Release validation must check:
 - faithful translation, study-language consistency, and no false official attribution;
 - LTR/RTL structure, isolated technical tokens, focus order, and responsive readability;
 - short paragraphs, concise recap points, clear headings, and accessible reading level;
-- valid, non-empty source references at lesson and compiled-item level; and
+- valid, non-empty source references at authoring-section and compiled-item level; and
 - unique existing linked-question IDs with Practice and Mock Exam eligibility enforced.
 
 Any failed check sets the appropriate canonical review flags and prevents scoreable use where `04-CONTENT-AND-DATA-CONTRACTS.md` requires approval.

@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import scripts.validate_factory_kit as factory_validator
 from scripts.validate_factory_kit import (
     EXAMPLE_REQUIRED_KEYS,
     REQUIRED_DOCS,
@@ -37,20 +38,10 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "moduleId",
             "objectiveIds",
             "title",
-            "origin",
-            "generatedStudyGuidance",
             "contentVersion",
+            "materialSectionIds",
             "learningObjectives",
-            "summary",
-            "explanation",
-            "body",
-            "keyTerms",
-            "workedExamples",
-            "commonMistakes",
-            "examTips",
-            "recap",
-            "sourceRefs",
-            "linkedQuestionIds",
+            "materialSections",
             "needsReview",
             "reviewNotes",
             "review",
@@ -161,17 +152,31 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ("learningObjectives", 0, "id"),
             ("learningObjectives", 0, "text"),
             ("learningObjectives", 0, "sourceRefs"),
-            ("keyTerms", 0, "term"),
-            ("keyTerms", 0, "definition"),
-            ("keyTerms", 0, "sourceRefs"),
-            ("workedExamples", 0, "title"),
-            ("workedExamples", 0, "body"),
-            ("workedExamples", 0, "sourceRefs"),
-            ("commonMistakes", 0, "misconception"),
-            ("commonMistakes", 0, "correction"),
-            ("commonMistakes", 0, "sourceRefs"),
-            ("examTips", 0, "body"),
-            ("examTips", 0, "sourceRefs"),
+            ("materialSections", 0, "id"),
+            ("materialSections", 0, "order"),
+            ("materialSections", 0, "title"),
+            ("materialSections", 0, "origin"),
+            ("materialSections", 0, "label"),
+            ("materialSections", 0, "generatedStudyGuidance"),
+            ("materialSections", 0, "summary"),
+            ("materialSections", 0, "explanation"),
+            ("materialSections", 0, "body"),
+            ("materialSections", 0, "keyTerms", 0, "term"),
+            ("materialSections", 0, "keyTerms", 0, "definition"),
+            ("materialSections", 0, "keyTerms", 0, "sourceRefs"),
+            ("materialSections", 0, "workedExamples", 0, "title"),
+            ("materialSections", 0, "workedExamples", 0, "body"),
+            ("materialSections", 0, "workedExamples", 0, "sourceRefs"),
+            ("materialSections", 0, "commonMistakes", 0, "misconception"),
+            ("materialSections", 0, "commonMistakes", 0, "correction"),
+            ("materialSections", 0, "commonMistakes", 0, "sourceRefs"),
+            ("materialSections", 0, "examTips", 0, "body"),
+            ("materialSections", 0, "examTips", 0, "sourceRefs"),
+            ("materialSections", 0, "recap"),
+            ("materialSections", 0, "sourceRefs"),
+            ("materialSections", 0, "linkedQuestionIds"),
+            ("materialSections", 0, "needsReview"),
+            ("materialSections", 0, "reviewNotes"),
             ("review", "status"),
             ("review", "approval"),
             ("review", "approval", "reviewedRecordId"),
@@ -243,6 +248,107 @@ class FactoryKitValidatorTests(unittest.TestCase):
         return json.loads(
             Path("docs/study-site-factory", name).read_text(encoding="utf-8")
         )
+
+    def make_multi_origin_lesson(self):
+        source_ref = copy.deepcopy(self.source_ref)
+        guidance_ref = {
+            "sourceId": "source-02",
+            "locationType": "slide",
+            "location": 5,
+        }
+        return {
+            "id": "lesson-dhcp-across-subnets",
+            "moduleId": "module-network-services",
+            "objectiveIds": ["objective-dhcp-across-subnets"],
+            "title": "DHCP Address Assignment Across Subnets",
+            "contentVersion": "1.0.0",
+            "materialSectionIds": [
+                "material-section-dhcp-source",
+                "material-section-dhcp-guidance",
+            ],
+            "learningObjectives": [
+                {
+                    "id": "objective-dhcp-across-subnets",
+                    "text": "Explain why DHCP relay is required across subnets.",
+                    "sourceRefs": [source_ref],
+                }
+            ],
+            "materialSections": [
+                {
+                    "id": "material-section-dhcp-source",
+                    "order": 1,
+                    "title": "Source material",
+                    "origin": "source",
+                    "label": "Source material",
+                    "generatedStudyGuidance": False,
+                    "summary": "DHCP broadcasts do not cross routers directly.",
+                    "explanation": [
+                        "A client begins with a local broadcast.",
+                        "A relay forwards the exchange to the remote server.",
+                    ],
+                    "body": "A client begins with a local broadcast.\n\nA relay forwards the exchange to the remote server.",
+                    "keyTerms": [
+                        {
+                            "term": "DHCP relay",
+                            "definition": "A device that forwards DHCP messages.",
+                            "sourceRefs": [source_ref],
+                        }
+                    ],
+                    "workedExamples": [],
+                    "commonMistakes": [],
+                    "examTips": [],
+                    "recap": ["Broadcast starts locally.", "Routers separate broadcasts.", "A relay forwards DHCP."],
+                    "sourceRefs": [source_ref],
+                    "linkedQuestionIds": ["q-network-dhcp-001"],
+                    "needsReview": False,
+                    "reviewNotes": "",
+                },
+                {
+                    "id": "material-section-dhcp-guidance",
+                    "order": 2,
+                    "title": "Study guidance",
+                    "origin": "generated",
+                    "label": "Generated study guidance",
+                    "generatedStudyGuidance": True,
+                    "summary": "Trace the client, relay, and server path.",
+                    "explanation": [
+                        "Identify the broadcast-domain boundary first.",
+                        "Then place the relay on the client-facing interface.",
+                    ],
+                    "body": "Identify the broadcast-domain boundary first.\n\nThen place the relay on the client-facing interface.",
+                    "keyTerms": [
+                        {
+                            "term": "Relay path",
+                            "definition": "The evidence-backed forwarding path.",
+                            "sourceRefs": [guidance_ref],
+                        }
+                    ],
+                    "workedExamples": [],
+                    "commonMistakes": [],
+                    "examTips": [],
+                    "recap": ["Find the boundary.", "Find the relay.", "Trace the server reply."],
+                    "sourceRefs": [guidance_ref],
+                    "linkedQuestionIds": ["gq-network-dhcp-001"],
+                    "needsReview": False,
+                    "reviewNotes": "",
+                },
+            ],
+            "needsReview": False,
+            "reviewNotes": "",
+            "review": {
+                "status": "human-reviewed",
+                "approval": {
+                    "reviewedRecordId": "lesson-dhcp-across-subnets",
+                    "reviewedContentVersion": "1.0.0",
+                    "status": "completed",
+                    "decision": "approved",
+                    "reviewer": "reviewer-lesson-01",
+                    "reviewedAt": "2026-08-22T10:30:00Z",
+                    "reason": "Evidence and lesson structure verified.",
+                    "notes": "Both origins remain separate.",
+                },
+            },
+        }
 
     def remove_nested_field(self, payload, path):
         container = payload
@@ -333,6 +439,24 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
         self.assertEqual(validate_example_payload(name, payload), [])
 
+    def test_source_only_project_config_rejects_enabled_generated_question_types(self):
+        name = "examples/project-config.example.json"
+        for enabled_field in ("mcqPerLesson", "trueFalsePerLesson"):
+            with self.subTest(enabled_field=enabled_field):
+                payload = self.load_example(name)
+                payload["contentPolicy"]["mode"] = "source-only"
+                payload["questionGeneration"]["mcqPerLesson"] = 0
+                payload["questionGeneration"]["trueFalsePerLesson"] = 0
+                payload["questionGeneration"][enabled_field] = 1
+
+                errors = validate_example_payload(name, payload)
+
+                self.assertIn(
+                    f"{name}: questionGeneration: source-only mode requires "
+                    "both generated question quotas to be zero",
+                    errors,
+                )
+
     def test_project_config_rejects_unknown_nested_fields(self):
         name = "examples/project-config.example.json"
         for field_path in ((), ("project",), ("questionGeneration",)):
@@ -354,7 +478,10 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def test_source_and_evidence_collections_must_be_non_empty(self):
         mutations = (
             ("examples/source-manifest.example.json", ("sources",)),
-            ("examples/lesson.example.json", ("sourceRefs",)),
+            (
+                "examples/lesson.example.json",
+                ("materialSections", 0, "sourceRefs"),
+            ),
             ("examples/official-question.example.json", ("sourceRefs",)),
             ("examples/generated-question.example.json", ("sourceRefs",)),
             ("examples/generated-question.example.json", ("evidenceMap",)),
@@ -690,9 +817,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ),
             (
                 "lesson.example.json",
-                ("linkedQuestionIds",),
+                ("materialSections", 0, "linkedQuestionIds"),
                 ["q-missing"],
-                "linkedQuestionIds[0] does not resolve",
+                "materialSections[0].linkedQuestionIds[0] does not resolve",
             ),
             (
                 "official-question.example.json",
@@ -840,19 +967,19 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ),
             (
                 "lesson.example.json",
-                ("linkedQuestionIds",),
+                ("materialSections", 0, "linkedQuestionIds"),
                 7,
                 "linkedQuestionIds: must be an array",
             ),
             (
                 "lesson.example.json",
-                ("linkedQuestionIds",),
+                ("materialSections", 0, "linkedQuestionIds"),
                 {},
                 "linkedQuestionIds: must be an array",
             ),
             (
                 "lesson.example.json",
-                ("linkedQuestionIds",),
+                ("materialSections", 0, "linkedQuestionIds"),
                 [{}],
                 "linkedQuestionIds: must contain only non-empty strings",
             ),
@@ -1183,17 +1310,15 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ["One.", "Two.", "Three.", "Four.", "Five.", "Six."],
         ):
             with self.subTest(explanation=explanation):
-                errors = validate_example_payload(
-                    "examples/lesson.example.json",
-                    {
-                        "explanation": explanation,
-                        "recap": ["One.", "Two.", "Three."],
-                        "review": {"status": "draft"},
-                    },
-                )
-                self.assertIn(
-                    "examples/lesson.example.json: explanation: must contain "
-                    "two to five non-empty paragraphs",
+                payload = self.make_multi_origin_lesson()
+                payload["materialSections"][0]["explanation"] = explanation
+                errors = validate_example_payload("examples/lesson.example.json", payload)
+                self.assertTrue(
+                    any(
+                        "materialSections[0]: explanation: must contain two to five "
+                        "non-empty paragraphs" in error
+                        for error in errors
+                    ),
                     errors,
                 )
 
@@ -1204,17 +1329,15 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ["One.", "Two.", "Three.", "Four.", "Five.", "Six.", "Seven.", "Eight."],
         ):
             with self.subTest(recap=recap):
-                errors = validate_example_payload(
-                    "examples/lesson.example.json",
-                    {
-                        "explanation": ["One.", "Two."],
-                        "recap": recap,
-                        "review": {"status": "draft"},
-                    },
-                )
-                self.assertIn(
-                    "examples/lesson.example.json: recap: must contain three "
-                    "to seven non-empty strings",
+                payload = self.make_multi_origin_lesson()
+                payload["materialSections"][0]["recap"] = recap
+                errors = validate_example_payload("examples/lesson.example.json", payload)
+                self.assertTrue(
+                    any(
+                        "materialSections[0]: recap: must contain three to seven "
+                        "non-empty strings" in error
+                        for error in errors
+                    ),
                     errors,
                 )
 
@@ -1222,9 +1345,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertTrue(
             {
                 "objectiveIds",
-                "body",
-                "origin",
-                "generatedStudyGuidance",
+                "contentVersion",
+                "materialSectionIds",
+                "materialSections",
                 "needsReview",
                 "reviewNotes",
             }.issubset(
@@ -1235,8 +1358,18 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def test_lesson_declares_generated_material_origin(self):
         payload = self.load_example("examples/lesson.example.json")
 
-        self.assertEqual(payload.get("origin"), "generated")
-        self.assertIs(payload.get("generatedStudyGuidance"), True)
+        self.assertEqual(
+            [section["origin"] for section in payload["materialSections"]],
+            ["source", "generated"],
+        )
+        self.assertEqual(
+            [section["label"] for section in payload["materialSections"]],
+            ["Source material", "Generated study guidance"],
+        )
+        self.assertEqual(
+            [section["generatedStudyGuidance"] for section in payload["materialSections"]],
+            [False, True],
+        )
 
     def test_lesson_spec_defines_each_content_policy_mode(self):
         text = Path(
@@ -1249,15 +1382,123 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertIn("`origin: source`", text)
         self.assertIn("`origin: generated`", text)
 
-    def test_lesson_rejects_canonical_body_or_objective_mapping_drift(self):
-        payload = {
-            "objectiveIds": ["objective-dhcp"],
-            "learningObjectives": [{"id": "objective-dns"}],
-            "explanation": ["First paragraph.", "Second paragraph."],
-            "body": "First paragraph. Second paragraph.",
-            "recap": ["One.", "Two.", "Three."],
-            "review": {"status": "draft"},
+    def test_multi_origin_lesson_compiles_distinct_ordered_material_sections(self):
+        compile_sections = getattr(
+            factory_validator, "compile_lesson_material_sections", lambda payload: ()
+        )
+        payload = self.make_multi_origin_lesson()
+
+        self.assertEqual(
+            validate_example_payload("examples/lesson.example.json", payload), []
+        )
+        compiled = compile_sections(payload)
+        self.assertEqual(
+            tuple(
+                (
+                    section["id"],
+                    section["lessonId"],
+                    section["order"],
+                    section["origin"],
+                    section["label"],
+                    section["generatedStudyGuidance"],
+                    section["sourceRefs"],
+                )
+                for section in compiled
+            ),
+            (
+                (
+                    "material-section-dhcp-source",
+                    "lesson-dhcp-across-subnets",
+                    1,
+                    "source",
+                    "Source material",
+                    False,
+                    [self.source_ref],
+                ),
+                (
+                    "material-section-dhcp-guidance",
+                    "lesson-dhcp-across-subnets",
+                    2,
+                    "generated",
+                    "Generated study guidance",
+                    True,
+                    [
+                        {
+                            "sourceId": "source-02",
+                            "locationType": "slide",
+                            "location": 5,
+                        }
+                    ],
+                ),
+            ),
+        )
+        expected_keys = {
+            "id",
+            "lessonId",
+            "order",
+            "title",
+            "origin",
+            "label",
+            "generatedStudyGuidance",
+            "summaries",
+            "terms",
+            "examples",
+            "mistakes",
+            "examTips",
+            "recaps",
+            "sourceRefs",
+            "linkedQuestionIds",
+            "contentVersion",
+            "needsReview",
+            "reviewNotes",
         }
+        self.assertEqual(tuple(set(section) for section in compiled), (expected_keys, expected_keys))
+
+    def test_multi_origin_lesson_rejects_ambiguous_section_identity_and_origin(self):
+        name = "examples/lesson.example.json"
+        mutations = []
+
+        duplicate_id = self.make_multi_origin_lesson()
+        duplicate_id["materialSections"][1]["id"] = duplicate_id["materialSections"][0]["id"]
+        mutations.append(("duplicate-id", duplicate_id, "materialSections: IDs must be unique"))
+
+        duplicate_order = self.make_multi_origin_lesson()
+        duplicate_order["materialSections"][1]["order"] = 1
+        mutations.append(("duplicate-order", duplicate_order, "materialSections: order values must be unique"))
+
+        wrong_sequence = self.make_multi_origin_lesson()
+        wrong_sequence["materialSections"].reverse()
+        mutations.append(("wrong-sequence", wrong_sequence, "materialSections: must be sorted by ascending order"))
+
+        wrong_id_index = self.make_multi_origin_lesson()
+        wrong_id_index["materialSectionIds"].reverse()
+        mutations.append(("wrong-id-index", wrong_id_index, "materialSectionIds: must equal materialSections IDs in order"))
+
+        wrong_label = self.make_multi_origin_lesson()
+        wrong_label["materialSections"][1]["label"] = "Source material"
+        mutations.append(("wrong-label", wrong_label, "label: must match origin"))
+
+        wrong_guidance = self.make_multi_origin_lesson()
+        wrong_guidance["materialSections"][0]["generatedStudyGuidance"] = True
+        mutations.append(("wrong-guidance", wrong_guidance, "generatedStudyGuidance: must match origin"))
+
+        missing_sources = self.make_multi_origin_lesson()
+        missing_sources["materialSections"][1]["sourceRefs"] = []
+        mutations.append(("missing-sources", missing_sources, "sourceRefs: must contain at least one source reference"))
+
+        body_drift = self.make_multi_origin_lesson()
+        body_drift["materialSections"][0]["body"] = "Drifted body."
+        mutations.append(("body-drift", body_drift, "body: must equal explanation paragraphs joined with two newlines"))
+
+        for label, payload, expected in mutations:
+            with self.subTest(label=label):
+                errors = validate_example_payload(name, payload)
+                self.assertTrue(any(expected in error for error in errors), errors)
+
+    def test_lesson_rejects_canonical_body_or_objective_mapping_drift(self):
+        payload = self.make_multi_origin_lesson()
+        payload["learningObjectives"][0]["id"] = "objective-dns"
+        payload["materialSections"][0]["body"] = "Drifted body."
 
         errors = validate_example_payload("examples/lesson.example.json", payload)
 
@@ -1266,24 +1507,20 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "equal objectiveIds in the same order",
             errors,
         )
-        self.assertIn(
-            "examples/lesson.example.json: body: must equal explanation "
-            "paragraphs joined with two newlines",
+        self.assertTrue(
+            any(
+                "materialSections[0]: body: must equal explanation paragraphs "
+                "joined with two newlines" in error
+                for error in errors
+            ),
             errors,
         )
 
     def test_lesson_rejects_empty_canonical_objective_ids(self):
-        errors = validate_example_payload(
-            "examples/lesson.example.json",
-            {
-                "objectiveIds": [""],
-                "learningObjectives": [{"id": ""}],
-                "explanation": ["First paragraph.", "Second paragraph."],
-                "body": "First paragraph.\n\nSecond paragraph.",
-                "recap": ["One.", "Two.", "Three."],
-                "review": {"status": "draft"},
-            },
-        )
+        payload = self.make_multi_origin_lesson()
+        payload["objectiveIds"] = [""]
+        payload["learningObjectives"][0]["id"] = ""
+        errors = validate_example_payload("examples/lesson.example.json", payload)
 
         self.assertIn(
             "examples/lesson.example.json: learningObjectives: IDs must "
@@ -1492,6 +1729,98 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "human-approved when that policy requires human review",
             " ".join(prd.split()),
         )
+
+    def test_mock_exam_eligibility_reference_policy_matrix(self):
+        eligible = getattr(
+            factory_validator,
+            "generated_question_is_mock_exam_eligible",
+            lambda *args, **kwargs: False,
+        )
+        validated = self.make_generated_question("validated")
+        human_reviewed = self.make_generated_question("human-reviewed")
+
+        cases = (
+            ("validated-open-gate", validated, False, False, True, True),
+            ("validated-human-gate", validated, True, False, True, False),
+            ("validated-high-stakes", validated, False, True, True, False),
+            ("human-open-gate", human_reviewed, False, False, True, True),
+            ("human-required-gate", human_reviewed, True, False, True, True),
+            ("human-high-stakes", human_reviewed, False, True, True, True),
+            ("non-scoreable", human_reviewed, False, False, False, False),
+        )
+        for (
+            label,
+            record,
+            require_human,
+            high_stakes,
+            is_scoreable,
+            expected,
+        ) in cases:
+            with self.subTest(label=label):
+                self.assertIs(
+                    eligible(
+                        copy.deepcopy(record),
+                        generated_questions_require_human_review=require_human,
+                        high_stakes=high_stakes,
+                        is_scoreable=is_scoreable,
+                    ),
+                    expected,
+                )
+
+    def test_mock_exam_eligibility_rejects_invalid_record_states(self):
+        eligible = getattr(
+            factory_validator,
+            "generated_question_is_mock_exam_eligible",
+            lambda *args, **kwargs: True,
+        )
+        base = self.make_generated_question("human-reviewed")
+        cases = []
+
+        stale_version = copy.deepcopy(base)
+        stale_version["review"]["approval"]["reviewedContentVersion"] = "0.9.0"
+        cases.append(("stale-version", stale_version))
+
+        stale_id = copy.deepcopy(base)
+        stale_id["review"]["approval"]["reviewedRecordId"] = "gq-stale"
+        cases.append(("stale-record-id", stale_id))
+
+        review_only = copy.deepcopy(base)
+        review_only["needsReview"] = True
+        cases.append(("review-only", review_only))
+
+        duplicate = copy.deepcopy(base)
+        duplicate["duplicateDisposition"] = "reject-duplicate"
+        cases.append(("duplicate", duplicate))
+
+        wrong_quality = copy.deepcopy(base)
+        wrong_quality["qualityState"] = "validated"
+        cases.append(("wrong-quality-state", wrong_quality))
+
+        wrong_review_state = copy.deepcopy(base)
+        wrong_review_state["reviewState"] = "unreviewed"
+        cases.append(("wrong-review-state", wrong_review_state))
+
+        rejected_approval = copy.deepcopy(base)
+        rejected_approval["review"]["approval"]["decision"] = "rejected"
+        cases.append(("rejected-approval", rejected_approval))
+
+        validated_with_approval = self.make_generated_question("validated")
+        validated_with_approval["review"]["approval"] = copy.deepcopy(
+            base["review"]["approval"]
+        )
+        cases.append(("validated-with-approval", validated_with_approval))
+
+        for label, record in cases:
+            with self.subTest(label=label):
+                self.assertIs(
+                    eligible(
+                        record,
+                        generated_questions_require_human_review=False,
+                        high_stakes=False,
+                        is_scoreable=True,
+                    ),
+                    False,
+                )
 
     def test_generated_question_review_binds_record_and_content_version(self):
         payload = self.make_generated_question()
@@ -1999,6 +2328,101 @@ class FactoryKitValidatorTests(unittest.TestCase):
         ):
             with self.subTest(contract=contract):
                 self.assertIn(contract, text)
+
+    def test_default_true_false_assignment_matches_golden_vector(self):
+        digest = getattr(
+            factory_validator, "true_false_default_seed_digest", lambda *args: ""
+        )
+        assign = getattr(
+            factory_validator, "default_true_false_answer_assignment", lambda *args: ()
+        )
+
+        self.assertEqual(
+            digest("network-fundamentals-study", "lesson-dhcp"),
+            "8ac2ef592fffbe692d7a716f305d4ea2e313f6bb20f46f4b14c9f89a0df53bd4",
+        )
+        self.assertEqual(
+            assign(
+                "network-fundamentals-study",
+                "lesson-dhcp",
+                ("gq-dhcp-004", "gq-dhcp-001", "gq-dhcp-003", "gq-dhcp-002"),
+            ),
+            (
+                ("gq-dhcp-001", False),
+                ("gq-dhcp-002", True),
+                ("gq-dhcp-003", True),
+                ("gq-dhcp-004", False),
+            ),
+        )
+
+    def test_nondefault_even_true_false_assignment_matches_golden_vector(self):
+        digest = getattr(
+            factory_validator, "true_false_record_digest", lambda *args: ""
+        )
+        assign = getattr(
+            factory_validator,
+            "nondefault_true_false_answer_assignment",
+            lambda *args: (),
+        )
+        question_ids = (
+            "gq-pool-06",
+            "gq-pool-01",
+            "gq-pool-04",
+            "gq-pool-02",
+            "gq-pool-05",
+            "gq-pool-03",
+        )
+
+        self.assertEqual(
+            digest("network-fundamentals-study", "gq-pool-05"),
+            "70adb69e40b40a3bc619f35d8b5b4094d608eca0e17952c10d04091f2b41cc54",
+        )
+        self.assertEqual(
+            assign("network-fundamentals-study", question_ids),
+            (
+                ("gq-pool-05", True),
+                ("gq-pool-01", True),
+                ("gq-pool-03", True),
+                ("gq-pool-02", False),
+                ("gq-pool-06", False),
+                ("gq-pool-04", False),
+            ),
+        )
+
+    def test_nondefault_odd_true_false_assignment_matches_both_residual_vectors(self):
+        assign = getattr(
+            factory_validator,
+            "nondefault_true_false_answer_assignment",
+            lambda *args: (),
+        )
+        question_ids = (
+            "gq-odd-05",
+            "gq-odd-02",
+            "gq-odd-04",
+            "gq-odd-01",
+            "gq-odd-03",
+        )
+
+        self.assertEqual(
+            assign("network-fundamentals-study", question_ids),
+            (
+                ("gq-odd-03", True),
+                ("gq-odd-05", True),
+                ("gq-odd-01", False),
+                ("gq-odd-04", False),
+                ("gq-odd-02", True),
+            ),
+        )
+        self.assertEqual(
+            assign("security-study", question_ids),
+            (
+                ("gq-odd-04", True),
+                ("gq-odd-03", True),
+                ("gq-odd-05", False),
+                ("gq-odd-02", False),
+                ("gq-odd-01", False),
+            ),
+        )
 
     def test_question_generation_profile_honors_configured_overrides(self):
         text = Path(

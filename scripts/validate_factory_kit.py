@@ -1,4 +1,6 @@
 import argparse
+import copy
+import hashlib
 import json
 import re
 from pathlib import Path, PureWindowsPath
@@ -162,24 +164,14 @@ EXAMPLE_REQUIRED_KEYS = {
         "id",
         "moduleId",
         "title",
-        "origin",
-        "generatedStudyGuidance",
         "contentVersion",
         "learningObjectives",
-        "summary",
-        "explanation",
-        "keyTerms",
-        "workedExamples",
-        "commonMistakes",
-        "examTips",
-        "recap",
-        "sourceRefs",
+        "materialSectionIds",
+        "materialSections",
         "review",
         "objectiveIds",
-        "body",
         "needsReview",
         "reviewNotes",
-        "linkedQuestionIds",
     },
     "examples/generated-question.example.json": {
         "id",
@@ -381,6 +373,75 @@ GENERATED_REVIEW_TRUTH_TABLE = {
     "needs-review": ("needs-review", "needs-review", True, "needs-review"),
     "rejected": ("rejected", "rejected", True, "rejected"),
 }
+TRUE_FALSE_DEFAULT_PATTERNS = ("TTFF", "TFTF", "TFFT", "FTTF", "FTFT", "FFTT")
+
+
+def _validated_true_false_ids(question_ids: object, expected_count: int | None = None) -> tuple[str, ...]:
+    if not isinstance(question_ids, (list, tuple)):
+        raise TypeError("question_ids must be a list or tuple")
+    ids = tuple(question_ids)
+    if (
+        (expected_count is not None and len(ids) != expected_count)
+        or not ids
+        or any(not isinstance(question_id, str) or not question_id.startswith("gq-") for question_id in ids)
+        or len(set(ids)) != len(ids)
+    ):
+        raise ValueError("question_ids must be unique stable gq- IDs of the required size")
+    return ids
+
+
+def true_false_default_seed_digest(project_slug: str, lesson_id: str) -> str:
+    """Hash the exact UTF-8 `project.slug + LF + lesson.id` default seed."""
+    if not isinstance(project_slug, str) or not project_slug:
+        raise ValueError("project_slug must be a non-empty string")
+    if not isinstance(lesson_id, str) or not lesson_id:
+        raise ValueError("lesson_id must be a non-empty string")
+    return hashlib.sha256(f"{project_slug}\n{lesson_id}".encode("utf-8")).hexdigest()
+
+
+def true_false_record_digest(project_slug: str, question_id: str) -> str:
+    """Hash the exact UTF-8 `project.slug + LF + gq-id` pool-order seed."""
+    if not isinstance(project_slug, str) or not project_slug:
+        raise ValueError("project_slug must be a non-empty string")
+    if not isinstance(question_id, str) or not question_id.startswith("gq-"):
+        raise ValueError("question_id must be a stable gq- ID")
+    return hashlib.sha256(f"{project_slug}\n{question_id}".encode("utf-8")).hexdigest()
+
+
+def default_true_false_answer_assignment(
+    project_slug: str, lesson_id: str, question_ids: object
+) -> tuple[tuple[str, bool], ...]:
+    """Assign the documented four-item lesson pattern in stable ID order."""
+    ids = tuple(sorted(_validated_true_false_ids(question_ids, expected_count=4)))
+    digest = true_false_default_seed_digest(project_slug, lesson_id)
+    pattern = TRUE_FALSE_DEFAULT_PATTERNS[int(digest[:8], 16) % len(TRUE_FALSE_DEFAULT_PATTERNS)]
+    return tuple((question_id, answer == "T") for question_id, answer in zip(ids, pattern))
+
+
+def nondefault_true_false_answer_assignment(
+    project_slug: str, question_ids: object
+) -> tuple[tuple[str, bool], ...]:
+    """Assign a non-default pool by SHA-256 order with the documented residual."""
+    ids = _validated_true_false_ids(question_ids)
+    ordered = tuple(
+        question_id
+        for _, question_id in sorted(
+            (true_false_record_digest(project_slug, question_id), question_id)
+            for question_id in ids
+        )
+    )
+    half = len(ordered) // 2
+    residual_is_true = hashlib.sha256(project_slug.encode("utf-8")).digest()[-1] & 1 == 0
+    answers = []
+    for index, question_id in enumerate(ordered):
+        if index < half:
+            answer = True
+        elif index < 2 * half:
+            answer = False
+        else:
+            answer = residual_is_true
+        answers.append((question_id, answer))
+    return tuple(answers)
 REVIEW_APPROVAL_REQUIRED_KEYS = {
     "reviewedRecordId",
     "reviewedContentVersion",
@@ -552,13 +613,17 @@ def validate_project_config_example(payload: dict, name: str) -> list[str]:
                     f"{name}: questionGeneration.{field}: must be a "
                     "non-negative integer"
                 )
-        if (
-            generation.get("mcqPerLesson") == 0
-            and generation.get("trueFalsePerLesson") == 0
-            and not (
-                isinstance(policy, dict) and policy.get("mode") == "source-only"
+        source_only = (
+            isinstance(policy, dict) and policy.get("mode") == "source-only"
+        )
+        mcq_quota = generation.get("mcqPerLesson")
+        true_false_quota = generation.get("trueFalsePerLesson")
+        if source_only and (mcq_quota != 0 or true_false_quota != 0):
+            errors.append(
+                f"{name}: questionGeneration: source-only mode requires "
+                "both generated question quotas to be zero"
             )
-        ):
+        elif not source_only and mcq_quota == 0 and true_false_quota == 0:
             errors.append(
                 f"{name}: questionGeneration: at least one question type "
                 "must be enabled"
@@ -921,35 +986,168 @@ def validate_evidenced_records(
     return errors
 
 
+LESSON_MATERIAL_SECTION_KEYS = {
+    "id",
+    "order",
+    "title",
+    "origin",
+    "label",
+    "generatedStudyGuidance",
+    "summary",
+    "explanation",
+    "body",
+    "keyTerms",
+    "workedExamples",
+    "commonMistakes",
+    "examTips",
+    "recap",
+    "sourceRefs",
+    "linkedQuestionIds",
+    "needsReview",
+    "reviewNotes",
+}
+
+
+def compile_lesson_material_sections(lesson: object) -> tuple[dict, ...]:
+    """Compile ordered authoring sections into canonical Material Sections."""
+    if not isinstance(lesson, dict) or not isinstance(
+        lesson.get("materialSections"), list
+    ):
+        return ()
+    lesson_id = lesson.get("id")
+    content_version = lesson.get("contentVersion")
+    compiled = []
+    for section in lesson["materialSections"]:
+        if not isinstance(section, dict):
+            continue
+        section_refs = copy.deepcopy(section.get("sourceRefs"))
+        compiled.append(
+            {
+                "id": section.get("id"),
+                "lessonId": lesson_id,
+                "order": section.get("order"),
+                "title": section.get("title"),
+                "origin": section.get("origin"),
+                "label": section.get("label"),
+                "generatedStudyGuidance": section.get(
+                    "generatedStudyGuidance"
+                ),
+                "summaries": [
+                    {"body": section.get("summary"), "sourceRefs": section_refs}
+                ],
+                "terms": copy.deepcopy(section.get("keyTerms")),
+                "examples": copy.deepcopy(section.get("workedExamples")),
+                "mistakes": copy.deepcopy(section.get("commonMistakes")),
+                "examTips": copy.deepcopy(section.get("examTips")),
+                "recaps": [
+                    {"body": body, "sourceRefs": copy.deepcopy(section_refs)}
+                    for body in section.get("recap", [])
+                ],
+                "sourceRefs": section_refs,
+                "linkedQuestionIds": copy.deepcopy(
+                    section.get("linkedQuestionIds")
+                ),
+                "contentVersion": content_version,
+                "needsReview": section.get("needsReview"),
+                "reviewNotes": section.get("reviewNotes"),
+            }
+        )
+    return tuple(compiled)
+
+
+def validate_lesson_material_section(
+    section: object, path: str
+) -> list[str]:
+    errors = validate_object_keys(
+        section, path, LESSON_MATERIAL_SECTION_KEYS, exact=True
+    )
+    if not isinstance(section, dict):
+        return errors
+    errors.extend(validate_prefixed_id(section.get("id"), f"{path}: id", "material-section-"))
+    errors.extend(validate_positive_integer(section.get("order"), f"{path}: order"))
+    errors.extend(validate_non_empty_string(section.get("title"), f"{path}: title"))
+    origin = section.get("origin")
+    if origin not in {"source", "generated"}:
+        errors.append(f"{path}: origin: must be source or generated")
+    expected_label = {
+        "source": "Source material",
+        "generated": "Generated study guidance",
+    }.get(origin)
+    if section.get("label") != expected_label:
+        errors.append(f"{path}: label: must match origin")
+    if (
+        type(section.get("generatedStudyGuidance")) is not bool
+        or section.get("generatedStudyGuidance") is not (origin == "generated")
+    ):
+        errors.append(f"{path}: generatedStudyGuidance: must match origin")
+    errors.extend(validate_non_empty_string(section.get("summary"), f"{path}: summary"))
+    errors.extend(
+        validate_source_reference_list(
+            section.get("sourceRefs"), f"{path}: sourceRefs", require_non_empty=True
+        )
+    )
+    if section.get("sourceRefs") == []:
+        errors.append(f"{path}: sourceRefs: must contain at least one source reference")
+    for field, required, non_empty in (
+        ("keyTerms", {"term", "definition", "sourceRefs"}, True),
+        ("workedExamples", {"title", "body", "sourceRefs"}, False),
+        ("commonMistakes", {"misconception", "correction", "sourceRefs"}, False),
+        ("examTips", {"body", "sourceRefs"}, False),
+    ):
+        errors.extend(
+            validate_evidenced_records(
+                section.get(field),
+                f"{path}: {field}",
+                required,
+                require_non_empty=non_empty,
+            )
+        )
+    errors.extend(
+        validate_string_array(
+            section.get("linkedQuestionIds"),
+            f"{path}: linkedQuestionIds",
+            unique=True,
+        )
+    )
+    if isinstance(section.get("linkedQuestionIds"), list):
+        for index, question_id in enumerate(section["linkedQuestionIds"]):
+            if not (
+                isinstance(question_id, str) and question_id.startswith(("q-", "gq-"))
+            ):
+                errors.append(
+                    f"{path}: linkedQuestionIds[{index}]: must use q- or gq-"
+                )
+    if type(section.get("needsReview")) is not bool:
+        errors.append(f"{path}: needsReview: must be a boolean")
+    if not isinstance(section.get("reviewNotes"), str):
+        errors.append(f"{path}: reviewNotes: must be a string")
+    explanation = section.get("explanation")
+    if not is_non_empty_string_list(explanation, 2, 5):
+        errors.append(
+            f"{path}: explanation: must contain two to five non-empty paragraphs"
+        )
+    if not is_non_empty_string_list(section.get("recap"), 3, 7):
+        errors.append(f"{path}: recap: must contain three to seven non-empty strings")
+    if is_non_empty_string_list(explanation, 2, 5) and section.get("body") != "\n\n".join(explanation):
+        errors.append(
+            f"{path}: body: must equal explanation paragraphs joined with two newlines"
+        )
+    return errors
+
+
 def validate_lesson_example(payload: dict, name: str) -> list[str]:
     errors = []
     errors.extend(validate_prefixed_id(payload.get("id"), f"{name}: id", "lesson-"))
     errors.extend(
         validate_prefixed_id(payload.get("moduleId"), f"{name}: moduleId", "module-")
     )
-    for field in ("title", "summary", "body"):
+    for field in ("title",):
         errors.extend(validate_non_empty_string(payload.get(field), f"{name}: {field}"))
-    origin = payload.get("origin")
-    if origin not in {"source", "generated"}:
-        errors.append(f"{name}: origin: must be source or generated")
-    expected_guidance = origin == "generated"
-    if (
-        type(payload.get("generatedStudyGuidance")) is not bool
-        or payload.get("generatedStudyGuidance") is not expected_guidance
-    ):
-        errors.append(
-            f"{name}: generatedStudyGuidance: must match the lesson origin"
-        )
     content_version = payload.get("contentVersion")
     if not isinstance(content_version, str) or not SEMANTIC_VERSION.fullmatch(
         content_version
     ):
         errors.append(f"{name}: contentVersion: must be a semantic version")
-    errors.extend(
-        validate_source_reference_list(
-            payload.get("sourceRefs"), f"{name}: sourceRefs", require_non_empty=True
-        )
-    )
     errors.extend(
         validate_string_array(
             payload.get("objectiveIds"),
@@ -976,60 +1174,40 @@ def validate_lesson_example(payload: dict, name: str) -> list[str]:
         )
     )
     errors.extend(
-        validate_evidenced_records(
-            payload.get("keyTerms"),
-            f"{name}: keyTerms",
-            {"term", "definition", "sourceRefs"},
-            require_non_empty=True,
-        )
-    )
-    errors.extend(
-        validate_evidenced_records(
-            payload.get("workedExamples"),
-            f"{name}: workedExamples",
-            {"title", "body", "sourceRefs"},
-            require_non_empty=False,
-        )
-    )
-    errors.extend(
-        validate_evidenced_records(
-            payload.get("commonMistakes"),
-            f"{name}: commonMistakes",
-            {"misconception", "correction", "sourceRefs"},
-            require_non_empty=False,
-        )
-    )
-    errors.extend(
-        validate_evidenced_records(
-            payload.get("examTips"),
-            f"{name}: examTips",
-            {"body", "sourceRefs"},
-            require_non_empty=False,
-        )
-    )
-    errors.extend(
         validate_string_array(
-            payload.get("linkedQuestionIds"),
-            f"{name}: linkedQuestionIds",
+            payload.get("materialSectionIds"),
+            f"{name}: materialSectionIds",
+            require_non_empty=True,
             unique=True,
         )
     )
-    if isinstance(payload.get("linkedQuestionIds"), list):
-        for index, question_id in enumerate(payload["linkedQuestionIds"]):
-            if not (
-                isinstance(question_id, str) and question_id.startswith(("q-", "gq-"))
-            ):
-                errors.append(f"{name}: linkedQuestionIds[{index}]: must use q- or gq-")
+    material_sections = payload.get("materialSections")
+    if not isinstance(material_sections, list) or not material_sections:
+        errors.append(f"{name}: materialSections: must be a non-empty array")
+    else:
+        for index, section in enumerate(material_sections):
+            errors.extend(
+                validate_lesson_material_section(
+                    section, f"{name}: materialSections[{index}]"
+                )
+            )
+        if all(isinstance(section, dict) for section in material_sections):
+            section_ids = [section.get("id") for section in material_sections]
+            orders = [section.get("order") for section in material_sections]
+            if len(section_ids) != len(set(section_ids)):
+                errors.append(f"{name}: materialSections: IDs must be unique")
+            if len(orders) != len(set(orders)):
+                errors.append(f"{name}: materialSections: order values must be unique")
+            if all(type(order) is int for order in orders) and orders != sorted(orders):
+                errors.append(f"{name}: materialSections: must be sorted by ascending order")
+            if payload.get("materialSectionIds") != section_ids:
+                errors.append(
+                    f"{name}: materialSectionIds: must equal materialSections IDs in order"
+                )
     if type(payload.get("needsReview")) is not bool:
         errors.append(f"{name}: needsReview: must be a boolean")
     if not isinstance(payload.get("reviewNotes"), str):
         errors.append(f"{name}: reviewNotes: must be a string")
-    if not is_non_empty_string_list(payload.get("explanation"), 2, 5):
-        errors.append(
-            f"{name}: explanation: must contain two to five non-empty paragraphs"
-        )
-    if not is_non_empty_string_list(payload.get("recap"), 3, 7):
-        errors.append(f"{name}: recap: must contain three to seven non-empty strings")
     objectives = payload.get("learningObjectives")
     objective_ids = payload.get("objectiveIds")
     authoring_objective_ids = (
@@ -1057,14 +1235,6 @@ def validate_lesson_example(payload: dict, name: str) -> list[str]:
         errors.append(
             f"{name}: learningObjectives: IDs must equal objectiveIds in the same order"
         )
-    explanation = payload.get("explanation")
-    if is_non_empty_string_list(explanation, 2, 5):
-        expected_body = "\n\n".join(explanation)
-        if payload.get("body") != expected_body:
-            errors.append(
-                f"{name}: body: must equal explanation paragraphs joined "
-                "with two newlines"
-            )
     errors.extend(validate_generated_review(payload, name))
     return errors
 
@@ -1162,6 +1332,68 @@ def validate_generated_review_truth(payload: dict, name: str) -> list[str]:
                 f"{review_status}"
             )
     return errors
+
+
+def generated_question_is_mock_exam_eligible(
+    record: object,
+    *,
+    generated_questions_require_human_review: bool,
+    is_scoreable: bool,
+    high_stakes: bool = False,
+) -> bool:
+    """Return the canonical Mock Exam eligibility decision for one generated item."""
+    if (
+        not isinstance(record, dict)
+        or type(generated_questions_require_human_review) is not bool
+        or type(is_scoreable) is not bool
+        or type(high_stakes) is not bool
+        or not is_scoreable
+        or record.get("origin") != "generated"
+        or record.get("needsReview") is not False
+        or record.get("duplicateDisposition") != "retain"
+    ):
+        return False
+
+    record_id = record.get("id")
+    content_version = record.get("contentVersion")
+    if (
+        not isinstance(record_id, str)
+        or not record_id.startswith("gq-")
+        or not isinstance(content_version, str)
+        or not SEMANTIC_VERSION.fullmatch(content_version)
+    ):
+        return False
+
+    review = record.get("review")
+    if not isinstance(review, dict):
+        return False
+    review_status = review.get("status")
+    requires_human = generated_questions_require_human_review or high_stakes
+
+    if review_status == "validated":
+        return (
+            not requires_human
+            and record.get("qualityState") == "validated"
+            and record.get("reviewState") == "unreviewed"
+            and "approval" not in review
+        )
+
+    if review_status != "human-reviewed":
+        return False
+    if (
+        record.get("qualityState") != "approved"
+        or record.get("reviewState") != "approved"
+    ):
+        return False
+
+    approval = review.get("approval")
+    return (
+        isinstance(approval, dict)
+        and approval.get("status") == "completed"
+        and approval.get("decision") == "approved"
+        and approval.get("reviewedRecordId") == record_id
+        and approval.get("reviewedContentVersion") == content_version
+    )
 
 
 def validate_id_text_items(value: object, path: str) -> tuple[list[str], list[str]]:
@@ -1851,17 +2083,21 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
             "examples/explanation.example.json: explanation does not "
             "describe generated question"
         )
-    if isinstance(lesson, dict):
-        linked_question_ids = lesson.get("linkedQuestionIds")
-        linked_question_list = (
-            linked_question_ids if isinstance(linked_question_ids, list) else []
-        )
-        for index, question_id in enumerate(linked_question_list):
-            if isinstance(question_id, str) and question_id not in question_ids:
-                errors.append(
-                    "examples/lesson.example.json: "
-                    f"linkedQuestionIds[{index}] does not resolve"
-                )
+    if isinstance(lesson, dict) and isinstance(lesson.get("materialSections"), list):
+        for section_index, section in enumerate(lesson["materialSections"]):
+            if not isinstance(section, dict):
+                continue
+            linked_question_ids = section.get("linkedQuestionIds")
+            linked_question_list = (
+                linked_question_ids if isinstance(linked_question_ids, list) else []
+            )
+            for question_index, question_id in enumerate(linked_question_list):
+                if isinstance(question_id, str) and question_id not in question_ids:
+                    errors.append(
+                        "examples/lesson.example.json: "
+                        f"materialSections[{section_index}].linkedQuestionIds"
+                        f"[{question_index}] does not resolve"
+                    )
     return errors
 
 

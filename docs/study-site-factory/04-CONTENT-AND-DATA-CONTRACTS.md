@@ -2,7 +2,7 @@
 
 ## Global Rules
 
-All records are JSON objects with exact required fields for their type; consumers may reject unknown schema versions. IDs are unique and immutable within a release. Stable prefixes are `source-`, `module-`, `objective-`, `lesson-`, `q-`, and `gq-`. `sourceRef` always preserves the original evidence and does not point to an inferred answer. All date-times are ISO 8601 UTC strings and versions are semantic strings.
+All records are JSON objects with exact required fields for their type; consumers may reject unknown schema versions. IDs are unique and immutable within a release. Stable prefixes are `source-`, `module-`, `objective-`, `lesson-`, `material-section-`, `q-`, and `gq-`. `sourceRef` always preserves the original evidence and does not point to an inferred answer. All date-times are ISO 8601 UTC strings and versions are semantic strings.
 
 ## Project Configuration
 
@@ -67,11 +67,15 @@ while the source audit records the working derivative and conversion evidence.
 | --- | --- | --- |
 | Module | `id`, `title`, `order`, `objectiveIds`, `sourceRefs` | ID begins `module-`; objectives are ordered and unique. |
 | Objective | `id`, `moduleId`, `text`, `order`, `sourceRefs` | ID begins `objective-`; parent module exists. |
-| Lesson | `id`, `moduleId`, `objectiveIds`, `title`, `body`, `origin`, `generatedStudyGuidance`, `contentVersion`, `sourceRefs`, `needsReview`, `reviewNotes` | ID begins `lesson-`; `origin` is `source` or `generated`; `generatedStudyGuidance` is true exactly for generated guidance; source-derived body has references; `contentVersion` identifies the version reviewed. |
+| Lesson | `id`, `moduleId`, `objectiveIds`, `title`, `contentVersion`, `materialSectionIds`, `needsReview`, `reviewNotes` | ID begins `lesson-`; it owns one ordered list of Material Sections without acquiring a single section origin; `materialSectionIds` equals the compiled section IDs in order; `contentVersion` identifies the version reviewed. |
 
 ## Material Sections
 
-Each material section requires exactly `id`, `lessonId`, `title`, `origin`, `generatedStudyGuidance`, `summaries`, `terms`, `examples`, `mistakes`, `examTips`, `recaps`, `sourceRefs`, `linkedQuestionIds`, `contentVersion`, `needsReview`, and `reviewNotes`. `id` is unique and `lessonId` must identify an existing `lesson-` record. `origin` is exactly `source` or `generated`, and `generatedStudyGuidance` is true exactly when `origin` is `generated`; the UI displays the corresponding source or generated label. A page that needs both origins uses separate labelled sections rather than merging their claims. `contentVersion` identifies the compiled lesson version. `sourceRefs` is the section-level evidence set; every non-empty item below also carries its own non-empty `sourceRefs` so a learner-facing claim remains traceable.
+`examples/lesson.example.json` is the exact authoring shape. It contains exactly `id`, `moduleId`, `objectiveIds`, `title`, `contentVersion`, `materialSectionIds`, `learningObjectives`, `materialSections`, `needsReview`, `reviewNotes`, and `review`. The Lesson is written once. Its `materialSections` array contains one or more exact section objects, sorted by ascending unique positive `order`; `materialSectionIds` must equal their unique IDs in that same order.
+
+Each authoring section contains exactly `id`, `order`, `title`, `origin`, `label`, `generatedStudyGuidance`, `summary`, `explanation`, `body`, `keyTerms`, `workedExamples`, `commonMistakes`, `examTips`, `recap`, `sourceRefs`, `linkedQuestionIds`, `needsReview`, and `reviewNotes`. Section IDs begin `material-section-`. A `source` section has label `Source material` and `generatedStudyGuidance: false`; a `generated` section has label `Generated study guidance` and `generatedStudyGuidance: true`. Each section has its own non-empty `sourceRefs`; generated guidance remains evidence-backed. `body` is exactly its two-to-five `explanation` paragraphs joined by two newline characters. Thus one Lesson can own multiple origins without duplicating its identity, objectives, version, or review.
+
+Compilation emits one canonical Material Section per authoring section, in the same order. Each compiled section contains exactly `id`, `lessonId`, `order`, `title`, `origin`, `label`, `generatedStudyGuidance`, `summaries`, `terms`, `examples`, `mistakes`, `examTips`, `recaps`, `sourceRefs`, `linkedQuestionIds`, `contentVersion`, `needsReview`, and `reviewNotes`. `lessonId` and `contentVersion` come from the owning Lesson; identity, order, labels, flags, evidence, links, and review flags come from that authoring section. A page that needs both origins renders these separate labelled records rather than merging their claims. Every non-empty item below also carries its own non-empty `sourceRefs` so a learner-facing claim remains traceable.
 
 | Field | Type | Rule |
 | --- | --- | --- |
