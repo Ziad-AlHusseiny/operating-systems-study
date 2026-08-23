@@ -91,6 +91,48 @@ VERIFIED_MCQ_ANSWER_KEY = {
     "gq-os-ch02-part3-004": 1,
     "gq-os-ch02-part3-005": 1,
     "gq-os-ch02-part3-006": 1,
+    "gq-os-ch03-part1-001": 1,
+    "gq-os-ch03-part1-002": 2,
+    "gq-os-ch03-part1-003": 0,
+    "gq-os-ch03-part1-004": 3,
+    "gq-os-ch03-part1-005": 1,
+    "gq-os-ch03-part1-006": 2,
+    "gq-os-ch03-part2-001": 1,
+    "gq-os-ch03-part2-002": 2,
+    "gq-os-ch03-part2-003": 0,
+    "gq-os-ch03-part2-004": 3,
+    "gq-os-ch03-part2-005": 1,
+    "gq-os-ch03-part2-006": 2,
+    "gq-os-ch03-part3-001": 1,
+    "gq-os-ch03-part3-002": 2,
+    "gq-os-ch03-part3-003": 0,
+    "gq-os-ch03-part3-004": 3,
+    "gq-os-ch03-part3-005": 1,
+    "gq-os-ch03-part3-006": 2,
+    "gq-os-ch05-part1-001": 1,
+    "gq-os-ch05-part1-002": 2,
+    "gq-os-ch05-part1-003": 0,
+    "gq-os-ch05-part1-004": 3,
+    "gq-os-ch05-part1-005": 1,
+    "gq-os-ch05-part1-006": 2,
+    "gq-os-ch05-part2-001": 2,
+    "gq-os-ch05-part2-002": 0,
+    "gq-os-ch05-part2-003": 3,
+    "gq-os-ch05-part2-004": 1,
+    "gq-os-ch05-part2-005": 2,
+    "gq-os-ch05-part2-006": 3,
+    "gq-os-ch05-part3-001": 1,
+    "gq-os-ch05-part3-002": 2,
+    "gq-os-ch05-part3-003": 0,
+    "gq-os-ch05-part3-004": 3,
+    "gq-os-ch05-part3-005": 1,
+    "gq-os-ch05-part3-006": 2,
+    "gq-os-ch05-part4-001": 1,
+    "gq-os-ch05-part4-002": 2,
+    "gq-os-ch05-part4-003": 0,
+    "gq-os-ch05-part4-004": 3,
+    "gq-os-ch05-part4-005": 1,
+    "gq-os-ch05-part4-006": 2,
 }
 
 
@@ -108,6 +150,16 @@ class OSContentPartTests(unittest.TestCase):
         if not content_dir.exists():
             return []
         return [json.loads(path.read_text(encoding="utf-8")) for path in sorted(content_dir.glob("*.json"))]
+
+    def combined_part(self):
+        parts = self.existing_parts()
+        return {
+            "version": "1.0",
+            "modules": [item for part in parts for item in part["modules"]],
+            "lessons": [item for part in parts for item in part["lessons"]],
+            "questions": [item for part in parts for item in part["questions"]],
+            "explanations": [item for part in parts for item in part["explanations"]],
+        }
 
     def assert_all_teaching_pages_covered(self, part, source_ids):
         expected = {
@@ -183,17 +235,24 @@ class OSContentPartTests(unittest.TestCase):
             self.assertEqual(lesson_source_ids, {source_id})
         self.assert_all_teaching_pages_covered(part, {f"os-lec-{n:02d}" for n in range(1, 8)})
 
+    def test_chapters_three_and_five_have_seven_traceable_lessons(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        self.assertEqual([module["id"] for module in part["modules"]], ["module-os-ch03", "module-os-ch05"])
+        self.assertEqual([module["order"] for module in part["modules"]], [3, 4])
+        self.assertEqual(len(part["lessons"]), 7)
+        self.assert_all_teaching_pages_covered(part, {f"os-lec-{n:02d}" for n in range(8, 15)})
+
     def test_every_generated_question_has_separate_arabic_guidance(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         explanations = {item["questionId"]: item for item in part["explanations"]}
-        self.assertEqual(len(part["questions"]), 70)
+        self.assertEqual(len(part["questions"]), 140)
         for question in part["questions"]:
             self.assertEqual(question["origin"], "generated")
             self.assertIn(question["id"], explanations)
             self.assertIn(len(explanations[question["id"]]["explanation"]), (2, 3))
 
     def test_part_and_authoring_records_use_exact_canonical_shapes(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         self.assertEqual(set(part), PART_KEYS)
         self.assertEqual(part["version"], "1.0")
         for module in part["modules"]:
@@ -241,7 +300,7 @@ class OSContentPartTests(unittest.TestCase):
                 self.assertTrue(any(section[field] for section in lesson["materialSections"]), f"{lesson['id']} lacks {field}")
 
     def test_source_references_resolve_within_teaching_page_bounds(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         sources = {source["id"]: source for source in self.manifest["sources"]}
         classifications = {
             (page["sourceId"], page["page"]): page["classification"]
@@ -257,7 +316,7 @@ class OSContentPartTests(unittest.TestCase):
             self.assertEqual(classifications[(source_ref["sourceId"], source_ref["location"])], "teaching")
 
     def test_module_objectives_and_lesson_question_links_resolve_in_order(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         question_ids = {question["id"] for question in part["questions"]}
         for module in part["modules"]:
             module_lessons = [lesson for lesson in part["lessons"] if lesson["moduleId"] == module["id"]]
@@ -278,8 +337,8 @@ class OSContentPartTests(unittest.TestCase):
             )
 
     def test_question_counts_quotas_and_deterministic_true_false_patterns(self):
-        part = self.load_part("content/os/ch01-ch02.json")
-        self.assertEqual(Counter(question["type"] for question in part["questions"]), {"mcq": 42, "true-false": 28})
+        part = self.combined_part()
+        self.assertEqual(Counter(question["type"] for question in part["questions"]), {"mcq": 84, "true-false": 56})
         patterns = ["TTFF", "TFTF", "TFFT", "FTTF", "FTFT", "FFTT"]
         true_false_answers = []
         for lesson in part["lessons"]:
@@ -296,10 +355,10 @@ class OSContentPartTests(unittest.TestCase):
             actual_pattern = "".join("T" if question["correctAnswer"] else "F" for question in true_false)
             self.assertEqual(actual_pattern, expected_pattern)
             true_false_answers.extend(question["correctAnswer"] for question in true_false)
-        self.assertEqual(Counter(true_false_answers), {True: 14, False: 14})
+        self.assertEqual(Counter(true_false_answers), {True: 28, False: 28})
 
     def test_generated_questions_use_exact_answer_evidence_and_provenance_shapes(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         lesson_objectives = {
             lesson["id"]: set(lesson["objectiveIds"])
             for lesson in part["lessons"]
@@ -350,15 +409,16 @@ class OSContentPartTests(unittest.TestCase):
                 self.assertIn(claim["support"], {"direct", "derived"})
 
     def test_mcq_options_have_precise_source_grounded_evidence(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         page_text = {
             (page["sourceId"], page["page"]): page["text"]
             for page in self.extraction["pages"]
         }
-        uniform_option_evidence = 0
-        direct_option_claims = 0
-        option_claims = 0
+        uniform_option_evidence = Counter()
+        direct_option_claims = Counter()
+        option_claims = Counter()
         for question in (item for item in part["questions"] if item["type"] == "mcq"):
+            part_name = "ch01-ch02" if question["id"].startswith(("gq-os-ch01-", "gq-os-ch02-")) else "ch03-ch05"
             evidence = {item["target"]: item for item in question["evidenceMap"]}
             signatures = []
             for index, option in enumerate(question["options"]):
@@ -381,14 +441,15 @@ class OSContentPartTests(unittest.TestCase):
                 self.assertLessEqual(len(option_claim["sourceRefs"]), 2)
                 self.assertEqual(rationale_claim["sourceRefs"], option_claim["sourceRefs"])
                 self.assertEqual(rationale_claim["support"], "derived")
-                option_claims += 1
-                direct_option_claims += option_claim["support"] == "direct"
-            uniform_option_evidence += len(set(signatures)) == 1
-        self.assertLessEqual(uniform_option_evidence, 8)
-        self.assertLess(direct_option_claims, option_claims)
+                option_claims[part_name] += 1
+                direct_option_claims[part_name] += option_claim["support"] == "direct"
+            uniform_option_evidence[part_name] += len(set(signatures)) == 1
+        for part_name in ("ch01-ch02", "ch03-ch05"):
+            self.assertLessEqual(uniform_option_evidence[part_name], 8)
+            self.assertLess(direct_option_claims[part_name], option_claims[part_name])
 
     def test_mcq_answer_indexes_match_the_manually_verified_source_oracle(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         actual = {
             question["id"]: question["correctAnswer"]
             for question in part["questions"]
@@ -403,9 +464,9 @@ class OSContentPartTests(unittest.TestCase):
             )
 
     def test_analyze_items_require_multistep_reasoning_signals(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         analyze_items = [question for question in part["questions"] if question["bloomLevel"] == "analyze"]
-        self.assertEqual(len(analyze_items), 14)
+        self.assertEqual(len(analyze_items), 28)
         reasoning_signal = re.compile(
             r"\b(after|although|before|because|compared|despite|diagnos|fails?|observes?|rather than|sequence|trade-off|when|while)\b",
             re.IGNORECASE,
@@ -416,7 +477,7 @@ class OSContentPartTests(unittest.TestCase):
             self.assertGreaterEqual(len(self.proposition_tokens(question)), 10, question["id"])
 
     def test_validated_questions_do_not_repeat_semantic_propositions(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         known_pairs = {
             frozenset(("gq-os-ch01-part1-002", "gq-os-ch01-part1-007")),
             frozenset(("gq-os-ch01-part1-004", "gq-os-ch01-part1-009")),
@@ -446,7 +507,7 @@ class OSContentPartTests(unittest.TestCase):
             self.assertEqual(question["duplicateComparison"]["matchClass"], "none")
 
     def test_prompts_are_unique_and_validated_review_states_are_consistent(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         normalized = [question["duplicateComparison"]["normalizedPrompt"] for question in part["questions"]]
         self.assertEqual(len(normalized), len(set(normalized)))
         for lesson in part["lessons"]:
@@ -466,10 +527,10 @@ class OSContentPartTests(unittest.TestCase):
             self.assertNotIn("approval", question["review"])
 
     def test_arabic_explanations_use_exact_shape_and_match_questions(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         questions = {question["id"]: question for question in part["questions"]}
-        self.assertEqual(len(part["explanations"]), 70)
-        self.assertEqual(len({item["id"] for item in part["explanations"]}), 70)
+        self.assertEqual(len(part["explanations"]), 140)
+        self.assertEqual(len({item["id"] for item in part["explanations"]}), 140)
         for item in part["explanations"]:
             self.assertEqual(set(item), EXPLANATION_KEYS)
             self.assertEqual(item["id"], f"explanation-{item['questionId']}-ar")
@@ -488,8 +549,50 @@ class OSContentPartTests(unittest.TestCase):
             self.assertEqual(item["reviewNotes"], "")
             self.assertEqual(item["review"], {"status": "validated"})
 
+    def test_new_arabic_explanation_bodies_exactly_join_their_paragraphs(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        self.assertEqual(len(part["explanations"]), 70)
+        for explanation in part["explanations"]:
+            self.assertEqual(explanation["body"], "\n\n".join(explanation["explanation"]))
+
+    def test_cross_part_ids_and_semantic_propositions_are_unique(self):
+        parts = self.existing_parts()
+        combined = self.combined_part()
+        id_groups = [
+            combined["modules"],
+            combined["lessons"],
+            [objective for lesson in combined["lessons"] for objective in lesson["learningObjectives"]],
+            [section for lesson in combined["lessons"] for section in lesson["materialSections"]],
+            combined["questions"],
+            combined["explanations"],
+        ]
+        for records in id_groups:
+            ids = [record["id"] for record in records]
+            self.assertEqual(len(ids), len(set(ids)))
+
+        semantic_signatures = []
+        for question in combined["questions"]:
+            answer = (
+                question["options"][question["correctAnswer"]]
+                if question["type"] == "mcq"
+                else question["correctedStatement"] or str(question["correctAnswer"])
+            )
+            semantic_signatures.append(self.normalized_prompt(
+                " ".join((question["prompt"], question["rationale"], answer))
+            ))
+        self.assertEqual(len(semantic_signatures), len(set(semantic_signatures)))
+
+        old_questions = parts[0]["questions"]
+        new_questions = parts[1]["questions"]
+        for old_question in old_questions:
+            old_tokens = self.proposition_tokens(old_question)
+            for new_question in new_questions:
+                new_tokens = self.proposition_tokens(new_question)
+                overlap = len(old_tokens & new_tokens) / min(len(old_tokens), len(new_tokens))
+                self.assertLess(overlap, 0.58, f"cross-part semantic near-duplicate: {old_question['id']} / {new_question['id']}")
+
     def test_generated_guidance_is_arabic_and_prohibited_official_claims_are_absent(self):
-        part = self.load_part("content/os/ch01-ch02.json")
+        part = self.combined_part()
         for lesson in part["lessons"]:
             for section in lesson["materialSections"]:
                 if section["origin"] == "generated":
