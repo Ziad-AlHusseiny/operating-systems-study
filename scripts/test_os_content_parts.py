@@ -39,6 +39,15 @@ EXPLANATION_KEYS = {
     "needsReview", "reviewNotes", "review",
 }
 ARABIC_RE = re.compile(r"[\u0600-\u06ff]")
+EVIDENCE_STOP_WORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "because", "by", "does",
+    "for", "from", "in", "into", "is", "it", "its", "of", "on", "or",
+    "that", "the", "their", "this", "to", "which", "while", "with",
+}
+SEMANTIC_STOP_WORDS = EVIDENCE_STOP_WORDS | {
+    "answer", "correct", "described", "lecture", "option", "statement",
+    "system", "what", "when",
+}
 
 
 class OSContentPartTests(unittest.TestCase):
@@ -89,6 +98,25 @@ class OSContentPartTests(unittest.TestCase):
     def questions_for_lesson(self, part, lesson_id):
         prefix = lesson_id.replace("lesson-", "gq-") + "-"
         return [question for question in part["questions"] if question["id"].startswith(prefix)]
+
+    def content_tokens(self, value, stop_words):
+        tokens = set()
+        for token in re.findall(r"[a-z0-9]+", value.casefold()):
+            if (len(token) > 1 or token.isdigit()) and token not in stop_words:
+                if len(token) > 4 and token.endswith("ies"):
+                    token = token[:-3] + "y"
+                elif len(token) > 3 and token.endswith("s"):
+                    token = token[:-1]
+                tokens.add(token)
+        return tokens
+
+    def proposition_tokens(self, question):
+        value = question["prompt"] + " " + question["rationale"]
+        if question["type"] == "mcq":
+            value += " " + question["options"][question["correctAnswer"]]
+        elif question["correctedStatement"]:
+            value += " " + question["correctedStatement"]
+        return self.content_tokens(value, SEMANTIC_STOP_WORDS)
 
     def test_chapters_one_and_two_have_seven_traceable_lessons(self):
         part = self.load_part("content/os/ch01-ch02.json")
@@ -276,6 +304,87 @@ class OSContentPartTests(unittest.TestCase):
                 self.assertTrue(claim["claimId"])
                 self.assertTrue(claim["sourceRefs"])
                 self.assertIn(claim["support"], {"direct", "derived"})
+
+    def test_mcq_options_have_precise_source_grounded_evidence(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        page_text = {
+            (page["sourceId"], page["page"]): page["text"]
+            for page in self.extraction["pages"]
+        }
+        uniform_option_evidence = 0
+        direct_option_claims = 0
+        option_claims = 0
+        for question in (item for item in part["questions"] if item["type"] == "mcq"):
+            evidence = {item["target"]: item for item in question["evidenceMap"]}
+            signatures = []
+            for index, option in enumerate(question["options"]):
+                option_claim = evidence[f"options[{index}]"]
+                rationale_claim = evidence[f"distractorRationales[{index}]"]
+                signatures.append((
+                    tuple((ref["sourceId"], ref["location"]) for ref in option_claim["sourceRefs"]),
+                    option_claim["support"],
+                ))
+                source_text = " ".join(
+                    page_text[(ref["sourceId"], ref["location"])]
+                    for ref in option_claim["sourceRefs"]
+                )
+                option_tokens = self.content_tokens(option, EVIDENCE_STOP_WORDS)
+                source_tokens = self.content_tokens(source_text, EVIDENCE_STOP_WORDS)
+                self.assertTrue(
+                    option_tokens & source_tokens,
+                    f"{question['id']} option {index} has no lexical grounding in its cited pages",
+                )
+                self.assertLessEqual(len(option_claim["sourceRefs"]), 2)
+                self.assertEqual(rationale_claim["sourceRefs"], option_claim["sourceRefs"])
+                self.assertEqual(rationale_claim["support"], "derived")
+                option_claims += 1
+                direct_option_claims += option_claim["support"] == "direct"
+            uniform_option_evidence += len(set(signatures)) == 1
+        self.assertLessEqual(uniform_option_evidence, 8)
+        self.assertLess(direct_option_claims, option_claims)
+
+    def test_analyze_items_require_multistep_reasoning_signals(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        analyze_items = [question for question in part["questions"] if question["bloomLevel"] == "analyze"]
+        self.assertEqual(len(analyze_items), 14)
+        reasoning_signal = re.compile(
+            r"\b(after|although|before|because|compared|despite|diagnos|fails?|observes?|rather than|sequence|trade-off|when|while)\b",
+            re.IGNORECASE,
+        )
+        for question in analyze_items:
+            self.assertGreaterEqual(len(question["prompt"].split()), 18, question["id"])
+            self.assertRegex(question["prompt"], reasoning_signal, question["id"])
+            self.assertGreaterEqual(len(self.proposition_tokens(question)), 10, question["id"])
+
+    def test_validated_questions_do_not_repeat_semantic_propositions(self):
+        part = self.load_part("content/os/ch01-ch02.json")
+        known_pairs = {
+            frozenset(("gq-os-ch01-part1-002", "gq-os-ch01-part1-007")),
+            frozenset(("gq-os-ch01-part1-004", "gq-os-ch01-part1-009")),
+            frozenset(("gq-os-ch01-part3-002", "gq-os-ch01-part3-005")),
+            frozenset(("gq-os-ch02-part1-005", "gq-os-ch02-part1-010")),
+            frozenset(("gq-os-ch02-part1-006", "gq-os-ch02-part1-009")),
+            frozenset(("gq-os-ch02-part2-006", "gq-os-ch02-part2-008")),
+            frozenset(("gq-os-ch02-part3-001", "gq-os-ch02-part3-007")),
+            frozenset(("gq-os-ch02-part3-005", "gq-os-ch02-part3-009")),
+        }
+        observed_pairs = set()
+        for lesson in part["lessons"]:
+            questions = self.questions_for_lesson(part, lesson["id"])
+            for left_index, left in enumerate(questions):
+                for right in questions[left_index + 1:]:
+                    left_tokens = self.proposition_tokens(left)
+                    right_tokens = self.proposition_tokens(right)
+                    overlap = len(left_tokens & right_tokens) / min(len(left_tokens), len(right_tokens))
+                    pair = frozenset((left["id"], right["id"]))
+                    if pair in known_pairs:
+                        observed_pairs.add(pair)
+                        self.assertLess(overlap, 0.35, f"known semantic overlap remains: {sorted(pair)}")
+                    self.assertLess(overlap, 0.42, f"semantic near-duplicate remains: {left['id']} / {right['id']}")
+        self.assertEqual(observed_pairs, known_pairs)
+        for question in part["questions"]:
+            self.assertEqual(question["duplicateComparison"]["candidateIds"], [])
+            self.assertEqual(question["duplicateComparison"]["matchClass"], "none")
 
     def test_prompts_are_unique_and_validated_review_states_are_consistent(self):
         part = self.load_part("content/os/ch01-ch02.json")
