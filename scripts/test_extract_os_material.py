@@ -1,10 +1,27 @@
+import json
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
 from pypdf import PdfWriter
 
-from scripts.extract_os_material import _classify_page, build_payload
+from scripts.extract_os_material import (
+    _classify_page,
+    _source_verified_classification,
+    build_payload,
+)
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_SOURCE_IDS = [f"os-lec-{number:02d}" for number in range(1, 22)]
+EXPECTED_CLASS_COUNTS = {
+    "teaching": 454,
+    "cover": 21,
+    "divider": 21,
+    "reference": 0,
+    "closing": 21,
+}
 
 
 class ExtractOperatingSystemsMaterialTests(unittest.TestCase):
@@ -53,6 +70,58 @@ class ExtractOperatingSystemsMaterialTests(unittest.TestCase):
             ),
             "teaching",
         )
+
+    def test_mismatched_non_teaching_override_is_flagged_for_review(self):
+        classification, evidence, review = _source_verified_classification(
+            {"id": "os-lec-01", "pages": 29},
+            1,
+            "Substantive content that does not match the verified cover page.",
+        )
+
+        self.assertEqual(classification, "teaching")
+        self.assertEqual(evidence["method"], "ambiguous-override")
+        self.assertEqual(review["status"], "needs-review")
+
+    def test_changed_source_digest_cannot_use_a_non_teaching_override(self):
+        classification, evidence, review = _source_verified_classification(
+            {"id": "os-lec-01", "pages": 29, "sha256": "changed-source"},
+            1,
+            "Operating System Concepts",
+        )
+
+        self.assertEqual(classification, "teaching")
+        self.assertEqual(evidence["method"], "ambiguous-override")
+        self.assertEqual(review["status"], "needs-review")
+
+    def test_committed_corpus_inventory_and_classification_evidence(self):
+        payload = json.loads(
+            (REPOSITORY_ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8")
+        )
+        audit = (REPOSITORY_ROOT / "reports" / "SOURCE_AUDIT_REPORT.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertEqual([source["id"] for source in payload["sources"]], EXPECTED_SOURCE_IDS)
+        self.assertEqual(len(payload["sources"]), 21)
+        self.assertEqual(len(payload["pages"]), 517)
+        self.assertEqual(sum(source["pages"] for source in payload["sources"]), 517)
+        class_counts = Counter(page["classification"] for page in payload["pages"])
+        self.assertEqual(
+            {classification: class_counts[classification] for classification in EXPECTED_CLASS_COUNTS},
+            EXPECTED_CLASS_COUNTS,
+        )
+        self.assertTrue(
+            all(page["text"].strip() for page in payload["pages"] if page["classification"] == "teaching")
+        )
+        self.assertTrue(
+            all(
+                page["classificationEvidence"]["method"] == "source-verified-override"
+                for page in payload["pages"]
+                if page["classification"] != "teaching"
+            )
+        )
+        for classification, count in EXPECTED_CLASS_COUNTS.items():
+            self.assertIn(f"| {classification} | {count} |", audit)
 
 
 if __name__ == "__main__":

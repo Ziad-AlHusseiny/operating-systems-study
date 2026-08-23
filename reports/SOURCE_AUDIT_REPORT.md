@@ -10,7 +10,7 @@
 - OCR corrections: none; embedded PDF text was extracted page by page.
 - Unreadable locations: none.
 - Duplicate groups: none detected by SHA-256.
-- Review items: none from source ingestion.
+- Review items: 0 from source ingestion.
 
 ## Page classifications
 
