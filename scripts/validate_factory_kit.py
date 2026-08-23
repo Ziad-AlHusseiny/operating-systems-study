@@ -51,6 +51,18 @@ def validate_required_files(root: Path, required: tuple[str, ...]) -> list[str]:
     ]
 
 
+def validate_markdown_headings(path: Path, required: tuple[str, ...]) -> list[str]:
+    try:
+        headings = {
+            line.lstrip("#").strip()
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.startswith("#")
+        }
+    except OSError as error:
+        return [f"{path}: cannot read Markdown: {error}"]
+    return [f"{path}: missing heading: {heading}" for heading in required if heading not in headings]
+
+
 def validate_kit(root: Path) -> list[str]:
     errors = validate_required_files(root, REQUIRED_DOCS + REQUIRED_EXAMPLES)
     for name in REQUIRED_EXAMPLES:
