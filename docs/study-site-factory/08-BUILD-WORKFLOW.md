@@ -142,8 +142,9 @@ replace a final artifact only after the complete chunk validates.
   and official-question coverage in `reports/QUESTION_QUALITY_REPORT.md`.
 - **Gate:** Gate 3, Canonical Content.
 - **Resume condition:** resume by stable `q-` range; do not regenerate
-  unchanged canonical records, and recheck all IDs and duplicate groups after
-  merging chunks.
+  unchanged canonical records. Any semantic correction increments
+  `contentVersion` and invalidates prior approval for that record. Recheck all
+  IDs and duplicate groups after merging chunks.
 
 ## Stage 8: Generate MCQ and True/False pools
 

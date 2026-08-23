@@ -11,6 +11,8 @@ Copy this form into the new project's input folder and complete every field.
 - Project slug:
 - Description:
 - Brand initials:
+- Brand primary color (CSS color value; must pass the QA contrast gates):
+- Brand accent color (CSS color value; must pass the QA contrast gates):
 - Source language:
 - Study language:
 
@@ -36,15 +38,19 @@ Select exactly one option; these choices are mutually exclusive.
 
 ### Question and exam settings
 
-- MCQs per lesson:
-- True/False questions per lesson:
-- Generated-question review policy for Mock Exam:
+- MCQs per lesson (use `0` to disable generated MCQs):
+- True/False questions per lesson (use `0` to disable generated True/False):
+- At least one generated type must remain enabled unless the content policy is
+  `source-only`, which requires both generated counts to be `0`.
+- Default Practice question count:
+- Generated-question review policy for Mock Exam: Human review required /
+  Automated validation permitted
 - Default exam question count:
 - Default exam minutes:
 
 ### Deployment
 
-- Hosting provider:
+- Hosting provider: GitHub Pages (fixed for this kit).
 - GitHub repository:
 - GitHub branch:
 - Public URL:
@@ -58,12 +64,15 @@ Select exactly one option; these choices are mutually exclusive.
 | `{{PROJECT_SLUG}}` | Stable lowercase project identifier. |
 | `{{PROJECT_DESCRIPTION}}` | Short source-backed site description. |
 | `{{BRAND_INITIALS}}` | Brief brand mark shown by the site. |
+| `{{BRAND_PRIMARY_COLOR}}` | Restrained primary CSS color token; it must pass the fixed contrast gates. |
+| `{{BRAND_ACCENT_COLOR}}` | Restrained accent CSS color token; it must pass the fixed contrast gates. |
 | `{{SOURCE_LANGUAGE}}` | Language used by the supplied source materials. |
 | `{{STUDY_LANGUAGE}}` | Language used by learners in the site. |
 | `{{CONTENT_POLICY}}` | Exactly one of `source-only`, `source-plus-generated`, or `generated-only`. |
 | `{{ALLOW_OUTSIDE_SOURCES}}` | Whether approved external authoritative sources may be used. |
 | `{{MCQ_PER_LESSON}}` | Target generated multiple-choice questions per supported lesson. |
 | `{{TRUE_FALSE_PER_LESSON}}` | Target generated true/false questions per supported lesson. |
+| `{{DEFAULT_PRACTICE_COUNT}}` | Positive default number of questions selected for a Practice session. |
 | `{{GENERATED_EXAM_REVIEW_POLICY}}` | Approval rule required before generated questions enter Mock Exam. |
 | `{{DEFAULT_EXAM_COUNT}}` | Default number of questions in a Mock Exam. |
 | `{{DEFAULT_EXAM_MINUTES}}` | Default Mock Exam time limit in minutes. |

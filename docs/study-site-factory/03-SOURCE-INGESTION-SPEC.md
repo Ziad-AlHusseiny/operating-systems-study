@@ -11,13 +11,21 @@ inventoried -> extracted -> visually-checked -> normalized -> accepted
                                       `-> needs-review
 ```
 
-Every configured file is inventoried before extraction. There is no silent skipping. A missing, unreadable, password-protected, corrupt, unsupported, or partially extracted source enters `needs-review` with its failure and known location. Do not infer an answer, answer key, correction, or missing content from surrounding material.
+Every configured file is inventoried before extraction. Its configured collection and learner-facing label are copied into the source manifest so filtering and display do not depend on a filename. There is no silent skipping. A missing, unreadable, password-protected, corrupt, unsupported, or partially extracted source enters `needs-review` with its failure and known location. Do not infer an answer, answer key, correction, or missing content from surrounding material.
 
 ## Required Audit Output
 
 `SOURCE_AUDIT_REPORT.md` is required for each ingestion run. It records source counts by format and status; PDF page counts and PPTX slide counts; unreadable locations; OCR corrections; duplicate groups; answer-key presence or absence; and all review items. Each entry identifies the `source-` ID, original filename, checksum, extraction tool/version, and completion time.
 
 ## Format Rules
+
+Word-compatible `.doc`, `.odt`, and `.rtf` inputs use the canonical `docx`
+manifest format after a recorded conversion; slide-deck `.ppt` and `.odp`
+inputs use canonical `pptx`. Conversion creates only a working derivative and
+preserves the original file and checksum in the inventory. Record the converter
+and version, retain the derivative hash, and visually compare the derivative
+with the original before acceptance. A conversion or fidelity failure is
+`needs-review`, never permission to omit the input.
 
 | Format | Inventory and extraction | Visual rendering | Provenance and confidence | Failure behavior |
 | --- | --- | --- | --- | --- |
@@ -34,4 +42,4 @@ Normalization creates canonical whitespace, Unicode, headings, and location loca
 
 ## Answer-Key Boundaries
 
-The audit explicitly records whether an answer key is present, absent, partial, unreadable, or conflicting. Only an explicit source answer key may populate an official answer. When no reliable answer key exists, preserve the question with `needsReview: true`, an empty or unscored answer according to its contract, and a review note. Generated content may reason from approved material, but it must not be represented as an official answer.
+The audit explicitly records whether an answer key is present, absent, partial, unreadable, or conflicting. Only an explicit source answer key may populate an official answer. When no reliable answer key exists, preserve the question with `needsReview: true`, `correctAnswer: null`, and a non-empty review note under the official-question contract. Generated content may reason from approved material, but it must not be represented as an official answer.

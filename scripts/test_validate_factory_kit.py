@@ -37,6 +37,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "moduleId",
             "objectiveIds",
             "title",
+            "origin",
+            "generatedStudyGuidance",
+            "contentVersion",
             "learningObjectives",
             "summary",
             "explanation",
@@ -58,6 +61,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "type",
             "prompt",
             "topic",
+            "contentVersion",
             "options",
             "correctAnswer",
             "sourceRefs",
@@ -103,6 +107,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "explanation",
             "body",
             "note",
+            "contentVersion",
             "sourceRefs",
             "needsReview",
             "reviewNotes",
@@ -141,6 +146,8 @@ class FactoryKitValidatorTests(unittest.TestCase):
         "examples/source-manifest.example.json": (
             ("sources", 0, "id"),
             ("sources", 0, "fileName"),
+            ("sources", 0, "collection"),
+            ("sources", 0, "label"),
             ("sources", 0, "format"),
             ("sources", 0, "checksum"),
             ("sources", 0, "pages"),
@@ -274,7 +281,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             (("contentPolicy", "mode"), "hybrid"),
             (("contentPolicy", "allowOutsideSources"), "false"),
             (("contentPolicy", "generatedQuestionsRequireHumanReviewForExam"), 1),
-            (("questionGeneration", "mcqPerLesson"), 0),
+            (("questionGeneration", "mcqPerLesson"), -1),
             (("questionGeneration", "difficultyPercent", "hard"), 19),
             (("questionGeneration", "bloomPercent", "remember"), "25"),
             (("exam", "defaultMinutes"), 0),
@@ -291,6 +298,40 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     container = container[part]
                 container[field_path[-1]] = invalid_value
                 self.assertTrue(validate_example_payload(name, payload))
+
+    def test_project_config_uses_zero_quota_to_disable_one_question_type(self):
+        name = "examples/project-config.example.json"
+        for disabled, enabled in (
+            ("mcqPerLesson", "trueFalsePerLesson"),
+            ("trueFalsePerLesson", "mcqPerLesson"),
+        ):
+            with self.subTest(disabled=disabled):
+                payload = self.load_example(name)
+                payload["questionGeneration"][disabled] = 0
+                self.assertGreater(payload["questionGeneration"][enabled], 0)
+                self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_project_config_rejects_disabling_both_question_types(self):
+        name = "examples/project-config.example.json"
+        payload = self.load_example(name)
+        payload["questionGeneration"]["mcqPerLesson"] = 0
+        payload["questionGeneration"]["trueFalsePerLesson"] = 0
+
+        errors = validate_example_payload(name, payload)
+
+        self.assertIn(
+            f"{name}: questionGeneration: at least one question type must be enabled",
+            errors,
+        )
+
+    def test_source_only_project_config_accepts_no_generated_question_types(self):
+        name = "examples/project-config.example.json"
+        payload = self.load_example(name)
+        payload["contentPolicy"]["mode"] = "source-only"
+        payload["questionGeneration"]["mcqPerLesson"] = 0
+        payload["questionGeneration"]["trueFalsePerLesson"] = 0
+
+        self.assertEqual(validate_example_payload(name, payload), [])
 
     def test_project_config_rejects_unknown_nested_fields(self):
         name = "examples/project-config.example.json"
@@ -349,6 +390,8 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 source = {
                     "id": "source-format",
                     "fileName": f"example.{source_format}",
+                    "collection": "Format examples",
+                    "label": f"{source_format} example",
                     "format": source_format,
                     "checksum": "sha256:format-example",
                     "status": "accepted",
@@ -378,6 +421,8 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 source = {
                     "id": "source-format",
                     "fileName": f"example.{source_format}",
+                    "collection": "Format examples",
+                    "label": f"{source_format} example",
                     "format": source_format,
                     "checksum": "sha256:format-example",
                     "status": "accepted",
@@ -483,21 +528,51 @@ class FactoryKitValidatorTests(unittest.TestCase):
             any("unexpected top-level keys: items" in e for e in mixed_errors)
         )
 
+    def test_official_review_item_accepts_explicitly_missing_answer(self):
+        name = "examples/official-question.example.json"
+        payload = self.load_example(name)
+        payload["correctAnswer"] = None
+        payload["needsReview"] = True
+        payload["reviewNotes"] = "The supplied material has no reliable answer key."
+
+        self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_scoreable_official_question_rejects_missing_answer(self):
+        name = "examples/official-question.example.json"
+        payload = self.load_example(name)
+        payload["correctAnswer"] = None
+
+        errors = validate_example_payload(name, payload)
+
+        self.assertTrue(
+            any("correctAnswer: must be a valid zero-based option index" in e for e in errors),
+            errors,
+        )
+
+    def test_missing_official_answer_rejects_non_string_review_note(self):
+        name = "examples/official-question.example.json"
+        payload = self.load_example(name)
+        payload["correctAnswer"] = None
+        payload["needsReview"] = True
+        payload["reviewNotes"] = None
+
+        errors = validate_example_payload(name, payload)
+
+        self.assertIn(f"{name}: reviewNotes: must be a string", errors)
+
     def test_generated_questions_accept_mcq_and_true_false_conditional_shapes(self):
         name = "examples/generated-question.example.json"
         mcq = self.make_generated_question()
         true_false = self.make_generated_question()
         true_false["type"] = "true-false"
-        true_false["options"] = ["True", "False"]
-        true_false["correctAnswer"] = 1
+        true_false.pop("options")
+        true_false["correctAnswer"] = False
         true_false["correctedStatement"] = "The corrected proposition is true."
         true_false.pop("distractorRationales")
         targets = (
             "prompt",
             "correctAnswer",
             "rationale",
-            "options[0]",
-            "options[1]",
             "correctedStatement",
         )
         true_false["evidenceMap"] = [
@@ -510,7 +585,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
             for index, target in enumerate(targets)
         ]
         true_statement = copy.deepcopy(true_false)
-        true_statement["correctAnswer"] = 0
+        true_statement["correctAnswer"] = True
         true_statement["correctedStatement"] = None
         true_statement["evidenceMap"] = [
             evidence
@@ -522,15 +597,37 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertEqual(validate_example_payload(name, true_false), [])
         self.assertEqual(validate_example_payload(name, true_statement), [])
 
+    def test_generated_true_false_uses_boolean_answer_without_options(self):
+        name = "examples/generated-question.example.json"
+        payload = self.make_generated_question()
+        payload["type"] = "true-false"
+        payload.pop("options")
+        payload.pop("distractorRationales")
+        payload["correctAnswer"] = False
+        payload["correctedStatement"] = "The corrected proposition is true."
+        payload["evidenceMap"] = [
+            {
+                "claimId": f"claim-{index}",
+                "target": target,
+                "sourceRefs": [self.source_ref],
+                "support": "direct",
+            }
+            for index, target in enumerate(
+                ("prompt", "correctAnswer", "rationale", "correctedStatement")
+            )
+        ]
+
+        self.assertEqual(validate_example_payload(name, payload), [])
+
     def test_generated_questions_reject_mixed_or_unsupported_type_fields(self):
         name = "examples/generated-question.example.json"
         mixed = self.make_generated_question()
         mixed["correctedStatement"] = None
         mixed_true_false = self.make_generated_question()
         mixed_true_false["type"] = "true-false"
-        mixed_true_false["options"] = ["True", "False"]
-        mixed_true_false["correctAnswer"] = 0
+        mixed_true_false["correctAnswer"] = True
         mixed_true_false["correctedStatement"] = None
+        mixed_true_false.pop("distractorRationales")
         unsupported = self.make_generated_question()
         unsupported["type"] = "ordering"
         unsupported.pop("options")
@@ -550,7 +647,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
         self.assertTrue(
             any(
-                "unexpected top-level keys: distractorRationales" in e
+                "unexpected top-level keys: options" in e
                 for e in mixed_true_false_errors
             )
         )
@@ -564,13 +661,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def test_generated_true_false_enforces_correction_semantics(self):
         name = "examples/generated-question.example.json"
         for answer, correction, expected in (
-            (0, "Not allowed for true.", "must be null when correctAnswer is 0"),
-            (1, None, "must be a non-empty string when correctAnswer is 1"),
+            (True, "Not allowed for true.", "must be null when correctAnswer is true"),
+            (False, None, "must be a non-empty string when correctAnswer is false"),
         ):
             with self.subTest(answer=answer):
                 payload = self.make_generated_question()
                 payload["type"] = "true-false"
-                payload["options"] = ["True", "False"]
+                payload.pop("options")
                 payload["correctAnswer"] = answer
                 payload["correctedStatement"] = correction
                 payload.pop("distractorRationales")
@@ -1017,7 +1114,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def make_generated_question(self, review_status="human-reviewed"):
         states = {
             "draft": ("draft", "unreviewed", True, None),
-            "validated": ("validated", "unreviewed", True, None),
+            "validated": ("validated", "unreviewed", False, None),
             "human-reviewed": ("approved", "approved", False, "approved"),
             "needs-review": ("needs-review", "needs-review", True, "needs-review"),
             "rejected": ("rejected", "rejected", True, "rejected"),
@@ -1123,10 +1220,34 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
     def test_lesson_requires_canonical_compilation_fields(self):
         self.assertTrue(
-            {"objectiveIds", "body", "needsReview", "reviewNotes"}.issubset(
+            {
+                "objectiveIds",
+                "body",
+                "origin",
+                "generatedStudyGuidance",
+                "needsReview",
+                "reviewNotes",
+            }.issubset(
                 EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"]
             )
         )
+
+    def test_lesson_declares_generated_material_origin(self):
+        payload = self.load_example("examples/lesson.example.json")
+
+        self.assertEqual(payload.get("origin"), "generated")
+        self.assertIs(payload.get("generatedStudyGuidance"), True)
+
+    def test_lesson_spec_defines_each_content_policy_mode(self):
+        text = Path(
+            "docs/study-site-factory/05-MATERIAL-LESSONS-SPEC.md"
+        ).read_text(encoding="utf-8")
+
+        for mode in ("`source-only`", "`source-plus-generated`", "`generated-only`"):
+            with self.subTest(mode=mode):
+                self.assertIn(mode, text)
+        self.assertIn("`origin: source`", text)
+        self.assertIn("`origin: generated`", text)
 
     def test_lesson_rejects_canonical_body_or_objective_mapping_drift(self):
         payload = {
@@ -1347,6 +1468,31 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 errors = validate_example_payload(name, invalid)
                 self.assertIn(f"{name}: {expected_suffix}", errors)
 
+    def test_validated_generated_question_is_not_a_review_item(self):
+        name = "examples/generated-question.example.json"
+        payload = self.make_generated_question("validated")
+        payload["needsReview"] = False
+
+        self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_question_spec_honors_configured_mock_exam_review_gate(self):
+        text = Path(
+            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "When `generatedQuestionsRequireHumanReviewForExam` is false, a "
+            "validated item may enter Mock Exam",
+            text,
+        )
+        prd = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "human-approved when that policy requires human review",
+            " ".join(prd.split()),
+        )
+
     def test_generated_question_review_binds_record_and_content_version(self):
         payload = self.make_generated_question()
         payload["review"]["approval"]["reviewedRecordId"] = "gq-other"
@@ -1558,6 +1704,22 @@ class FactoryKitValidatorTests(unittest.TestCase):
         for route in routes:
             self.assertIn(route, text)
 
+    def test_ux_navigation_includes_question_explanations(self):
+        text = Path("docs/study-site-factory/07-UX-AND-SYSTEM-FLOW.md").read_text(
+            encoding="utf-8"
+        )
+        section = text.split("## Navigation and responsiveness", 1)[1].split(
+            "## Route-level states", 1
+        )[0]
+        normalized = " ".join(section.split())
+
+        self.assertIn(
+            "Question Bank, Question Explanations, Revision Summary", normalized
+        )
+        self.assertIn(
+            "A More menu contains Question Bank, Question Explanations", normalized
+        )
+
     def test_qa_document_contains_all_blocking_gates(self):
         path = Path("docs/study-site-factory/09-QA-GATES.md")
         text = path.read_text(encoding="utf-8")
@@ -1685,15 +1847,16 @@ class FactoryKitValidatorTests(unittest.TestCase):
         text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
             encoding="utf-8"
         )
+        normalized = " ".join(text.split())
         self.assertIn(
             "Items marked `Needs review — unscored` are excluded from every "
             "Mock Exam pool.",
-            text,
+            normalized,
         )
         self.assertIn(
             "Generated questions may enter a Mock Exam only when they are "
-            "approved and scoreable",
-            text,
+            "validated and scoreable",
+            normalized,
         )
 
     def test_content_contract_defines_complete_material_section_records(self):
@@ -1747,9 +1910,151 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "`reviewedContentVersion`",
         ):
             self.assertIn(field, text)
-        self.assertIn(
-            "only when both `qualityState` and `reviewState` are `approved`", text
+        self.assertIn("eligible for scored Practice", text)
+        self.assertIn("additional configured human-review gate", text)
+
+    def test_source_manifest_preserves_configured_collection_and_label(self):
+        payload = self.load_example("examples/source-manifest.example.json")
+
+        for source in payload["sources"]:
+            with self.subTest(source_id=source["id"]):
+                self.assertIsInstance(source.get("collection"), str)
+                self.assertTrue(source["collection"].strip())
+                self.assertIsInstance(source.get("label"), str)
+                self.assertTrue(source["label"].strip())
+
+    def test_ingestion_covers_compatible_document_and_slide_formats(self):
+        text = Path(
+            "docs/study-site-factory/03-SOURCE-INGESTION-SPEC.md"
+        ).read_text(encoding="utf-8")
+
+        for extension in ("`.doc`", "`.odt`", "`.rtf`", "`.ppt`", "`.odp`"):
+            with self.subTest(extension=extension):
+                self.assertIn(extension, text)
+        self.assertIn("preserves the original file and checksum", text)
+
+    def test_generated_content_examples_bind_approval_to_content_version(self):
+        for name in (
+            "examples/lesson.example.json",
+            "examples/explanation.example.json",
+        ):
+            with self.subTest(name=name):
+                payload = self.load_example(name)
+                self.assertRegex(payload.get("contentVersion", ""), r"^\d+\.\d+\.\d+$")
+                self.assertEqual(
+                    payload["review"]["approval"]["reviewedContentVersion"],
+                    payload["contentVersion"],
+                )
+
+    def test_content_contract_declares_exact_generated_example_fields(self):
+        text = Path(
+            "docs/study-site-factory/04-CONTENT-AND-DATA-CONTRACTS.md"
+        ).read_text(encoding="utf-8")
+        section = text.split("## Generated Question Quality and Duplication", 1)[
+            1
+        ].split("## Question Explanation", 1)[0]
+
+        for field in (
+            "rationale",
+            "bloomLevel",
+            "learningObjectiveId",
+            "contentVersion",
+            "review",
+        ):
+            with self.subTest(field=field):
+                self.assertIn(f"`{field}`", section)
+
+    def test_content_contract_declares_exact_explanation_example_fields(self):
+        text = Path(
+            "docs/study-site-factory/04-CONTENT-AND-DATA-CONTRACTS.md"
+        ).read_text(encoding="utf-8")
+        section = text.split("## Question Explanation", 1)[1].split(
+            "## Review State and Scoring", 1
+        )[0]
+
+        for field in (
+            "language",
+            "generatedStudyGuidance",
+            "translation",
+            "explanation",
+            "body",
+            "note",
+            "contentVersion",
+            "review",
+        ):
+            with self.subTest(field=field):
+                self.assertIn(f"`{field}`", section)
+
+    def test_true_false_answer_order_has_a_stable_reproducible_input(self):
+        text = Path(
+            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
+        ).read_text(encoding="utf-8")
+
+        for contract in (
+            "SHA-256",
+            "`project.slug`",
+            "`lesson.id`",
+            "`TTFF`, `TFTF`, `TFFT`, `FTTF`, `FTFT`, `FFTT`",
+            "first `floor(P / 2)` records",
+        ):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, text)
+
+    def test_question_generation_profile_honors_configured_overrides(self):
+        text = Path(
+            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("defaults unless project configuration overrides them", text)
+        self.assertIn("largest-remainder allocation", text)
+
+    def test_project_input_identifies_github_pages_as_fixed_provider(self):
+        text = Path(
+            "docs/study-site-factory/01-PROJECT-INPUT-TEMPLATE.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("- Hosting provider: GitHub Pages (fixed for this kit).", text)
+
+    def test_project_input_declares_restrained_brand_color_tokens(self):
+        project_input = Path(
+            "docs/study-site-factory/01-PROJECT-INPUT-TEMPLATE.md"
+        ).read_text(encoding="utf-8")
+        prd = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
+            encoding="utf-8"
         )
+
+        for token in ("{{BRAND_PRIMARY_COLOR}}", "{{BRAND_ACCENT_COLOR}}"):
+            with self.subTest(token=token):
+                self.assertIn(token, project_input)
+                self.assertIn(token, prd)
+
+    def test_project_input_declares_default_practice_count(self):
+        project_input = Path(
+            "docs/study-site-factory/01-PROJECT-INPUT-TEMPLATE.md"
+        ).read_text(encoding="utf-8")
+        prd = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("{{DEFAULT_PRACTICE_COUNT}}", project_input)
+        self.assertIn("{{DEFAULT_PRACTICE_COUNT}}", prd)
+
+    def test_source_corrections_invalidate_version_bound_approval(self):
+        text = Path(
+            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
+        ).read_text(encoding="utf-8")
+        section = text.split("### Source-derived content", 1)[1].split(
+            "### Generated content", 1
+        )[0]
+        normalized = " ".join(section.split())
+
+        self.assertIn("increments `contentVersion`", normalized)
+        self.assertIn("invalidates any prior approval", normalized)
+
+    def test_factory_docs_do_not_reference_internal_task_numbers(self):
+        for path in Path("docs/study-site-factory").glob("*.md"):
+            with self.subTest(path=path):
+                self.assertNotRegex(path.read_text(encoding="utf-8"), r"\bTask \d+\b")
 
 
 if __name__ == "__main__":

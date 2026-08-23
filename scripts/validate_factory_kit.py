@@ -149,6 +149,7 @@ EXAMPLE_REQUIRED_KEYS = {
         "type",
         "prompt",
         "topic",
+        "contentVersion",
         "correctAnswer",
         "sourceRefs",
         "needsReview",
@@ -161,6 +162,9 @@ EXAMPLE_REQUIRED_KEYS = {
         "id",
         "moduleId",
         "title",
+        "origin",
+        "generatedStudyGuidance",
+        "contentVersion",
         "learningObjectives",
         "summary",
         "explanation",
@@ -212,6 +216,7 @@ EXAMPLE_REQUIRED_KEYS = {
         "translation",
         "explanation",
         "note",
+        "contentVersion",
         "sourceRefs",
         "review",
         "id",
@@ -309,6 +314,7 @@ QUESTION_BASE_REQUIRED_FIELDS = {
     "type",
     "prompt",
     "topic",
+    "contentVersion",
     "correctAnswer",
     "sourceRefs",
     "needsReview",
@@ -346,7 +352,7 @@ GENERATED_QUESTION_COMMON_FIELDS = {
 }
 GENERATED_QUESTION_TYPE_REQUIRED_FIELDS = {
     "mcq": {"options", "distractorRationales"},
-    "true-false": {"options", "correctedStatement"},
+    "true-false": {"correctedStatement"},
 }
 GENERATED_REVIEW_STATUSES = {
     "draft",
@@ -370,7 +376,7 @@ GENERATED_MCQ_EVIDENCE_TARGETS = {
 }
 GENERATED_REVIEW_TRUTH_TABLE = {
     "draft": ("draft", "unreviewed", True, None),
-    "validated": ("validated", "unreviewed", True, None),
+    "validated": ("validated", "unreviewed", False, None),
     "human-reviewed": ("approved", "approved", False, "approved"),
     "needs-review": ("needs-review", "needs-review", True, "needs-review"),
     "rejected": ("rejected", "rejected", True, "rejected"),
@@ -540,10 +546,22 @@ def validate_project_config_example(payload: dict, name: str) -> list[str]:
     generation = payload.get("questionGeneration")
     if isinstance(generation, dict):
         for field in ("mcqPerLesson", "trueFalsePerLesson"):
-            errors.extend(
-                validate_positive_integer(
-                    generation.get(field), f"{name}: questionGeneration.{field}"
+            value = generation.get(field)
+            if type(value) is not int or value < 0:
+                errors.append(
+                    f"{name}: questionGeneration.{field}: must be a "
+                    "non-negative integer"
                 )
+        if (
+            generation.get("mcqPerLesson") == 0
+            and generation.get("trueFalsePerLesson") == 0
+            and not (
+                isinstance(policy, dict) and policy.get("mode") == "source-only"
+            )
+        ):
+            errors.append(
+                f"{name}: questionGeneration: at least one question type "
+                "must be enabled"
             )
         errors.extend(
             validate_percent_distribution(
@@ -670,7 +688,16 @@ def validate_source_manifest_example(payload: dict, name: str) -> list[str]:
         return errors
 
     source_ids = []
-    common = {"id", "fileName", "format", "checksum", "status", "locations"}
+    common = {
+        "id",
+        "fileName",
+        "collection",
+        "label",
+        "format",
+        "checksum",
+        "status",
+        "locations",
+    }
     for index, source in enumerate(sources):
         path = f"{name}: sources[{index}]"
         errors.extend(validate_object_keys(source, path, common))
@@ -696,7 +723,7 @@ def validate_source_manifest_example(payload: dict, name: str) -> list[str]:
             or not source_id.removeprefix("source-")
         ):
             errors.append(f"{path}: id must use the source- prefix")
-        for field in ("fileName", "checksum"):
+        for field in ("fileName", "collection", "label", "checksum"):
             errors.extend(
                 validate_non_empty_string(source.get(field), f"{path}: {field}")
             )
@@ -784,7 +811,7 @@ def validate_generated_review(payload: dict, name: str) -> list[str]:
         errors.append(f"{name}: review.status: invalid value: {status}")
         return errors
 
-    expected_needs_review = status != "human-reviewed"
+    expected_needs_review = status in {"draft", "needs-review", "rejected"}
     needs_review = payload.get("needsReview")
     if type(needs_review) is not bool or needs_review is not expected_needs_review:
         display = str(expected_needs_review).lower()
@@ -902,6 +929,22 @@ def validate_lesson_example(payload: dict, name: str) -> list[str]:
     )
     for field in ("title", "summary", "body"):
         errors.extend(validate_non_empty_string(payload.get(field), f"{name}: {field}"))
+    origin = payload.get("origin")
+    if origin not in {"source", "generated"}:
+        errors.append(f"{name}: origin: must be source or generated")
+    expected_guidance = origin == "generated"
+    if (
+        type(payload.get("generatedStudyGuidance")) is not bool
+        or payload.get("generatedStudyGuidance") is not expected_guidance
+    ):
+        errors.append(
+            f"{name}: generatedStudyGuidance: must match the lesson origin"
+        )
+    content_version = payload.get("contentVersion")
+    if not isinstance(content_version, str) or not SEMANTIC_VERSION.fullmatch(
+        content_version
+    ):
+        errors.append(f"{name}: contentVersion: must be a semantic version")
     errors.extend(
         validate_source_reference_list(
             payload.get("sourceRefs"), f"{name}: sourceRefs", require_non_empty=True
@@ -1035,10 +1078,8 @@ def generated_evidence_targets(payload: dict) -> set[str]:
             "prompt",
             "correctAnswer",
             "rationale",
-            "options[0]",
-            "options[1]",
         }
-        if payload.get("correctAnswer") == 1:
+        if payload.get("correctAnswer") is False:
             targets.add("correctedStatement")
         return targets
     return {"prompt", "correctAnswer", "rationale"}
@@ -1144,12 +1185,23 @@ def validate_id_text_items(value: object, path: str) -> tuple[list[str], list[st
     return errors, ids
 
 
-def validate_question_type_shape(payload: dict, name: str) -> list[str]:
+def validate_question_type_shape(
+    payload: dict,
+    name: str,
+    *,
+    allow_missing_answer: bool = False,
+    generated_true_false: bool = False,
+) -> list[str]:
     question_type = payload.get("type")
     if not isinstance(question_type, str) or question_type not in QUESTION_TYPES:
         return [f"{name}: type: invalid value: {question_type}"]
     answer = payload.get("correctAnswer")
+    missing_answer = allow_missing_answer and answer is None
     errors = []
+    if question_type == "true-false" and generated_true_false:
+        if type(answer) is not bool:
+            errors.append(f"{name}: correctAnswer: must be a boolean")
+        return errors
     if question_type in {"mcq", "true-false", "multi-select"}:
         options = payload.get("options")
         if question_type == "mcq":
@@ -1158,7 +1210,7 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
                 errors.append(
                     f"{name}: options: must contain exactly four non-empty strings"
                 )
-            if (
+            if not missing_answer and (
                 type(answer) is not int
                 or not isinstance(options, list)
                 or not 0 <= answer < len(options)
@@ -1169,14 +1221,14 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
         elif question_type == "true-false":
             if options != ["True", "False"]:
                 errors.append(f'{name}: options: must equal ["True", "False"]')
-            if type(answer) is not int or answer not in {0, 1}:
+            if not missing_answer and (type(answer) is not int or answer not in {0, 1}):
                 errors.append(f"{name}: correctAnswer: must be 0 or 1")
         else:
             if not is_non_empty_string_list(options, 2, 10_000):
                 errors.append(
                     f"{name}: options: must contain at least two non-empty strings"
                 )
-            if (
+            if not missing_answer and (
                 not isinstance(answer, list)
                 or not answer
                 or any(type(index) is not int for index in answer)
@@ -1192,7 +1244,7 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
             payload.get("statements"), f"{name}: statements"
         )
         errors.extend(item_errors)
-        if (
+        if not missing_answer and (
             not isinstance(answer, dict)
             or set(answer) != set(statement_ids)
             or any(type(value) is not bool for value in answer.values())
@@ -1212,7 +1264,7 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
         if type(allow_many) is not bool:
             errors.append(f"{name}: allowManyToOne: must be a boolean")
         values = list(answer.values()) if isinstance(answer, dict) else []
-        if (
+        if not missing_answer and (
             not isinstance(answer, dict)
             or set(answer) != set(left_ids)
             or any(value not in right_ids for value in values)
@@ -1230,16 +1282,22 @@ def validate_question_type_shape(payload: dict, name: str) -> list[str]:
         valid_answer_items = isinstance(answer, list) and all(
             isinstance(value, str) and value.strip() for value in answer
         )
-        if not valid_answer_items or (
+        if not missing_answer and (not valid_answer_items or (
             len(answer) != len(item_ids) or set(answer) != set(item_ids)
-        ):
+        )):
             errors.append(
                 f"{name}: correctAnswer: must order every item ID exactly once"
             )
     return errors
 
 
-def validate_question_base(payload: dict, name: str, expected_origin: str) -> list[str]:
+def validate_question_base(
+    payload: dict,
+    name: str,
+    expected_origin: str,
+    *,
+    generated_true_false: bool = False,
+) -> list[str]:
     errors = []
     prefix = "q-" if expected_origin == "official" else "gq-"
     errors.extend(validate_prefixed_id(payload.get("id"), f"{name}: id", prefix))
@@ -1247,6 +1305,11 @@ def validate_question_base(payload: dict, name: str, expected_origin: str) -> li
         errors.append(f"{name}: origin: must be {expected_origin}")
     for field in ("prompt", "topic"):
         errors.extend(validate_non_empty_string(payload.get(field), f"{name}: {field}"))
+    content_version = payload.get("contentVersion")
+    if not isinstance(content_version, str) or not SEMANTIC_VERSION.fullmatch(
+        content_version
+    ):
+        errors.append(f"{name}: contentVersion: must be a semantic version")
     errors.extend(
         validate_source_reference_list(
             payload.get("sourceRefs"), f"{name}: sourceRefs", require_non_empty=True
@@ -1256,7 +1319,26 @@ def validate_question_base(payload: dict, name: str, expected_origin: str) -> li
         errors.append(f"{name}: needsReview: must be a boolean")
     if not isinstance(payload.get("reviewNotes"), str):
         errors.append(f"{name}: reviewNotes: must be a string")
-    errors.extend(validate_question_type_shape(payload, name))
+    allow_missing_answer = (
+        expected_origin == "official"
+        and payload.get("needsReview") is True
+        and payload.get("correctAnswer") is None
+    )
+    if allow_missing_answer and not (
+        isinstance(payload.get("reviewNotes"), str)
+        and payload["reviewNotes"].strip()
+    ):
+        errors.append(
+            f"{name}: reviewNotes: must explain a missing official answer"
+        )
+    errors.extend(
+        validate_question_type_shape(
+            payload,
+            name,
+            allow_missing_answer=allow_missing_answer,
+            generated_true_false=generated_true_false,
+        )
+    )
     return errors
 
 
@@ -1272,8 +1354,13 @@ def validate_official_question_example(payload: dict, name: str) -> list[str]:
 
 
 def validate_generated_question_example(payload: dict, name: str) -> list[str]:
-    errors = validate_question_base(payload, name, "generated")
     question_type = payload.get("type")
+    errors = validate_question_base(
+        payload,
+        name,
+        "generated",
+        generated_true_false=question_type == "true-false",
+    )
     if (
         not isinstance(question_type, str)
         or question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS
@@ -1292,16 +1379,16 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
             )
     elif question_type == "true-false":
         correction = payload.get("correctedStatement")
-        if payload.get("correctAnswer") == 0 and correction is not None:
+        if payload.get("correctAnswer") is True and correction is not None:
             errors.append(
-                f"{name}: correctedStatement: must be null when correctAnswer is 0"
+                f"{name}: correctedStatement: must be null when correctAnswer is true"
             )
-        elif payload.get("correctAnswer") == 1 and (
+        elif payload.get("correctAnswer") is False and (
             not isinstance(correction, str) or not correction.strip()
         ):
             errors.append(
                 f"{name}: correctedStatement: must be a non-empty string when "
-                "correctAnswer is 1"
+                "correctAnswer is false"
             )
 
     errors.extend(
@@ -1487,6 +1574,11 @@ def validate_explanation_example(payload: dict, name: str) -> list[str]:
         )
     for field in ("translation", "body", "note"):
         errors.extend(validate_non_empty_string(payload.get(field), f"{name}: {field}"))
+    content_version = payload.get("contentVersion")
+    if not isinstance(content_version, str) or not SEMANTIC_VERSION.fullmatch(
+        content_version
+    ):
+        errors.append(f"{name}: contentVersion: must be a semantic version")
     errors.extend(
         validate_source_reference_list(
             payload.get("sourceRefs"), f"{name}: sourceRefs", require_non_empty=True

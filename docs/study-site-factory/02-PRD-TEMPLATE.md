@@ -9,10 +9,10 @@ project-specific feature or policy outside that input contract.
 
 | Decision | Variable | Product use |
 | --- | --- | --- |
-| Site identity | `{{PROJECT_TITLE}}`, `{{PROJECT_SHORT_TITLE}}`, `{{PROJECT_SLUG}}`, `{{PROJECT_DESCRIPTION}}`, `{{BRAND_INITIALS}}` | Browser title, branding, routes, and source-backed description. |
+| Site identity | `{{PROJECT_TITLE}}`, `{{PROJECT_SHORT_TITLE}}`, `{{PROJECT_SLUG}}`, `{{PROJECT_DESCRIPTION}}`, `{{BRAND_INITIALS}}`, `{{BRAND_PRIMARY_COLOR}}`, `{{BRAND_ACCENT_COLOR}}` | Browser title, restrained brand color tokens, branding, routes, and source-backed description. |
 | Language direction | `{{SOURCE_LANGUAGE}}`, `{{STUDY_LANGUAGE}}` | Source display, learner-facing language, and document direction. |
 | Content boundaries | `{{CONTENT_POLICY}}`, `{{ALLOW_OUTSIDE_SOURCES}}` | Permitted content mode and whether approved outside authorities may supplement declared materials. |
-| Practice volume | `{{MCQ_PER_LESSON}}`, `{{TRUE_FALSE_PER_LESSON}}` | Target generated practice volume for each sufficiently supported lesson. |
+| Practice volume | `{{MCQ_PER_LESSON}}`, `{{TRUE_FALSE_PER_LESSON}}`, `{{DEFAULT_PRACTICE_COUNT}}` | Target generated volume per supported lesson and the default Practice session count. |
 | Exam safety | `{{GENERATED_EXAM_REVIEW_POLICY}}`, `{{DEFAULT_EXAM_COUNT}}`, `{{DEFAULT_EXAM_MINUTES}}` | Generated-question approval gate plus default Mock Exam count and time. |
 | Publication | `{{GITHUB_REPOSITORY}}`, `{{GITHUB_BRANCH}}`, `{{PUBLIC_URL}}` | Static deployment destination and public verification target. |
 
@@ -57,7 +57,8 @@ unscored.
   mistakes, and bookmarks; scoreable totals count only items with approved
   answers, while unique totals count each stable item once.
 - Dashboard offers clear entry points to Material, Practice, Mock Exam,
-  Question Bank, Revision Summary, Mistakes, and Bookmarks.
+  Question Bank, Question Explanations, Revision Summary, Mistakes, and
+  Bookmarks.
 - A Material index supports module or lesson discovery, progress indication,
   search, and filters. A lesson page provides its objectives, source-backed
   explanation, source references, and linked questions.
@@ -92,7 +93,9 @@ unscored.
   question` with provenance and review state.
 - A mixed Practice pool identifies every item’s origin before submission.
 - Items marked `Needs review — unscored` are excluded from every Mock Exam pool. They never affect scoreable totals or scores.
-- Generated questions may enter a Mock Exam only when they are approved and scoreable under `{{GENERATED_EXAM_REVIEW_POLICY}}`; otherwise they remain Practice-only.
+- Generated questions may enter a Mock Exam only when they are validated and
+  scoreable under `{{GENERATED_EXAM_REVIEW_POLICY}}`, and human-approved when
+  that policy requires human review; otherwise they remain Practice-only.
 - Missing official answers remain visibly unscored. Maintainers must correct
   them from an approved answer key or keep them review-only.
 

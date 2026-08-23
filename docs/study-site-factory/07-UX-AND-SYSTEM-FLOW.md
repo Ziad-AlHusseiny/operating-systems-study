@@ -43,12 +43,12 @@ the item boundary:
 ## Navigation and responsiveness
 
 Desktop navigation order is Dashboard, Material, Practice, Mock Exam, Question
-Bank, Revision Summary, Mistakes, and Bookmarks. Question Explanations is a
-contextual route reached from a question rather than a top-level destination.
+Bank, Question Explanations, Revision Summary, Mistakes, and Bookmarks.
+Question Explanations is also linked contextually from each question.
 
 Mobile primary navigation contains Dashboard, Material, Practice, and Mock
-Exam. A More menu contains Question Bank, Revision Summary, Mistakes,
-Bookmarks, preferences, and any contextual return path. The current route is
+Exam. A More menu contains Question Bank, Question Explanations, Revision
+Summary, Mistakes, Bookmarks, preferences, and any contextual return path. The current route is
 identified programmatically and visually; opening and closing the More menu is
 keyboard accessible and preserves focus predictably.
 

@@ -22,8 +22,10 @@ field named `projectId` must equal that slug.
 
 `contentPolicy.mode` is exactly `source-only`, `source-plus-generated`, or
 `generated-only`; its other two fields are Booleans.
-`questionGeneration.mcqPerLesson` and `trueFalsePerLesson` are positive
-integers. `difficultyPercent` has exactly numeric `easy`, `medium`, and `hard`
+`questionGeneration.mcqPerLesson` and `trueFalsePerLesson` are non-negative
+integers. A zero target disables that generated question type. Both are zero
+only in `source-only` mode; every mode that permits generated questions requires
+at least one positive target. `difficultyPercent` has exactly numeric `easy`, `medium`, and `hard`
 fields, while `bloomPercent` has exactly numeric `remember`, `apply`, and
 `analyze` fields. Each percentage is from 0 through 100 and each object totals
 exactly 100. `deployment.provider` is `github-pages`, `repository` uses
@@ -31,7 +33,7 @@ exactly 100. `deployment.provider` is `github-pages`, `repository` uses
 
 ## Source Manifest and `sourceRef`
 
-The source manifest has exactly `version` and `sources` as its required top-level fields. Each source requires `id` (`source-` prefix), `fileName`, `format`, `checksum`, `status`, and `locations`. PDF sources additionally require `pages`; PPTX sources additionally require `slides`. No other source format permits a `pages` or `slides` field in the manifest. A source status is `inventoried`, `extracted`, `visually-checked`, `normalized`, `accepted`, or `needs-review`.
+The source manifest has exactly `version` and `sources` as its required top-level fields. Each source requires `id` (`source-` prefix), `fileName`, `collection`, `label`, `format`, `checksum`, `status`, and `locations`. `collection` is the configured grouping used by source filters, and `label` is its non-empty learner-facing source name; neither is inferred from the filename. PDF sources additionally require `pages`; PPTX sources additionally require `slides`. No other source format permits a `pages` or `slides` field in the manifest. A source status is `inventoried`, `extracted`, `visually-checked`, `normalized`, `accepted`, or `needs-review`.
 
 | Source format | Required count | Only compatible `locationType` |
 | --- | --- | --- |
@@ -43,6 +45,11 @@ The source manifest has exactly `version` and `sources` as its required top-leve
 | `csv` | None | `row` |
 | `json` | None | `section` |
 | `image` | None | `image` |
+
+The canonical `docx` format also represents converted Word-compatible `.doc`,
+`.odt`, and `.rtf` sources; `pptx` also represents converted `.ppt` and `.odp`
+slide decks. `fileName` and `checksum` always identify the preserved original,
+while the source audit records the working derivative and conversion evidence.
 
 | Field | Type | Rule |
 | --- | --- | --- |
@@ -60,11 +67,11 @@ The source manifest has exactly `version` and `sources` as its required top-leve
 | --- | --- | --- |
 | Module | `id`, `title`, `order`, `objectiveIds`, `sourceRefs` | ID begins `module-`; objectives are ordered and unique. |
 | Objective | `id`, `moduleId`, `text`, `order`, `sourceRefs` | ID begins `objective-`; parent module exists. |
-| Lesson | `id`, `moduleId`, `objectiveIds`, `title`, `body`, `sourceRefs`, `needsReview`, `reviewNotes` | ID begins `lesson-`; source-derived body has references. |
+| Lesson | `id`, `moduleId`, `objectiveIds`, `title`, `body`, `origin`, `generatedStudyGuidance`, `contentVersion`, `sourceRefs`, `needsReview`, `reviewNotes` | ID begins `lesson-`; `origin` is `source` or `generated`; `generatedStudyGuidance` is true exactly for generated guidance; source-derived body has references; `contentVersion` identifies the version reviewed. |
 
 ## Material Sections
 
-Each material section requires exactly `id`, `lessonId`, `title`, `summaries`, `terms`, `examples`, `mistakes`, `examTips`, `recaps`, `sourceRefs`, `linkedQuestionIds`, `needsReview`, and `reviewNotes`. `id` is unique and `lessonId` must identify an existing `lesson-` record. `sourceRefs` is the section-level evidence set; every non-empty item below also carries its own non-empty `sourceRefs` so a learner-facing claim remains traceable.
+Each material section requires exactly `id`, `lessonId`, `title`, `origin`, `generatedStudyGuidance`, `summaries`, `terms`, `examples`, `mistakes`, `examTips`, `recaps`, `sourceRefs`, `linkedQuestionIds`, `contentVersion`, `needsReview`, and `reviewNotes`. `id` is unique and `lessonId` must identify an existing `lesson-` record. `origin` is exactly `source` or `generated`, and `generatedStudyGuidance` is true exactly when `origin` is `generated`; the UI displays the corresponding source or generated label. A page that needs both origins uses separate labelled sections rather than merging their claims. `contentVersion` identifies the compiled lesson version. `sourceRefs` is the section-level evidence set; every non-empty item below also carries its own non-empty `sourceRefs` so a learner-facing claim remains traceable.
 
 | Field | Type | Rule |
 | --- | --- | --- |
@@ -78,7 +85,7 @@ Each material section requires exactly `id`, `lessonId`, `title`, `summaries`, `
 
 ## Questions
 
-All question types require `id`, `origin`, `type`, `prompt`, `topic`, `correctAnswer`, `sourceRefs`, `needsReview`, and `reviewNotes`. `origin` is exactly `official` or `generated`; `sourceRefs` use the contract above. Official question IDs begin `q-`; generated IDs begin `gq-`; IDs never change when a question is reviewed.
+All question types require `id`, `origin`, `type`, `prompt`, `topic`, `correctAnswer`, `contentVersion`, `sourceRefs`, `needsReview`, and `reviewNotes`. `origin` is exactly `official` or `generated`; `sourceRefs` use the contract above. `contentVersion` is the semantic version to which a review approval binds. Official question IDs begin `q-`; generated IDs begin `gq-`; IDs never change when a question is reviewed.
 
 | Type | Required type-specific fields | `correctAnswer` |
 | --- | --- | --- |
@@ -89,43 +96,55 @@ All question types require `id`, `origin`, `type`, `prompt`, `topic`, `correctAn
 | `matching` | `leftItems`, `rightItems`, each `{id, text}` | Object mapping every left ID to one right ID; right IDs are unique unless `allowManyToOne` is true. |
 | `ordering` | `items` array of `{id, text}` | Array of every item ID in correct order. |
 
-An official question additionally requires `duplicateSources` (array) and `officialExplanation` (string). Its answer may only come from an explicit official answer key. It never overwrites an official record.
+An official question additionally requires `duplicateSources` (array) and `officialExplanation` (string). Its answer may only come from an explicit official answer key. When that answer is absent or unreliable, and only for an official question with `needsReview: true`, `correctAnswer` is `null` and `reviewNotes` is non-empty; the type-specific prompt/options/statements/items remain complete, and the item is unscored and excluded from Mock Exam. A generated question and an official question with `needsReview: false` always require the valid type-specific answer shown above. Generated reasoning never overwrites an official record.
 
 ## Generated Question Quality and Duplication
 
-A generated question requires the base question fields plus exactly `generationMethod`, `generatedExplanationId`, `provenance`, `difficulty`, `cognitiveLevel`, `evidenceMap`, `qualityState`, `reviewState`, `duplicateComparison`, and `duplicateDisposition`. `provenance` requires `sourceRefs`, `modelVersion`, and `promptVersion`; `generatedExplanationId` identifies an explanation record.
+A generated question supports only `mcq` and `true-false`. In addition to the base and applicable type-specific question fields, its generated-specific common field set is exactly `rationale`, `difficulty`, `bloomLevel`, `cognitiveLevel`, `learningObjectiveId`, `generationMethod`, `generatedExplanationId`, `provenance`, `evidenceMap`, `qualityState`, `reviewState`, `duplicateComparison`, `duplicateDisposition`, and `review`. The base `contentVersion` remains required. A generated MCQ uses the `mcq` row above. A generated True/False item uses `prompt` as its single testable statement, has no `options`, stores a Boolean `correctAnswer`, and requires `correctedStatement`: null when true and a non-empty complete correction when false. This generated representation intentionally replaces the numeric, option-based official True/False form. `provenance` requires exactly `sourceRefs`, `modelVersion`, and `promptVersion`; `generatedExplanationId` identifies an explanation record.
 
 | Field | Type | Allowed values or rule |
 | --- | --- | --- |
+| `rationale` | string | Non-empty evidence-based explanation of the correct answer. |
 | `difficulty` | string | Exactly `easy`, `medium`, or `hard`. |
+| `bloomLevel` | string | Exactly `remember`, `apply`, or `analyze`; equals `cognitiveLevel`. |
 | `cognitiveLevel` | string | Exactly `remember`, `understand`, `apply`, `analyze`, `evaluate`, or `create` (Bloom level). |
-| `evidenceMap` | array | Non-empty `{claimId, sourceRefs, support}` records; `support` is exactly `direct` or `derived`. |
+| `learningObjectiveId` | string | Existing `objective-` ID assessed by the item. |
+| `contentVersion` | string | Semantic content version reviewed by any approval. |
+| `evidenceMap` | array | Non-empty `{claimId, target, sourceRefs, support}` records; `target` identifies one required claim-bearing field and `support` is exactly `direct` or `derived`. |
 | `qualityState` | string | Exactly `draft`, `validated`, `needs-review`, `approved`, or `rejected`. |
 | `reviewState` | string | Exactly `unreviewed`, `needs-review`, `approved`, or `rejected`. |
 | `duplicateComparison` | object | Exactly `algorithmVersion`, `normalizedPrompt`, `candidateIds`, and `matchClass`; `matchClass` is `none`, `exact`, `near`, or `conflict`. |
 | `duplicateDisposition` | string | Exactly `retain`, `reject-duplicate`, or `needs-review`. |
+| `review` | object | Generated review view with `status` and conditional version-bound `approval` under the review contract below. |
 
-Duplicate comparison is deterministic: normalize prompts with Unicode NFKC, trim, collapse internal whitespace, casefold, and remove punctuation; compare only questions with the same `type`; and process candidate IDs in lexicographic question ID order. No exact match yields `retain`. An exact match with an official `q-` yields `reject-duplicate`. Among exact generated matches, retain only the lexicographically lowest `gq-` ID and mark every other candidate `reject-duplicate`. A `near` match or conflicting evidence yields `needs-review`; it cannot be scoreable until reviewed. Detailed authoring rubrics belong to Task 4.
+Duplicate comparison is deterministic: normalize prompts with Unicode NFKC, trim, collapse internal whitespace, casefold, and remove punctuation; compare only questions with the same `type`; and process candidate IDs in lexicographic question ID order. No exact match yields `retain`. An exact match with an official `q-` yields `reject-duplicate`. Among exact generated matches, retain only the lexicographically lowest `gq-` ID and mark every other candidate `reject-duplicate`. A `near` match or conflicting evidence yields `needs-review`; it cannot be scoreable until reviewed. Detailed authoring rubrics are defined in [06-QUESTION-GENERATION-SPEC.md](06-QUESTION-GENERATION-SPEC.md).
 
 ## Question Explanation
 
 | Field | Type | Rule |
 | --- | --- | --- |
-| `id` | string | Unique explanation ID. |
+| `id` | string | Unique `explanation-` ID. |
 | `questionId` | string | Existing `q-` or `gq-` ID. |
-| `body` | string | Explains the answer without adding unsupported claims. |
-| `sourceRefs` | array | Evidence for each material claim. |
+| `language` | string | BCP 47 study-language tag. |
+| `generatedStudyGuidance` | boolean | Exactly `true`; this record is never an official answer. |
+| `translation` | string | Complete non-empty study-language translation of the question. |
+| `explanation` | array | Two or three non-empty short explanation paragraphs. |
+| `body` | string | Concise answer explanation without unsupported claims. |
+| `note` | string | Non-empty revision note that preserves the generated label. |
+| `contentVersion` | string | Semantic content version reviewed by any approval. |
+| `sourceRefs` | array | Non-empty evidence for every material claim. |
 | `needsReview` / `reviewNotes` | boolean / string | Review state and reason. |
+| `review` | object | Generated review view with `status` and conditional version-bound `approval`. |
 
 ## Review State and Scoring
 
-Every reviewable record has `needsReview` and `reviewNotes`. Review decisions are immutable records; a new review supersedes a prior one without deleting it.
+Every version-bound canonical lesson, material section, question, and explanation has `needsReview`, `reviewNotes`, and a semantic `contentVersion`. Review decisions are immutable records; a new review supersedes a prior one without deleting it. An approval applies only when `reviewedRecordId` equals the current record ID and `reviewedContentVersion` equals its current top-level `contentVersion`.
 
 | Record | Exact required fields | Allowed values and scoring effect |
 | --- | --- | --- |
 | Review approval | `reviewedRecordId`, `reviewedContentVersion`, `status`, `decision`, `reviewer`, `reviewedAt`, `reason`, `notes` | `status` is exactly `pending` or `completed`; `decision` is exactly `approved`, `rejected`, or `needs-review`. `reviewer` is a non-empty reviewer ID, `reviewedAt` is ISO 8601 UTC, and `reason`/`notes` are strings. The content/schema version reviewed is preserved in `reviewedContentVersion`. |
 
-`needsReview: true`, `decision: needs-review`, or `decision: rejected` means the record is visibly labelled “Needs review — unscored” and excluded from every score, result, practice aggregate, and Mock Exam pool. A scoreable official record must have `needsReview: false`, a valid type-specific answer, valid source references, and a completed approved review when the project policy requires review. A generated record is scoreable only when both `qualityState` and `reviewState` are `approved`, its duplicate disposition is `retain`, and its type-specific answer and source references are valid. Rejection retains the item and its provenance.
+`needsReview: true`, `decision: needs-review`, or `decision: rejected` means the record is visibly labelled “Needs review — unscored” and excluded from every score, result, practice aggregate, and Mock Exam pool. A scoreable official record must have `needsReview: false`, a valid type-specific answer, valid source references, and a completed approved review when the project policy requires review. A generated record is eligible for scored Practice when it has `needsReview: false`, `review.status: validated` or `human-reviewed`, the corresponding `qualityState: validated` or `approved`, a compatible `reviewState`, `duplicateDisposition: retain`, a valid type-specific answer, and valid evidence. Mock Exam applies the additional configured human-review gate defined in `06-QUESTION-GENERATION-SPEC.md`. Rejection retains the item and its provenance.
 
 ## LocalStorage Progress
 

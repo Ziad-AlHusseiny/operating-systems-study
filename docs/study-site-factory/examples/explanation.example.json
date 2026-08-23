@@ -10,6 +10,7 @@
   ],
   "body": "إعداد DHCP relay هو الحل المدعوم لأنه يمرر تبادل DHCP بين شبكة الجهاز والخادم الموجود على شبكة فرعية أخرى.",
   "note": "إرشاد دراسي مولد ومبني على المصادر المشار إليها، وليس سؤال امتحان رسميا.",
+  "contentVersion": "1.0.0",
   "sourceRefs": [
     {"sourceId": "source-01", "locationType": "page", "location": 12},
     {"sourceId": "source-02", "locationType": "slide", "location": 5}

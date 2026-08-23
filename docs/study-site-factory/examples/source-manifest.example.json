@@ -4,6 +4,8 @@
     {
       "id": "source-01",
       "fileName": "networking-handbook.pdf",
+      "collection": "Core materials",
+      "label": "Networking handbook",
       "format": "pdf",
       "checksum": "sha256:example-networking-handbook",
       "pages": 42,
@@ -13,6 +15,8 @@
     {
       "id": "source-02",
       "fileName": "networking-lecture.pptx",
+      "collection": "Lecture materials",
+      "label": "Networking lecture",
       "format": "pptx",
       "checksum": "sha256:example-networking-lecture",
       "slides": 18,

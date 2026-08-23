@@ -4,6 +4,7 @@
   "type": "mcq",
   "prompt": "Which protocol automatically assigns IP configuration?",
   "topic": "Networking",
+  "contentVersion": "1.0.0",
   "options": ["DNS", "DHCP", "HTTP", "SSH"],
   "correctAnswer": 1,
   "sourceRefs": [

@@ -3,6 +3,9 @@
   "moduleId": "module-network-services",
   "objectiveIds": ["objective-dhcp-across-subnets"],
   "title": "DHCP Address Assignment Across Subnets",
+  "origin": "generated",
+  "generatedStudyGuidance": true,
+  "contentVersion": "1.0.0",
   "learningObjectives": [
     {
       "id": "objective-dhcp-across-subnets",

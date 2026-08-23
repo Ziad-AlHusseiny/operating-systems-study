@@ -39,6 +39,9 @@ visible page/slide/section supports the change. Preserve original source files,
 stable IDs, duplicate source references, and the audit trail. If sources
 conflict, the mark is missing, or the render is unreadable, set the record to
 review-only and unscored, add an exact review note, and request a human decision.
+Any semantic correction increments `contentVersion` and invalidates any prior
+approval; record a new version-bound review before policy-controlled scoreable
+use.
 Do not infer an official answer from a generated lesson, rationale, outside
 knowledge, or what appears likely.
 

@@ -8,15 +8,19 @@ The authoring field `bloomLevel` is the generation profile's name for the canoni
 
 ## Default Generation Profile
 
-For every sufficiently supported lesson, generate exactly six MCQs and four True/False items. For `L` sufficiently supported lessons, the full target batch has `N = 10L` questions: difficulty counts are exactly `easy = 3L`, `medium = 5L`, and `hard = 2L`. The configured 30/50/20 difficulty percentages are therefore met exactly when there is no reported shortfall.
+Six MCQs, four True/False items, 30/50/20 difficulty, and 25/50/25 Bloom are defaults unless project configuration overrides them. A zero per-lesson count disables that generated question type; at least one type must remain enabled in a mode that permits generated questions. `source-only` instead requires both generated targets to be zero and skips generation. For `L` sufficiently supported lessons with per-lesson targets `M` MCQs and `T` True/False items, the full target batch has `N = (M + T)L` questions. With the default counts and no reported shortfall, `N = 10L` and difficulty counts are exactly `easy = 3L`, `medium = 5L`, and `hard = 2L`.
 
-The configured 25/50/25 Bloom percentages are targets subject to whole-question allocation. The only accepted deterministic allocation is `apply = 5L`, `remember = floor(5L / 2)`, and `analyze = N - apply - remember`. When `L` is even, this is exactly 25/50/25. When `L` is odd, `analyze` receives the single indivisible residual and exceeds `remember` by exactly one question; this one-item residual is permitted and must be recorded in the quota report. Any other residual, unreported residual, or deviation without a content shortfall fails generation QA. The four True/False answers for each fully supported lesson are balanced: exactly two True and two False, with answer order varied deterministically.
+Convert each configured percentage distribution to whole-question counts with largest-remainder allocation: multiply `N` by each percentage, divide by 100, take each floor, then assign remaining questions in descending fractional-remainder order. Difficulty ties use `easy`, `medium`, `hard`; Bloom ties use `analyze`, `remember`, `apply`. Record every residual recipient. Under the default Bloom profile, this yields `apply = 5L`, `remember = floor(5L / 2)`, and `analyze = N - apply - remember`; an odd `L` gives the single indivisible residual to `analyze`. Any unreported residual or deviation without a content shortfall fails generation QA. With the default four True/False items, every fully supported lesson has exactly two True and two False answers.
+
+For reproducible default True/False answer order, sort the lesson's four records by stable `gq-` ID. Compute SHA-256 over the UTF-8 bytes of `project.slug`, one literal line-feed byte, and `lesson.id`; parse the first eight hexadecimal digits as an unsigned integer and take it modulo 6. Use the result as the zero-based index into this fixed pattern list: `TTFF`, `TFTF`, `TFFT`, `FTTF`, `FTFT`, `FFTT`. Assign the sorted records those truth values, where `T` uses `correctAnswer: true` and `F` uses `correctAnswer: false`.
+
+For a configured non-default True/False count, compute SHA-256 over the UTF-8 bytes of `project.slug`, one line-feed, and each stable `gq-` ID; sort the full generated True/False pool by hash and then ID, and call its size `P`. The first `floor(P / 2)` records are True and the next `floor(P / 2)` are False. When `P` is odd, the final record is True if the least-significant bit of the final digest byte in the SHA-256 hash of `project.slug` is zero, and False if it is one; record which value received the extra item. This keeps full-pool balance within one while varying record order reproducibly. Generation QA recomputes the applicable mapping; a different order fails. A reported shortfall is exempt from its original target mapping but must report the produced True/False balance explicitly.
 
 “Sufficiently supported” means the lesson has accepted evidence that can support the prompt, answer, rationale, and every distractor or corrected statement without outside facts. Quotas are targets, never permission to invent content.
 
 ## Quota Shortfall Report
 
-If evidence cannot safely meet a quota, emit a shortfall rather than a weak question. The report records release ID, lesson ID, objective ID, requested and produced counts by type, difficulty, and `bloomLevel`; True/False answer balance; missing slots; checked `sourceRefs`; reason code; explanation; and review owner. It also always records `integerAllocationResidual` as `0` or `1`; a value of `1` names `analyze` as the recipient and states that `L` was odd. Reason codes include `insufficient-evidence`, `answer-ambiguity`, `duplicate`, `translation-risk`, and `review-rejection`. Release QA compares the report with the generation profile and does not silently backfill from another objective or outside sources.
+If evidence cannot safely meet a quota, emit a shortfall rather than a weak question. The report records release ID, lesson ID, objective ID, requested and produced counts by type, difficulty, and `bloomLevel`; True/False answer balance; missing slots; checked `sourceRefs`; reason code; explanation; and review owner. It also records the integer allocation residual and ordered recipient list for both configured distributions; each residual is from zero through two because there are three buckets. Under the defaults, the Bloom residual is `0` or `1`, and a value of `1` names `analyze` and states that `L` was odd. Reason codes include `insufficient-evidence`, `answer-ambiguity`, `duplicate`, `translation-risk`, and `review-rejection`. Release QA compares the report with the generation profile and does not silently backfill from another objective or outside sources.
 
 ## MCQ Rubric
 
@@ -40,7 +44,7 @@ Every True/False item must satisfy all of these checks:
 2. It contains no double negative.
 3. A false item is not a trivial one-word flip of a source sentence.
 4. Absolutes such as “always” and “never” appear only when the evidence supports the absolute.
-5. Answer balance is enforced across the four-item lesson set.
+5. Answer balance follows the configured deterministic pool rule; the default four-item lesson set has exactly two True and two False answers.
 6. It includes a source-grounded rationale for the answer.
 7. When false, `correctedStatement` contains a complete corrected false statement; when true, `correctedStatement` is null.
 
@@ -61,7 +65,7 @@ Run the deterministic canonical normalization and comparison from `04-CONTENT-AN
 | `review.status` | `qualityState` | `reviewState` | `needsReview` | `review.approval` |
 | --- | --- | --- | --- | --- |
 | `draft` | `draft` | `unreviewed` | `true` | Absent. |
-| `validated` | `validated` | `unreviewed` | `true` | Absent. |
+| `validated` | `validated` | `unreviewed` | `false` | Absent. |
 | `human-reviewed` | `approved` | `approved` | `false` | `status: completed`, `decision: approved`. |
 | `needs-review` | `needs-review` | `needs-review` | `true` | Completed human decision `needs-review`. |
 | `rejected` | `rejected` | `rejected` | `true` | Completed human decision `rejected`. |
@@ -70,9 +74,9 @@ For every present approval, `reviewedRecordId` equals the generated question `id
 
 ## Route Eligibility
 
-Question Bank may show every retained item with origin, evidence, duplicate, and review labels. Practice may show `validated` or `needs-review` items only in an explicitly unscored review mode; normal scored Practice requires canonical `qualityState: approved`, `reviewState: approved`, `duplicateDisposition: retain`, a valid answer, and valid evidence. Mock Exam uses only that same scoreable set and never includes draft, merely validated, needs-review, rejected, duplicate, ambiguous, or stale-review items.
+Question Bank may show every retained item with origin, evidence, duplicate, and review labels. Normal scored Practice may use `validated` or `human-reviewed` items when `needsReview` is false, the truth-table states match, `duplicateDisposition` is `retain`, and the answer and evidence are valid. `needs-review` items may appear only in an explicitly unscored review mode. Draft and rejected items are not learner-facing.
 
-When `generatedQuestionsRequireHumanReviewForExam` is true, human approval is mandatory for every Mock Exam item. Regardless of configuration, any high-stakes, credentialing, admissions, employment, compliance, or externally reported assessment requires human review and completed approval. Automated validation alone never authorizes high-stakes use.
+When `generatedQuestionsRequireHumanReviewForExam` is true, human approval is mandatory for every Mock Exam item: `review.status`, `qualityState`, and `reviewState` must be `human-reviewed`, `approved`, and `approved`, and the current version-bound approval must be completed and approved. When `generatedQuestionsRequireHumanReviewForExam` is false, a validated item may enter Mock Exam if it meets the same scoreability, evidence, answer, and duplicate rules as scored Practice. Mock Exam never includes draft, needs-review, rejected, duplicate, ambiguous, or stale-review items. Regardless of configuration, any high-stakes, credentialing, admissions, employment, compliance, or externally reported assessment requires human review and completed approval. Automated validation alone never authorizes high-stakes use.
 
 ## Claims and Labels
 
