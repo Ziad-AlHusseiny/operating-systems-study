@@ -1,4 +1,5 @@
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -7,6 +8,7 @@ from scripts.validate_factory_kit import (
     EXAMPLE_REQUIRED_KEYS,
     REQUIRED_DOCS,
     REQUIRED_EXAMPLES,
+    collect_declared_variables,
     collect_template_variables,
     validate_generated_evidence_map,
     validate_markdown_headings,
@@ -27,6 +29,93 @@ class FactoryKitValidatorTests(unittest.TestCase):
         "distractorRationales[0]", "distractorRationales[1]",
         "distractorRationales[2]", "distractorRationales[3]",
     )
+
+    def test_complete_factory_kit_passes(self):
+        root = Path("docs/study-site-factory")
+        self.assertEqual(validate_kit(root), [])
+
+    def test_all_template_variables_are_declared(self):
+        root = Path("docs/study-site-factory")
+        declared = collect_declared_variables(
+            root / "01-PROJECT-INPUT-TEMPLATE.md"
+        )
+        used = set().union(*(
+            collect_template_variables(path.read_text(encoding="utf-8"))
+            for path in root.glob("*.md")
+        ))
+        self.assertEqual(used - declared, set())
+
+    def test_bare_variable_names_are_not_declarations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "input.md"
+            path.write_text(
+                "| `PROJECT_TITLE` | Bare name. |\n", encoding="utf-8"
+            )
+            self.assertEqual(collect_declared_variables(path), set())
+
+    def test_complete_validation_reports_undeclared_template_variables(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            with (root / "README.md").open("a", encoding="utf-8") as stream:
+                stream.write("\n{{UNDECLARED_FACTORY_VALUE}}\n")
+
+            errors = validate_kit(root)
+
+        self.assertIn(
+            "undeclared template variable: UNDECLARED_FACTORY_VALUE", errors
+        )
+
+    def test_complete_validation_reports_broken_relative_links(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            with (root / "README.md").open("a", encoding="utf-8") as stream:
+                stream.write("\n[Missing](missing-document.md)\n")
+
+            errors = validate_kit(root)
+
+        self.assertIn(
+            f"{root / 'README.md'}: broken relative link: missing-document.md",
+            errors,
+        )
+
+    def test_complete_validation_reports_unfinished_markers(self):
+        markers = (
+            "T" + "BD",
+            "T" + "ODO",
+            "implement" + " later",
+            "fill" + " in later",
+        )
+        for marker in markers:
+            with (
+                self.subTest(marker=marker),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory) / "factory"
+                shutil.copytree(Path("docs/study-site-factory"), root)
+                with (root / "README.md").open("a", encoding="utf-8") as stream:
+                    stream.write(f"\n{marker}\n")
+
+                errors = validate_kit(root)
+
+            self.assertIn(
+                f"{root / 'README.md'}: unfinished marker: {marker}", errors
+            )
+
+    def test_complete_validation_reports_missing_required_headings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            path = root / "02-PRD-TEMPLATE.md"
+            text = path.read_text(encoding="utf-8").replace(
+                "## Product Goal", "## Removed Product Goal", 1
+            )
+            path.write_text(text, encoding="utf-8")
+
+            errors = validate_kit(root)
+
+        self.assertIn(f"{path}: missing heading: Product Goal", errors)
 
     def make_generated_question(self, review_status="human-reviewed"):
         states = {

@@ -10,6 +10,13 @@ Follow these seven steps in order:
 6. Review gate reports: resolve or explicitly retain every reported review item before continuing.
 7. Deploy only after approval: deploy only when the human approval and final QA gate both pass.
 
+## Start a new project
+
+Use docs/study-site-factory/10-MASTER-BUILD-PROMPT.md.
+Project input: input/PROJECT_INPUT.md
+Configuration: input/project-config.json
+Materials: input/materials/
+
 Validate the completed kit with:
 
 ```powershell

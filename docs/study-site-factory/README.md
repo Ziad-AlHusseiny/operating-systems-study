@@ -20,6 +20,28 @@ project that must present generated content as official source material.
 Read the numbered documents in filename order. Start with the project input and
 configuration, then read only the stage-specific documents needed for the work.
 
+- [00 — Quick start](00-QUICK-START.md)
+- [01 — Project input template](01-PROJECT-INPUT-TEMPLATE.md)
+- [02 — PRD template](02-PRD-TEMPLATE.md)
+- [03 — Source ingestion specification](03-SOURCE-INGESTION-SPEC.md)
+- [04 — Content and data contracts](04-CONTENT-AND-DATA-CONTRACTS.md)
+- [05 — Material lessons specification](05-MATERIAL-LESSONS-SPEC.md)
+- [06 — Question generation specification](06-QUESTION-GENERATION-SPEC.md)
+- [07 — UX and system flow](07-UX-AND-SYSTEM-FLOW.md)
+- [08 — Build workflow](08-BUILD-WORKFLOW.md)
+- [09 — QA gates](09-QA-GATES.md)
+- [10 — Master build prompt](10-MASTER-BUILD-PROMPT.md)
+- [11 — Handoff and deployment](11-HANDOFF-AND-DEPLOYMENT.md)
+
+Reference JSON examples:
+
+- [Project configuration](examples/project-config.example.json)
+- [Source manifest](examples/source-manifest.example.json)
+- [Lesson](examples/lesson.example.json)
+- [Official question](examples/official-question.example.json)
+- [Generated question](examples/generated-question.example.json)
+- [Explanation](examples/explanation.example.json)
+
 ## Fixed system
 
 The static architecture, source references, stable IDs, review-item handling,
@@ -47,5 +69,6 @@ Run the kit validator before handoff:
 python -B scripts/validate_factory_kit.py
 ```
 
-It reports missing required files and invalid JSON. Later documents extend its
-validation checks as the kit is completed.
+It reports missing required files, invalid JSON and contracts, missing required
+headings, undeclared template variables, broken relative links, and unfinished
+delivery markers.

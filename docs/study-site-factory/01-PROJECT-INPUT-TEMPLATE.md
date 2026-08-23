@@ -53,20 +53,20 @@ Select exactly one option; these choices are mutually exclusive.
 
 | Variable | Meaning |
 | --- | --- |
-| `PROJECT_TITLE` | Full course or project title. |
-| `PROJECT_SHORT_TITLE` | Short navigation and branding title. |
-| `PROJECT_SLUG` | Stable lowercase project identifier. |
-| `PROJECT_DESCRIPTION` | Short source-backed site description. |
-| `BRAND_INITIALS` | Brief brand mark shown by the site. |
-| `SOURCE_LANGUAGE` | Language used by the supplied source materials. |
-| `STUDY_LANGUAGE` | Language used by learners in the site. |
-| `CONTENT_POLICY` | Exactly one of `source-only`, `source-plus-generated`, or `generated-only`. |
-| `ALLOW_OUTSIDE_SOURCES` | Whether approved external authoritative sources may be used. |
-| `MCQ_PER_LESSON` | Target generated multiple-choice questions per supported lesson. |
-| `TRUE_FALSE_PER_LESSON` | Target generated true/false questions per supported lesson. |
-| `GENERATED_EXAM_REVIEW_POLICY` | Approval rule required before generated questions enter Mock Exam. |
-| `DEFAULT_EXAM_COUNT` | Default number of questions in a Mock Exam. |
-| `DEFAULT_EXAM_MINUTES` | Default Mock Exam time limit in minutes. |
-| `GITHUB_REPOSITORY` | Deployment repository in `OWNER/REPOSITORY` form. |
-| `GITHUB_BRANCH` | Branch published by the deployment provider. |
-| `PUBLIC_URL` | Expected public website URL. |
+| `{{PROJECT_TITLE}}` | Full course or project title. |
+| `{{PROJECT_SHORT_TITLE}}` | Short navigation and branding title. |
+| `{{PROJECT_SLUG}}` | Stable lowercase project identifier. |
+| `{{PROJECT_DESCRIPTION}}` | Short source-backed site description. |
+| `{{BRAND_INITIALS}}` | Brief brand mark shown by the site. |
+| `{{SOURCE_LANGUAGE}}` | Language used by the supplied source materials. |
+| `{{STUDY_LANGUAGE}}` | Language used by learners in the site. |
+| `{{CONTENT_POLICY}}` | Exactly one of `source-only`, `source-plus-generated`, or `generated-only`. |
+| `{{ALLOW_OUTSIDE_SOURCES}}` | Whether approved external authoritative sources may be used. |
+| `{{MCQ_PER_LESSON}}` | Target generated multiple-choice questions per supported lesson. |
+| `{{TRUE_FALSE_PER_LESSON}}` | Target generated true/false questions per supported lesson. |
+| `{{GENERATED_EXAM_REVIEW_POLICY}}` | Approval rule required before generated questions enter Mock Exam. |
+| `{{DEFAULT_EXAM_COUNT}}` | Default number of questions in a Mock Exam. |
+| `{{DEFAULT_EXAM_MINUTES}}` | Default Mock Exam time limit in minutes. |
+| `{{GITHUB_REPOSITORY}}` | Deployment repository in `OWNER/REPOSITORY` form. |
+| `{{GITHUB_BRANCH}}` | Branch published by the deployment provider. |
+| `{{PUBLIC_URL}}` | Expected public website URL. |

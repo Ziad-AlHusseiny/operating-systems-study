@@ -4,6 +4,13 @@ import re
 from pathlib import Path
 
 VARIABLE = re.compile(r"\{\{([A-Z][A-Z0-9_]*)\}\}")
+MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+UNFINISHED_MARKERS = (
+    "T" + "BD",
+    "T" + "ODO",
+    "implement" + " later",
+    "fill" + " in later",
+)
 
 REQUIRED_DOCS = (
     "README.md",
@@ -29,6 +36,99 @@ REQUIRED_EXAMPLES = (
     "examples/generated-question.example.json",
     "examples/explanation.example.json",
 )
+
+REQUIRED_HEADINGS = {
+    "README.md": (
+        "Purpose",
+        "Reading order",
+        "Validation",
+    ),
+    "00-QUICK-START.md": ("Start a new project",),
+    "01-PROJECT-INPUT-TEMPLATE.md": (
+        "Copy-ready form",
+        "Variable dictionary",
+    ),
+    "02-PRD-TEMPLATE.md": (
+        "Project Variables",
+        "Fixed Product Requirements",
+        "Product Goal",
+        "Users and Jobs",
+        "Content Modes",
+        "Functional Requirements",
+        "Material Requirements",
+        "Question Requirements",
+        "Persistence",
+        "Non-Functional Requirements",
+        "Acceptance Criteria",
+    ),
+    "03-SOURCE-INGESTION-SPEC.md": (
+        "Purpose",
+        "Source Lifecycle",
+        "Required Audit Output",
+        "Format Rules",
+        "Normalization and Acceptance",
+        "Answer-Key Boundaries",
+    ),
+    "04-CONTENT-AND-DATA-CONTRACTS.md": (
+        "Project Configuration",
+        "Source Manifest and `sourceRef`",
+        "Material Sections",
+        "Questions",
+        "Generated Question Quality and Duplication",
+        "Review State and Scoring",
+    ),
+    "05-MATERIAL-LESSONS-SPEC.md": (
+        "Purpose and Inputs",
+        "Module Map and Learning Objectives",
+        "Lesson Page",
+        "Lesson Quality Checks",
+    ),
+    "06-QUESTION-GENERATION-SPEC.md": (
+        "Purpose and Contract",
+        "MCQ Rubric",
+        "True/False Rubric",
+        "Evidence and Ambiguity",
+        "Review States and Canonical Mapping",
+        "Release Checks",
+    ),
+    "07-UX-AND-SYSTEM-FLOW.md": (
+        "Route map",
+        "Core journeys",
+        "Navigation and responsiveness",
+        "Question interactions and exam safety",
+        "Accessibility and language",
+    ),
+    "08-BUILD-WORKFLOW.md": (
+        "Resume contract",
+        "Stage 1: Initialize project",
+        "Stage 12: Handoff, deploy, and verify public output",
+        "Stage invalidation and repair",
+    ),
+    "09-QA-GATES.md": tuple(
+        f"Gate {number}: {name}"
+        for number, name in enumerate((
+            "Input Completeness",
+            "Extraction and Provenance",
+            "Canonical Content",
+            "Lessons and Guidance",
+            "Generated Questions",
+            "Application Safety and Logic",
+            "Browser QA",
+            "Deployment",
+        ), 1)
+    ),
+    "10-MASTER-BUILD-PROMPT.md": (
+        "Master build prompt",
+        "Low-token operating mode",
+    ),
+    "11-HANDOFF-AND-DEPLOYMENT.md": (
+        "Maintainer file map",
+        "Deployment authorization boundary",
+        "Authorized deployment procedure",
+        "Public verification",
+        "Final handoff summary",
+    ),
+}
 
 EXAMPLE_REQUIRED_KEYS = {
     "examples/source-manifest.example.json": {"version", "sources"},
@@ -79,6 +179,10 @@ GENERATED_REVIEW_TRUTH_TABLE = {
 
 def collect_template_variables(text: str) -> set[str]:
     return set(VARIABLE.findall(text))
+
+
+def collect_declared_variables(path: Path) -> set[str]:
+    return collect_template_variables(path.read_text(encoding="utf-8"))
 
 
 def validate_json_file(path: Path) -> list[str]:
@@ -415,11 +519,50 @@ def validate_markdown_headings(path: Path, required: tuple[str, ...]) -> list[st
         }
     except OSError as error:
         return [f"{path}: cannot read Markdown: {error}"]
-    return [f"{path}: missing heading: {heading}" for heading in required if heading not in headings]
+    return [
+        f"{path}: missing heading: {heading}"
+        for heading in required
+        if heading not in headings
+    ]
+
+
+def validate_internal_links(root: Path, markdown_paths: list[Path]) -> list[str]:
+    errors = []
+    for path in markdown_paths:
+        for target in MARKDOWN_LINK.findall(path.read_text(encoding="utf-8")):
+            if target.startswith(("http://", "https://", "#")):
+                continue
+            clean_target = target.split("#", 1)[0]
+            if (
+                clean_target
+                and not (path.parent / clean_target).resolve().exists()
+            ):
+                errors.append(f"{path}: broken relative link: {target}")
+    return errors
+
+
+def validate_unfinished_markers(markdown_paths: list[Path]) -> list[str]:
+    errors = []
+    for path in markdown_paths:
+        text = path.read_text(encoding="utf-8")
+        folded_text = text.casefold()
+        for marker in UNFINISHED_MARKERS:
+            if marker.casefold() in folded_text:
+                errors.append(f"{path}: unfinished marker: {marker}")
+    return errors
 
 
 def validate_kit(root: Path) -> list[str]:
     errors = validate_required_files(root, REQUIRED_DOCS + REQUIRED_EXAMPLES)
+    markdown_paths = [
+        root / name for name in REQUIRED_DOCS if (root / name).is_file()
+    ]
+
+    for name, headings in REQUIRED_HEADINGS.items():
+        path = root / name
+        if path.is_file():
+            errors.extend(validate_markdown_headings(path, headings))
+
     for name in REQUIRED_EXAMPLES:
         path = root / name
         if path.is_file():
@@ -429,6 +572,21 @@ def validate_kit(root: Path) -> list[str]:
                 errors.append(f"{path}: invalid JSON: {error}")
                 continue
             errors.extend(validate_example_payload(name, payload))
+
+    declaration_path = root / "01-PROJECT-INPUT-TEMPLATE.md"
+    if declaration_path.is_file():
+        declared = collect_declared_variables(declaration_path)
+        used = set().union(*(
+            collect_template_variables(path.read_text(encoding="utf-8"))
+            for path in markdown_paths
+        ))
+        errors.extend(
+            f"undeclared template variable: {name}"
+            for name in sorted(used - declared)
+        )
+
+    errors.extend(validate_internal_links(root, markdown_paths))
+    errors.extend(validate_unfinished_markers(markdown_paths))
     return errors
 
 
