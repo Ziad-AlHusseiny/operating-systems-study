@@ -59,6 +59,21 @@ class FactoryKitValidatorTests(unittest.TestCase):
         for route in routes:
             self.assertIn(route, text)
 
+    def test_prd_excludes_review_items_from_every_mock_exam_pool(self):
+        text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "Items marked `Needs review — unscored` are excluded from every "
+            "Mock Exam pool.",
+            text,
+        )
+        self.assertIn(
+            "Generated questions may enter a Mock Exam only when they are "
+            "approved and scoreable",
+            text,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

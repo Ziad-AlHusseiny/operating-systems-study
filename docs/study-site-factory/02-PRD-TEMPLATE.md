@@ -91,10 +91,8 @@ unscored.
   answers. Generated pools contain only questions labeled `Generated practice
   question` with provenance and review state.
 - A mixed Practice pool identifies every item’s origin before submission.
-- Items marked `Needs review — unscored` never affect scoreable totals or
-  scores. They cannot enter an official Mock Exam question set.
-- Generated questions may enter Mock Exam only when they satisfy
-  `{{GENERATED_EXAM_REVIEW_POLICY}}`; otherwise they remain Practice-only.
+- Items marked `Needs review — unscored` are excluded from every Mock Exam pool. They never affect scoreable totals or scores.
+- Generated questions may enter a Mock Exam only when they are approved and scoreable under `{{GENERATED_EXAM_REVIEW_POLICY}}`; otherwise they remain Practice-only.
 - Missing official answers remain visibly unscored. Maintainers must correct
   them from an approved answer key or keep them review-only.
 
