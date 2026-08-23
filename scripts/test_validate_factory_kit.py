@@ -558,6 +558,32 @@ class FactoryKitValidatorTests(unittest.TestCase):
         for route in routes:
             self.assertIn(route, text)
 
+    def test_qa_document_contains_all_blocking_gates(self):
+        path = Path("docs/study-site-factory/09-QA-GATES.md")
+        text = path.read_text(encoding="utf-8")
+        for gate in (
+            "Gate 1: Input Completeness",
+            "Gate 2: Extraction and Provenance",
+            "Gate 3: Canonical Content",
+            "Gate 4: Lessons and Guidance",
+            "Gate 5: Generated Questions",
+            "Gate 6: Application Safety and Logic",
+            "Gate 7: Browser QA",
+            "Gate 8: Deployment",
+        ):
+            self.assertIn(gate, text)
+
+    def test_build_workflow_names_resumable_artifacts(self):
+        path = Path("docs/study-site-factory/08-BUILD-WORKFLOW.md")
+        text = path.read_text(encoding="utf-8")
+        artifacts = (
+            "SOURCE_AUDIT_REPORT.md", "CONTENT_COVERAGE_REPORT.md",
+            "QUESTION_QUALITY_REPORT.md", "FINAL_QA_REPORT.md",
+            "progress-ledger.md",
+        )
+        for artifact in artifacts:
+            self.assertIn(artifact, text)
+
     def test_prd_excludes_review_items_from_every_mock_exam_pool(self):
         text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
             encoding="utf-8"
