@@ -59,7 +59,13 @@ while the source audit records the working derivative and conversion evidence.
 | `sourceRef.context` | string | Optional human-readable span or region. |
 | `sourceRef.confidence` | number | Optional 0–1 extraction confidence. |
 
-`sourceRefs` is a non-empty array whenever a content record claims source-derived content. A reference must name a manifest source and a location compatible with that source format.
+`sourceRef` has exactly required `sourceId`, `locationType`, and `location`, plus
+optional string `context` and optional numeric `confidence`; unknown fields are
+invalid. Page and slide locations are positive integers between `1` and the
+source's declared `pages` or `slides` count, inclusive. `sourceRefs` is a
+non-empty array whenever a content record claims source-derived content. A
+reference must name a manifest source and a location compatible with that
+source format.
 
 ## Learning Structure
 
@@ -112,7 +118,7 @@ A generated question supports only `mcq` and `true-false`. In addition to the ba
 | `difficulty` | string | Exactly `easy`, `medium`, or `hard`. |
 | `bloomLevel` | string | Exactly `remember`, `apply`, or `analyze`; equals `cognitiveLevel`. |
 | `cognitiveLevel` | string | Exactly `remember`, `understand`, `apply`, `analyze`, `evaluate`, or `create` (Bloom level). |
-| `learningObjectiveId` | string | Existing `objective-` ID assessed by the item. |
+| `learningObjectiveId` | string | Existing `objective-` ID assessed by the item; it must equal an ID in both the owning Lesson's `objectiveIds` and `learningObjectives`. |
 | `contentVersion` | string | Semantic content version reviewed by any approval. |
 | `evidenceMap` | array | Non-empty `{claimId, target, sourceRefs, support}` records; `target` identifies one required claim-bearing field and `support` is exactly `direct` or `derived`. |
 | `qualityState` | string | Exactly `draft`, `validated`, `needs-review`, `approved`, or `rejected`. |

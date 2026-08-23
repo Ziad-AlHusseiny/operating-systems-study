@@ -10,7 +10,7 @@ publication.
 | Path | Maintainer purpose | Editing rule |
 | --- | --- | --- |
 | `input/PROJECT_INPUT.md` | Human-approved scope, languages, branding, and publication destination. | Edit decisions here, then invalidate dependent stages. |
-| `input/project-config.json` | Machine-readable quotas, modes, exam defaults, persistence version, and deployment settings. | Validate after every edit; do not override it only in generated files. |
+| `input/project-config.json` | Machine-readable quotas, modes, exam defaults, and deployment settings. | Validate after every edit; do not override it only in generated files. |
 | `input/materials/` | Original supplied evidence. | Preserve originals; additions/replacements require a new manifest hash and source audit. |
 | `content/source-manifest.json` | Stable `source-` inventory, hashes, formats, and locations. | Rebuild from inputs; retain stable IDs where identity is unchanged. |
 | `content/lessons/` | Canonical generated lesson records. | Edit canonical records with evidence/review metadata, then rebuild delivery payloads. |
@@ -99,8 +99,12 @@ canonical input or builder and rebuild.
 Persisted progress includes an explicit schema version. When content IDs,
 review flags, scoring eligibility, or storage shape changes:
 
-1. Increment the configured progress schema version and add a deterministic
-   migration from every supported prior version.
+The progress schema version belongs to the LocalStorage/application migration
+contract, not to `input/project-config.json`; keep the approved project
+configuration shape unchanged.
+
+1. Increment the LocalStorage schema version owned by the application and add a
+   deterministic migration from every supported prior version.
 2. Parse imported/local data as untrusted input; reject malformed structure and
    unsupported future versions without overwriting the user's valid state.
 3. Keep only IDs present in current canonical payloads. Normalize attempts,
@@ -318,6 +322,31 @@ foreach ($LocalFile in $RequiredPayloads) {
 }
 ```
 
+The public-check runner must write
+`reports/GATE_8_DEPLOYMENT_EVIDENCE.json`. The record is bound to the release
+commit and has these fields:
+
+- `releaseCommit` and `remoteBranchCommit`: the same full SHA checked by Gate
+  7 and published by the configured branch.
+- `workflow`: `event` (`push` or `workflow_dispatch`), `headSha`, `conclusion`,
+  and a `jobs` object whose `build` and `deploy` values are `success`.
+- `publicHtml`: `commit`, HTTP `status`, and `contentType`.
+- `requiredPayloadPaths`: every repository-relative JSON path under the static
+  data directory; `publicPayloads`: one result per required path with `commit`,
+  status/content type, `parsed`, local/public counts, and local/public stable-ID
+  arrays.
+- `browserSmokes`: exactly one `1440x1000` and one `390x844` result. Each result
+  records the commit, `passed`, the required public journeys and display checks,
+  `consoleErrors`, and `failedRequests`.
+
+The executable reference policy is
+`scripts.validate_factory_kit.deployment_is_verified`. A generated project may
+copy that pure function or implement an equivalent validator, but it must run
+the policy against the evidence record and the locally computed release SHA.
+Missing, stale, malformed, count/ID-mismatched, or incomplete browser evidence
+keeps the verdict false. A successful workflow or root-HTML response alone
+never does.
+
 ## Non-destructive rollback
 
 Rollback creates a normal auditable commit; never use `git reset --hard`, branch
@@ -363,6 +392,7 @@ malformed, failed, or commit-mismatched evidence before formatting the handoff:
 ```powershell
 $DeploymentVerified = $false
 $EvidencePath = "reports/FINAL_HANDOFF_EVIDENCE.json"
+$Gate8EvidencePath = "reports/GATE_8_DEPLOYMENT_EVIDENCE.json"
 $RequiredEvidence = @(
     "reports/SOURCE_AUDIT_REPORT.md",
     "reports/CONTENT_COVERAGE_REPORT.md",
@@ -444,8 +474,8 @@ $Branch = [string]$ProjectConfig.deployment.branch
 $PublicUrl = ([string]$ProjectConfig.deployment.publicUrl).TrimEnd("/") + "/"
 $Commit = (git rev-parse HEAD).Trim().ToLowerInvariant()
 if ($Commit -notmatch "^[0-9a-f]{40}$") { throw "Release commit is not a full SHA" }
-$MatchingRuns = @(gh run list --workflow pages.yml --branch $Branch --event workflow_dispatch --commit $Commit --status success --limit 20 --json databaseId,headSha,conclusion,createdAt | ConvertFrom-Json | Where-Object {
-    $_.headSha -eq $Commit -and $_.conclusion -eq "success"
+$MatchingRuns = @(gh run list --workflow pages.yml --branch $Branch --commit $Commit --status success --limit 20 --json databaseId,headSha,conclusion,createdAt,event | ConvertFrom-Json | Where-Object {
+    $_.headSha -eq $Commit -and $_.conclusion -eq "success" -and $_.event -in @("push", "workflow_dispatch")
 } | Sort-Object createdAt -Descending)
 if ($LASTEXITCODE -ne 0) { throw "Could not query Pages runs for the committed release" }
 $RunId = $null
@@ -456,20 +486,21 @@ if ($MatchingRuns.Count -gt 0) {
     $RemoteSha = (($RemoteRef[0] -split "\s+")[0]).ToLowerInvariant()
     if ($RemoteSha -ne $Commit) { throw "Configured remote branch is not at the committed release" }
     $RunId = [string]$MatchingRuns[0].databaseId
-    $Run = gh run view $RunId --json headSha,conclusion,jobs | ConvertFrom-Json
-    if ($LASTEXITCODE -ne 0 -or $Run.headSha -ne $Commit -or $Run.conclusion -ne "success") { throw "Pages run does not verify the committed release" }
+    $Run = gh run view $RunId --json event,headSha,conclusion,jobs | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0 -or $Run.event -notin @("push", "workflow_dispatch") -or $Run.headSha -ne $Commit -or $Run.conclusion -ne "success") { throw "Pages run does not verify the committed release" }
     foreach ($JobName in @("build", "deploy")) {
         $Jobs = @($Run.jobs | Where-Object { $_.name -eq $JobName -and $_.conclusion -eq "success" })
         if ($Jobs.Count -ne 1) { throw "Required Pages job did not succeed: $JobName" }
     }
-    $HtmlResponse = Invoke-WebRequest -Uri $PublicUrl
-    if ($HtmlResponse.StatusCode -ne 200 -or [string]$HtmlResponse.Headers["Content-Type"] -notmatch "(?i)^text/html(?:\s*;|$)") { throw "Public release HTML verification failed" }
+    if (-not (Test-Path -LiteralPath $Gate8EvidencePath -PathType Leaf)) { throw "Complete Gate 8 evidence is missing" }
+    python -B -c 'import sys; from pathlib import Path; from scripts.validate_factory_kit import deployment_is_verified, parse_json; evidence = parse_json(Path(sys.argv[1]).read_text(encoding="utf-8")); raise SystemExit(0 if deployment_is_verified(evidence, expected_commit=sys.argv[2]) else 1)' $Gate8EvidencePath $Commit
+    if ($LASTEXITCODE -ne 0) { throw "Gate 8 workflow, HTML, JSON parity, or browser evidence is incomplete or stale" }
     $DeploymentVerified = $true
 }
 
 $VerifiedUrl = if ($DeploymentVerified) { $PublicUrl } else { "not deployed" }
 $WorkflowRunSummary = if ($DeploymentVerified) {
-    "run $RunId; commit $($Run.headSha); build/deploy success"
+    "run $RunId; event $($Run.event); commit $($Run.headSha); complete Gate 8 evidence passed"
 } else {
     "not run — awaiting explicit authorization"
 }

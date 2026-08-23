@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import re
+from datetime import datetime
 from pathlib import Path, PureWindowsPath
 
 VARIABLE = re.compile(r"\{\{([A-Z][A-Z0-9_]*)\}\}")
@@ -250,8 +251,14 @@ LANGUAGE_TAG = re.compile(r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$")
 REPOSITORY_NAME = re.compile(r"^[^/\s]+/[^/\s]+$")
 SEMANTIC_VERSION = re.compile(r"^\d+\.\d+(?:\.\d+)?$")
 UTC_DATETIME = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
+FULL_COMMIT_SHA = re.compile(r"^[0-9a-f]{40}$")
+HTML_CONTENT_TYPE = re.compile(r"^text/html(?:\s*;|$)", re.IGNORECASE)
+JSON_CONTENT_TYPE = re.compile(
+    r"^application/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)", re.IGNORECASE
+)
 
 SOURCE_REFERENCE_REQUIRED_KEYS = {"sourceId", "locationType", "location"}
+SOURCE_REFERENCE_OPTIONAL_KEYS = {"context", "confidence"}
 SOURCE_REFERENCE_LOCATION_TYPES = {"page", "slide", "section", "row", "image"}
 SOURCE_STATUSES = {
     "inventoried",
@@ -374,19 +381,46 @@ GENERATED_REVIEW_TRUTH_TABLE = {
     "rejected": ("rejected", "rejected", True, "rejected"),
 }
 TRUE_FALSE_DEFAULT_PATTERNS = ("TTFF", "TFTF", "TFFT", "FTTF", "FTFT", "FFTT")
+DEPLOYMENT_WORKFLOW_EVENTS = {"push", "workflow_dispatch"}
+DEPLOYMENT_REQUIRED_JOBS = {"build", "deploy"}
+DEPLOYMENT_BROWSER_VIEWPORTS = {"1440x1000", "390x844"}
+DEPLOYMENT_BROWSER_CHECKS = {
+    "Dashboard",
+    "Material",
+    "Practice",
+    "active-Exam non-leakage",
+    "Results",
+    "search",
+    "combined filters",
+    "pagination",
+    "bookmarks",
+    "progress export/import",
+    "light/dark",
+    "LTR/RTL",
+    "responsive navigation",
+    "asset/base-path loading",
+    "no horizontal overflow",
+}
 
 
-def _validated_true_false_ids(question_ids: object, expected_count: int | None = None) -> tuple[str, ...]:
+def _validated_true_false_ids(
+    question_ids: object, expected_count: int | None = None
+) -> tuple[str, ...]:
     if not isinstance(question_ids, (list, tuple)):
         raise TypeError("question_ids must be a list or tuple")
     ids = tuple(question_ids)
     if (
         (expected_count is not None and len(ids) != expected_count)
         or not ids
-        or any(not isinstance(question_id, str) or not question_id.startswith("gq-") for question_id in ids)
+        or any(
+            not isinstance(question_id, str) or not question_id.startswith("gq-")
+            for question_id in ids
+        )
         or len(set(ids)) != len(ids)
     ):
-        raise ValueError("question_ids must be unique stable gq- IDs of the required size")
+        raise ValueError(
+            "question_ids must be unique stable gq- IDs of the required size"
+        )
     return ids
 
 
@@ -414,8 +448,12 @@ def default_true_false_answer_assignment(
     """Assign the documented four-item lesson pattern in stable ID order."""
     ids = tuple(sorted(_validated_true_false_ids(question_ids, expected_count=4)))
     digest = true_false_default_seed_digest(project_slug, lesson_id)
-    pattern = TRUE_FALSE_DEFAULT_PATTERNS[int(digest[:8], 16) % len(TRUE_FALSE_DEFAULT_PATTERNS)]
-    return tuple((question_id, answer == "T") for question_id, answer in zip(ids, pattern))
+    pattern = TRUE_FALSE_DEFAULT_PATTERNS[
+        int(digest[:8], 16) % len(TRUE_FALSE_DEFAULT_PATTERNS)
+    ]
+    return tuple(
+        (question_id, answer == "T") for question_id, answer in zip(ids, pattern)
+    )
 
 
 def nondefault_true_false_answer_assignment(
@@ -431,7 +469,9 @@ def nondefault_true_false_answer_assignment(
         )
     )
     half = len(ordered) // 2
-    residual_is_true = hashlib.sha256(project_slug.encode("utf-8")).digest()[-1] & 1 == 0
+    residual_is_true = (
+        hashlib.sha256(project_slug.encode("utf-8")).digest()[-1] & 1 == 0
+    )
     answers = []
     for index, question_id in enumerate(ordered):
         if index < half:
@@ -442,6 +482,8 @@ def nondefault_true_false_answer_assignment(
             answer = residual_is_true
         answers.append((question_id, answer))
     return tuple(answers)
+
+
 REVIEW_APPROVAL_REQUIRED_KEYS = {
     "reviewedRecordId",
     "reviewedContentVersion",
@@ -478,10 +520,23 @@ def collect_declared_variables(path: Path) -> set[str]:
     return collect_template_variables(text) if text is not None else set()
 
 
+def _reject_duplicate_json_keys(pairs: list[tuple[str, object]]) -> dict:
+    payload = {}
+    for key, value in pairs:
+        if key in payload:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        payload[key] = value
+    return payload
+
+
+def parse_json(text: str) -> object:
+    return json.loads(text, object_pairs_hook=_reject_duplicate_json_keys)
+
+
 def validate_json_file(path: Path) -> list[str]:
     try:
-        json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        parse_json(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError) as error:
         return [f"{path}: invalid JSON: {error}"]
     return []
 
@@ -516,6 +571,124 @@ def validate_exact_boolean(value: object, path: str) -> list[str]:
     if type(value) is not bool:
         return [f"{path}: must be a boolean"]
     return []
+
+
+def is_utc_datetime(value: object) -> bool:
+    if not isinstance(value, str) or not UTC_DATETIME.fullmatch(value):
+        return False
+    try:
+        datetime.fromisoformat(f"{value[:-1]}+00:00")
+    except ValueError:
+        return False
+    return True
+
+
+def deployment_is_verified(evidence: object, *, expected_commit: str) -> bool:
+    if (
+        not isinstance(evidence, dict)
+        or not isinstance(expected_commit, str)
+        or not FULL_COMMIT_SHA.fullmatch(expected_commit)
+        or evidence.get("releaseCommit") != expected_commit
+        or evidence.get("remoteBranchCommit") != expected_commit
+    ):
+        return False
+
+    workflow = evidence.get("workflow")
+    if not isinstance(workflow, dict):
+        return False
+    jobs = workflow.get("jobs")
+    if (
+        workflow.get("event") not in DEPLOYMENT_WORKFLOW_EVENTS
+        or workflow.get("headSha") != expected_commit
+        or workflow.get("conclusion") != "success"
+        or not isinstance(jobs, dict)
+        or any(jobs.get(job) != "success" for job in DEPLOYMENT_REQUIRED_JOBS)
+    ):
+        return False
+
+    public_html = evidence.get("publicHtml")
+    if (
+        not isinstance(public_html, dict)
+        or public_html.get("commit") != expected_commit
+        or public_html.get("status") != 200
+        or not isinstance(public_html.get("contentType"), str)
+        or not HTML_CONTENT_TYPE.match(public_html["contentType"])
+    ):
+        return False
+
+    required_paths = evidence.get("requiredPayloadPaths")
+    payloads = evidence.get("publicPayloads")
+    if (
+        not isinstance(required_paths, list)
+        or not required_paths
+        or not all(
+            isinstance(path, str) and path.endswith(".json") for path in required_paths
+        )
+        or len(required_paths) != len(set(required_paths))
+        or not isinstance(payloads, list)
+        or len(payloads) != len(required_paths)
+    ):
+        return False
+    payload_map = {
+        payload.get("path"): payload
+        for payload in payloads
+        if isinstance(payload, dict) and isinstance(payload.get("path"), str)
+    }
+    if set(payload_map) != set(required_paths):
+        return False
+    for path in required_paths:
+        payload = payload_map[path]
+        local_count = payload.get("localCount")
+        public_count = payload.get("publicCount")
+        local_ids = payload.get("localIds")
+        public_ids = payload.get("publicIds")
+        if (
+            payload.get("commit") != expected_commit
+            or payload.get("status") != 200
+            or not isinstance(payload.get("contentType"), str)
+            or not JSON_CONTENT_TYPE.match(payload["contentType"])
+            or payload.get("parsed") is not True
+            or type(local_count) is not int
+            or local_count < 0
+            or type(public_count) is not int
+            or public_count != local_count
+            or not isinstance(local_ids, list)
+            or not isinstance(public_ids, list)
+            or not all(
+                isinstance(value, str) and value for value in local_ids + public_ids
+            )
+            or len(local_ids) != len(set(local_ids))
+            or len(public_ids) != len(set(public_ids))
+            or len(local_ids) != local_count
+            or len(public_ids) != public_count
+            or sorted(local_ids) != sorted(public_ids)
+        ):
+            return False
+
+    browser_smokes = evidence.get("browserSmokes")
+    if not isinstance(browser_smokes, list) or len(browser_smokes) != len(
+        DEPLOYMENT_BROWSER_VIEWPORTS
+    ):
+        return False
+    smoke_map = {
+        smoke.get("viewport"): smoke
+        for smoke in browser_smokes
+        if isinstance(smoke, dict) and isinstance(smoke.get("viewport"), str)
+    }
+    if set(smoke_map) != DEPLOYMENT_BROWSER_VIEWPORTS:
+        return False
+    for smoke in smoke_map.values():
+        checks = smoke.get("checks")
+        if (
+            smoke.get("commit") != expected_commit
+            or smoke.get("passed") is not True
+            or smoke.get("consoleErrors") != 0
+            or smoke.get("failedRequests") != 0
+            or not isinstance(checks, list)
+            or not DEPLOYMENT_BROWSER_CHECKS.issubset(checks)
+        ):
+            return False
+    return True
 
 
 def validate_positive_integer(value: object, path: str) -> list[str]:
@@ -613,9 +786,7 @@ def validate_project_config_example(payload: dict, name: str) -> list[str]:
                     f"{name}: questionGeneration.{field}: must be a "
                     "non-negative integer"
                 )
-        source_only = (
-            isinstance(policy, dict) and policy.get("mode") == "source-only"
-        )
+        source_only = isinstance(policy, dict) and policy.get("mode") == "source-only"
         mcq_quota = generation.get("mcqPerLesson")
         true_false_quota = generation.get("trueFalsePerLesson")
         if source_only and (mcq_quota != 0 or true_false_quota != 0):
@@ -685,6 +856,13 @@ def validate_source_reference(reference: object, path: str) -> list[str]:
     errors = []
     if missing:
         errors.append(f"{path}: missing required keys: {', '.join(missing)}")
+    unexpected = sorted(
+        reference.keys()
+        - SOURCE_REFERENCE_REQUIRED_KEYS
+        - SOURCE_REFERENCE_OPTIONAL_KEYS
+    )
+    if unexpected:
+        errors.append(f"{path}: unexpected keys: {', '.join(unexpected)}")
 
     source_id = reference.get("sourceId")
     if source_id is not None and (
@@ -714,11 +892,13 @@ def validate_source_reference(reference: object, path: str) -> list[str]:
         type(confidence) not in {int, float} or not 0 <= confidence <= 1
     ):
         errors.append(f"{path}: confidence must be a number from 0 to 1")
+    if "context" in reference and not isinstance(reference["context"], str):
+        errors.append(f"{path}: context must be a string")
     return errors
 
 
 def validate_manifest_location(
-    value: object, path: str, source_format: object
+    value: object, path: str, source_format: object, source_count: object = None
 ) -> list[str]:
     required = {"locationType", "location"}
     errors = validate_object_keys(value, path, required, exact=True)
@@ -731,7 +911,12 @@ def validate_manifest_location(
     if expected is not None and location_type != expected:
         errors.append(f"{path}: locationType must be {expected} for {source_format}")
     location = value.get("location")
-    if (
+    if location_type in {"page", "slide"} and type(source_count) is int:
+        if type(location) is not int or not 1 <= location <= source_count:
+            errors.append(
+                f"{path}: location must be an integer from 1 to {source_count}"
+            )
+    elif (
         type(location) not in {int, str}
         or isinstance(location, str)
         and not location.strip()
@@ -796,11 +981,11 @@ def validate_source_manifest_example(payload: dict, name: str) -> list[str]:
             errors.append(f"{path}: format: invalid value: {source_format}")
         if source.get("status") not in SOURCE_STATUSES:
             errors.append(f"{path}: status: invalid value: {source.get('status')}")
-        for count_field in ("pages", "slides"):
-            if count_field in source:
+        for declared_count_field in ("pages", "slides"):
+            if declared_count_field in source:
                 errors.extend(
                     validate_positive_integer(
-                        source[count_field], f"{path}: {count_field}"
+                        source[declared_count_field], f"{path}: {declared_count_field}"
                     )
                 )
         locations = source.get("locations")
@@ -813,6 +998,7 @@ def validate_source_manifest_example(payload: dict, name: str) -> list[str]:
                         location,
                         f"{path}: locations[{location_index}]",
                         source_format,
+                        source.get(count_field) if count_field is not None else None,
                     )
                 )
     duplicates = sorted({value for value in source_ids if source_ids.count(value) > 1})
@@ -938,7 +1124,7 @@ def validate_generated_review(payload: dict, name: str) -> list[str]:
         )
     )
     reviewed_at = approval.get("reviewedAt")
-    if not isinstance(reviewed_at, str) or not UTC_DATETIME.fullmatch(reviewed_at):
+    if not is_utc_datetime(reviewed_at):
         errors.append(f"{name}: review.approval.reviewedAt: must be ISO 8601 UTC")
     for field in ("reason", "notes"):
         if not isinstance(approval.get(field), str):
@@ -1029,9 +1215,7 @@ def compile_lesson_material_sections(lesson: object) -> tuple[dict, ...]:
                 "title": section.get("title"),
                 "origin": section.get("origin"),
                 "label": section.get("label"),
-                "generatedStudyGuidance": section.get(
-                    "generatedStudyGuidance"
-                ),
+                "generatedStudyGuidance": section.get("generatedStudyGuidance"),
                 "summaries": [
                     {"body": section.get("summary"), "sourceRefs": section_refs}
                 ],
@@ -1044,9 +1228,7 @@ def compile_lesson_material_sections(lesson: object) -> tuple[dict, ...]:
                     for body in section.get("recap", [])
                 ],
                 "sourceRefs": section_refs,
-                "linkedQuestionIds": copy.deepcopy(
-                    section.get("linkedQuestionIds")
-                ),
+                "linkedQuestionIds": copy.deepcopy(section.get("linkedQuestionIds")),
                 "contentVersion": content_version,
                 "needsReview": section.get("needsReview"),
                 "reviewNotes": section.get("reviewNotes"),
@@ -1055,15 +1237,15 @@ def compile_lesson_material_sections(lesson: object) -> tuple[dict, ...]:
     return tuple(compiled)
 
 
-def validate_lesson_material_section(
-    section: object, path: str
-) -> list[str]:
+def validate_lesson_material_section(section: object, path: str) -> list[str]:
     errors = validate_object_keys(
         section, path, LESSON_MATERIAL_SECTION_KEYS, exact=True
     )
     if not isinstance(section, dict):
         return errors
-    errors.extend(validate_prefixed_id(section.get("id"), f"{path}: id", "material-section-"))
+    errors.extend(
+        validate_prefixed_id(section.get("id"), f"{path}: id", "material-section-")
+    )
     errors.extend(validate_positive_integer(section.get("order"), f"{path}: order"))
     errors.extend(validate_non_empty_string(section.get("title"), f"{path}: title"))
     origin = section.get("origin")
@@ -1075,10 +1257,9 @@ def validate_lesson_material_section(
     }.get(origin)
     if section.get("label") != expected_label:
         errors.append(f"{path}: label: must match origin")
-    if (
-        type(section.get("generatedStudyGuidance")) is not bool
-        or section.get("generatedStudyGuidance") is not (origin == "generated")
-    ):
+    if type(section.get("generatedStudyGuidance")) is not bool or section.get(
+        "generatedStudyGuidance"
+    ) is not (origin == "generated"):
         errors.append(f"{path}: generatedStudyGuidance: must match origin")
     errors.extend(validate_non_empty_string(section.get("summary"), f"{path}: summary"))
     errors.extend(
@@ -1114,9 +1295,7 @@ def validate_lesson_material_section(
             if not (
                 isinstance(question_id, str) and question_id.startswith(("q-", "gq-"))
             ):
-                errors.append(
-                    f"{path}: linkedQuestionIds[{index}]: must use q- or gq-"
-                )
+                errors.append(f"{path}: linkedQuestionIds[{index}]: must use q- or gq-")
     if type(section.get("needsReview")) is not bool:
         errors.append(f"{path}: needsReview: must be a boolean")
     if not isinstance(section.get("reviewNotes"), str):
@@ -1128,7 +1307,9 @@ def validate_lesson_material_section(
         )
     if not is_non_empty_string_list(section.get("recap"), 3, 7):
         errors.append(f"{path}: recap: must contain three to seven non-empty strings")
-    if is_non_empty_string_list(explanation, 2, 5) and section.get("body") != "\n\n".join(explanation):
+    if is_non_empty_string_list(explanation, 2, 5) and section.get(
+        "body"
+    ) != "\n\n".join(explanation):
         errors.append(
             f"{path}: body: must equal explanation paragraphs joined with two newlines"
         )
@@ -1199,7 +1380,9 @@ def validate_lesson_example(payload: dict, name: str) -> list[str]:
             if len(orders) != len(set(orders)):
                 errors.append(f"{name}: materialSections: order values must be unique")
             if all(type(order) is int for order in orders) and orders != sorted(orders):
-                errors.append(f"{name}: materialSections: must be sorted by ascending order")
+                errors.append(
+                    f"{name}: materialSections: must be sorted by ascending order"
+                )
             if payload.get("materialSectionIds") != section_ids:
                 errors.append(
                     f"{name}: materialSectionIds: must equal materialSections IDs in order"
@@ -1398,8 +1581,7 @@ def generated_question_is_mock_exam_eligible(
             isinstance(approval.get(field), str) and approval[field].strip()
             for field in ("reviewer", "reason", "notes")
         )
-        and isinstance(approval.get("reviewedAt"), str)
-        and bool(UTC_DATETIME.fullmatch(approval["reviewedAt"]))
+        and is_utc_datetime(approval.get("reviewedAt"))
     )
 
 
@@ -1521,9 +1703,10 @@ def validate_question_type_shape(
         valid_answer_items = isinstance(answer, list) and all(
             isinstance(value, str) and value.strip() for value in answer
         )
-        if not missing_answer and (not valid_answer_items or (
-            len(answer) != len(item_ids) or set(answer) != set(item_ids)
-        )):
+        if not missing_answer and (
+            not valid_answer_items
+            or (len(answer) != len(item_ids) or set(answer) != set(item_ids))
+        ):
             errors.append(
                 f"{name}: correctAnswer: must order every item ID exactly once"
             )
@@ -1564,12 +1747,9 @@ def validate_question_base(
         and payload.get("correctAnswer") is None
     )
     if allow_missing_answer and not (
-        isinstance(payload.get("reviewNotes"), str)
-        and payload["reviewNotes"].strip()
+        isinstance(payload.get("reviewNotes"), str) and payload["reviewNotes"].strip()
     ):
-        errors.append(
-            f"{name}: reviewNotes: must explain a missing official answer"
-        )
+        errors.append(f"{name}: reviewNotes: must explain a missing official answer")
     errors.extend(
         validate_question_type_shape(
             payload,
@@ -2043,6 +2223,22 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
             }:
                 continue
             requested = (requested_type, requested_value)
+            count_field = {
+                "page": "pages",
+                "slide": "slides",
+            }.get(requested_type)
+            declared_count = (
+                source.get(count_field) if count_field is not None else None
+            )
+            if type(declared_count) is int and (
+                type(requested_value) is not int
+                or not 1 <= requested_value <= declared_count
+            ):
+                errors.append(
+                    f"{path}: {requested_type} location must be an integer "
+                    f"from 1 to {declared_count}"
+                )
+                continue
             if requested not in available:
                 errors.append(f"{path}: source location does not resolve")
 
@@ -2060,6 +2256,39 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
         if isinstance(explanation, dict) and isinstance(explanation.get("id"), str)
         else set()
     )
+
+    lesson_objective_ids = set()
+    lesson_authoring_objective_ids = set()
+    if isinstance(lesson, dict):
+        objective_ids = lesson.get("objectiveIds")
+        if isinstance(objective_ids, list):
+            lesson_objective_ids = {
+                objective_id
+                for objective_id in objective_ids
+                if isinstance(objective_id, str)
+                and objective_id.startswith("objective-")
+                and objective_id.removeprefix("objective-")
+            }
+        learning_objectives = lesson.get("learningObjectives")
+        if isinstance(learning_objectives, list):
+            lesson_authoring_objective_ids = {
+                objective.get("id")
+                for objective in learning_objectives
+                if isinstance(objective, dict)
+                and isinstance(objective.get("id"), str)
+                and objective["id"].startswith("objective-")
+                and objective["id"].removeprefix("objective-")
+            }
+    generated_objective_id = (
+        generated.get("learningObjectiveId") if isinstance(generated, dict) else None
+    )
+    if isinstance(generated_objective_id, str) and generated_objective_id not in (
+        lesson_objective_ids & lesson_authoring_objective_ids
+    ):
+        errors.append(
+            "examples/generated-question.example.json: "
+            "learningObjectiveId does not resolve to the lesson"
+        )
 
     generated_explanation_id = (
         generated.get("generatedExplanationId") if isinstance(generated, dict) else None
@@ -2130,8 +2359,8 @@ def validate_kit(root: Path) -> list[str]:
         path = root / name
         if path.is_file():
             try:
-                payload = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, json.JSONDecodeError) as error:
+                payload = parse_json(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, ValueError) as error:
                 errors.append(f"{path}: invalid JSON: {error}")
                 continue
             if isinstance(payload, dict):

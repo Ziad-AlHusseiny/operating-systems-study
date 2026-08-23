@@ -252,10 +252,11 @@ For every row, exercise and record:
   payloads; run public desktop/mobile smoke checks for routes, Material,
   Practice, active-Exam non-leakage, Results, search, filters, bookmarks, and
   progress import/export; require zero relevant console/network errors.
-- **Evidence artifact:** `reports/FINAL_QA_REPORT.md` with authorization
-  reference, repository/branch/SHA, workflow run URL/ID and conclusions, public
-  URL, HTTP evidence, local-versus-public counts, browser matrix subset, time,
-  and known limitations.
+- **Evidence artifact:** `reports/FINAL_QA_REPORT.md` plus
+  `reports/GATE_8_DEPLOYMENT_EVIDENCE.json`, with authorization reference,
+  repository/branch/SHA, trigger event, workflow run URL/ID and conclusions,
+  public URL, HTTP evidence, local-versus-public counts and stable IDs, the two
+  public browser smoke results, time, and known limitations.
 - **Pass condition:** the authorized workflow build and deploy jobs succeed for
   the verified SHA; public HTML and every required JSON return HTTP 200; public
   counts/IDs equal local counts/IDs; public browser smoke checks pass.
@@ -390,3 +391,11 @@ npx playwright test --config playwright.public.config.mjs --project=desktop --pr
 The `gh workflow run` line is an external mutation: show it in the plan, but do
 not execute it without explicit deployment authorization. Monitoring and public
 verification never convert absent authorization into permission to publish.
+For an already-authorized push-triggered deployment, do not dispatch another
+run: query the matching commit without an `--event` filter and accept only an
+event of `push` or `workflow_dispatch`. In either path, populate
+`GATE_8_DEPLOYMENT_EVIDENCE.json` and run
+`scripts.validate_factory_kit.deployment_is_verified` with the locally computed
+full SHA. The verdict stays false unless the workflow, root HTML, every required
+JSON count/stable-ID comparison, and both public browser smokes all carry that
+same SHA and pass.

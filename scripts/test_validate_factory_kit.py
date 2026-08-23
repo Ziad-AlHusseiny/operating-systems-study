@@ -245,9 +245,80 @@ class FactoryKitValidatorTests(unittest.TestCase):
     )
 
     def load_example(self, name):
-        return json.loads(
+        return factory_validator.parse_json(
             Path("docs/study-site-factory", name).read_text(encoding="utf-8")
         )
+
+    def make_deployment_evidence(self, event="push"):
+        commit = "a" * 40
+        browser_checks = [
+            "Dashboard",
+            "Material",
+            "Practice",
+            "active-Exam non-leakage",
+            "Results",
+            "search",
+            "combined filters",
+            "pagination",
+            "bookmarks",
+            "progress export/import",
+            "light/dark",
+            "LTR/RTL",
+            "responsive navigation",
+            "asset/base-path loading",
+            "no horizontal overflow",
+        ]
+        return {
+            "releaseCommit": commit,
+            "remoteBranchCommit": commit,
+            "workflow": {
+                "event": event,
+                "headSha": commit,
+                "conclusion": "success",
+                "jobs": {"build": "success", "deploy": "success"},
+            },
+            "publicHtml": {
+                "commit": commit,
+                "status": 200,
+                "contentType": "text/html; charset=utf-8",
+            },
+            "requiredPayloadPaths": ["lessons.json", "questions.json"],
+            "publicPayloads": [
+                {
+                    "path": "lessons.json",
+                    "commit": commit,
+                    "status": 200,
+                    "contentType": "application/json",
+                    "parsed": True,
+                    "localCount": 1,
+                    "publicCount": 1,
+                    "localIds": ["lesson-01"],
+                    "publicIds": ["lesson-01"],
+                },
+                {
+                    "path": "questions.json",
+                    "commit": commit,
+                    "status": 200,
+                    "contentType": "application/json; charset=utf-8",
+                    "parsed": True,
+                    "localCount": 2,
+                    "publicCount": 2,
+                    "localIds": ["gq-001", "q-001"],
+                    "publicIds": ["gq-001", "q-001"],
+                },
+            ],
+            "browserSmokes": [
+                {
+                    "viewport": viewport,
+                    "commit": commit,
+                    "passed": True,
+                    "checks": browser_checks,
+                    "consoleErrors": 0,
+                    "failedRequests": 0,
+                }
+                for viewport in ("1440x1000", "390x844")
+            ],
+        }
 
     def make_multi_origin_lesson(self):
         source_ref = copy.deepcopy(self.source_ref)
@@ -297,7 +368,11 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     "workedExamples": [],
                     "commonMistakes": [],
                     "examTips": [],
-                    "recap": ["Broadcast starts locally.", "Routers separate broadcasts.", "A relay forwards DHCP."],
+                    "recap": [
+                        "Broadcast starts locally.",
+                        "Routers separate broadcasts.",
+                        "A relay forwards DHCP.",
+                    ],
                     "sourceRefs": [source_ref],
                     "linkedQuestionIds": ["q-network-dhcp-001"],
                     "needsReview": False,
@@ -326,7 +401,11 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     "workedExamples": [],
                     "commonMistakes": [],
                     "examTips": [],
-                    "recap": ["Find the boundary.", "Find the relay.", "Trace the server reply."],
+                    "recap": [
+                        "Find the boundary.",
+                        "Find the relay.",
+                        "Trace the server reply.",
+                    ],
                     "sourceRefs": [guidance_ref],
                     "linkedQuestionIds": ["gq-network-dhcp-001"],
                     "needsReview": False,
@@ -527,6 +606,29 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 container[field_path[-1]] = []
                 self.assertTrue(validate_example_payload(name, payload))
 
+    def test_source_reference_enforces_exact_shape_and_string_context(self):
+        name = "examples/generated-question.example.json"
+        cases = (
+            (
+                "unknown-field",
+                {**self.source_ref, "unknown": "not allowed"},
+                "sourceRefs[0]: unexpected keys: unknown",
+            ),
+            (
+                "non-string-context",
+                {**self.source_ref, "context": 12},
+                "sourceRefs[0]: context must be a string",
+            ),
+        )
+        for label, source_ref, expected in cases:
+            with self.subTest(label=label):
+                payload = self.make_generated_question()
+                payload["sourceRefs"][0] = source_ref
+
+                errors = validate_example_payload(name, payload)
+
+                self.assertTrue(any(expected in error for error in errors), errors)
+
     def test_source_formats_enforce_compatible_counts_and_locations(self):
         name = "examples/source-manifest.example.json"
         cases = (
@@ -557,6 +659,89 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     source[count_field] = 3
                 payload = {"version": "1.0", "sources": [source]}
                 self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_page_and_slide_manifest_locations_enforce_declared_bounds(self):
+        name = "examples/source-manifest.example.json"
+        for source_format, count_field, location_type in (
+            ("pdf", "pages", "page"),
+            ("pptx", "slides", "slide"),
+        ):
+            for location, valid in ((1, True), (3, True), (4, False), ("1", False)):
+                with self.subTest(
+                    source_format=source_format, location=location, valid=valid
+                ):
+                    source = {
+                        "id": "source-bounds",
+                        "fileName": f"example.{source_format}",
+                        "collection": "Bounds",
+                        "label": "Bounds example",
+                        "format": source_format,
+                        "checksum": "sha256:bounds-example",
+                        count_field: 3,
+                        "status": "accepted",
+                        "locations": [
+                            {"locationType": location_type, "location": location}
+                        ],
+                    }
+
+                    errors = validate_example_payload(
+                        name, {"version": "1.0", "sources": [source]}
+                    )
+
+                    if valid:
+                        self.assertEqual(errors, [])
+                    else:
+                        self.assertTrue(
+                            any(
+                                "location must be an integer from 1 to 3" in e
+                                for e in errors
+                            ),
+                            errors,
+                        )
+
+    def test_page_and_slide_references_enforce_declared_bounds(self):
+        for source_format, count_field, location_type in (
+            ("pdf", "pages", "page"),
+            ("pptx", "slides", "slide"),
+        ):
+            source = {
+                "id": "source-bounds",
+                "format": source_format,
+                count_field: 3,
+                "locations": [
+                    {"locationType": location_type, "location": location}
+                    for location in (1, 3, 4)
+                ],
+            }
+            for location, valid in ((1, True), (3, True), (4, False)):
+                with self.subTest(
+                    source_format=source_format, location=location, valid=valid
+                ):
+                    payloads = {
+                        "examples/source-manifest.example.json": {"sources": [source]},
+                        "examples/official-question.example.json": {
+                            "id": "q-bounds",
+                            "sourceRefs": [
+                                {
+                                    "sourceId": "source-bounds",
+                                    "locationType": location_type,
+                                    "location": location,
+                                }
+                            ],
+                        },
+                    }
+
+                    errors = factory_validator.validate_example_links(payloads)
+
+                    if valid:
+                        self.assertEqual(errors, [])
+                    else:
+                        self.assertIn(
+                            "examples/official-question.example.json: "
+                            f"sourceRefs[0]: {location_type} location must be "
+                            "an integer from 1 to 3",
+                            errors,
+                        )
 
     def test_source_formats_reject_incompatible_counts_and_locations(self):
         name = "examples/source-manifest.example.json"
@@ -699,7 +884,10 @@ class FactoryKitValidatorTests(unittest.TestCase):
         errors = validate_example_payload(name, payload)
 
         self.assertTrue(
-            any("correctAnswer: must be a valid zero-based option index" in e for e in errors),
+            any(
+                "correctAnswer: must be a valid zero-based option index" in e
+                for e in errors
+            ),
             errors,
         )
 
@@ -861,7 +1049,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     root = Path(directory) / "factory"
                     shutil.copytree(Path("docs/study-site-factory"), root)
                     path = root / "examples" / relative
-                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    payload = factory_validator.parse_json(
+                        path.read_text(encoding="utf-8")
+                    )
                     container = payload
                     for part in field_path[:-1]:
                         container = container[part]
@@ -875,12 +1065,33 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     f"missing linkage error {expected}: {errors}",
                 )
 
+    def test_generated_question_objective_must_resolve_to_its_lesson(self):
+        for objective_id in ("objective-drift", "objective-"):
+            with self.subTest(objective_id=objective_id):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "factory"
+                    shutil.copytree(Path("docs/study-site-factory"), root)
+                    path = root / "examples" / "generated-question.example.json"
+                    payload = factory_validator.parse_json(
+                        path.read_text(encoding="utf-8")
+                    )
+                    payload["learningObjectiveId"] = objective_id
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+
+                    errors = validate_kit(root)
+
+                self.assertIn(
+                    "examples/generated-question.example.json: "
+                    "learningObjectiveId does not resolve to the lesson",
+                    errors,
+                )
+
     def test_generated_explanation_must_describe_its_owning_question(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "factory"
             shutil.copytree(Path("docs/study-site-factory"), root)
             path = root / "examples" / "explanation.example.json"
-            payload = json.loads(path.read_text(encoding="utf-8"))
+            payload = factory_validator.parse_json(path.read_text(encoding="utf-8"))
             payload["questionId"] = "q-001"
             path.write_text(json.dumps(payload), encoding="utf-8")
 
@@ -1041,7 +1252,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     root = Path(directory) / "factory"
                     shutil.copytree(Path("docs/study-site-factory"), root)
                     path = root / "examples" / relative
-                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    payload = factory_validator.parse_json(
+                        path.read_text(encoding="utf-8")
+                    )
                     container = payload
                     for part in field_path[:-1]:
                         container = container[part]
@@ -1110,7 +1323,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     root = Path(directory) / "factory"
                     shutil.copytree(Path("docs/study-site-factory"), root)
                     path = root / "examples" / relative
-                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    payload = factory_validator.parse_json(
+                        path.read_text(encoding="utf-8")
+                    )
                     mutate(payload)
                     path.write_text(json.dumps(payload), encoding="utf-8")
 
@@ -1313,11 +1528,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
         root = Path("docs/study-site-factory")
         for relative, required in EXAMPLE_REQUIRED_KEYS.items():
             with self.subTest(relative=relative):
-                payload = json.loads((root / relative).read_text(encoding="utf-8"))
+                payload = factory_validator.parse_json(
+                    (root / relative).read_text(encoding="utf-8")
+                )
                 self.assertTrue(required.issubset(payload))
 
     def test_generated_mcq_example_has_complete_answer_contract(self):
-        payload = json.loads(
+        payload = factory_validator.parse_json(
             Path(
                 "docs/study-site-factory/examples/generated-question.example.json"
             ).read_text(encoding="utf-8")
@@ -1339,7 +1556,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
             with self.subTest(explanation=explanation):
                 payload = self.make_multi_origin_lesson()
                 payload["materialSections"][0]["explanation"] = explanation
-                errors = validate_example_payload("examples/lesson.example.json", payload)
+                errors = validate_example_payload(
+                    "examples/lesson.example.json", payload
+                )
                 self.assertTrue(
                     any(
                         "materialSections[0]: explanation: must contain two to five "
@@ -1358,7 +1577,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
             with self.subTest(recap=recap):
                 payload = self.make_multi_origin_lesson()
                 payload["materialSections"][0]["recap"] = recap
-                errors = validate_example_payload("examples/lesson.example.json", payload)
+                errors = validate_example_payload(
+                    "examples/lesson.example.json", payload
+                )
                 self.assertTrue(
                     any(
                         "materialSections[0]: recap: must contain three to seven "
@@ -1377,9 +1598,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 "materialSections",
                 "needsReview",
                 "reviewNotes",
-            }.issubset(
-                EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"]
-            )
+            }.issubset(EXAMPLE_REQUIRED_KEYS["examples/lesson.example.json"])
         )
 
     def test_lesson_declares_generated_material_origin(self):
@@ -1394,14 +1613,17 @@ class FactoryKitValidatorTests(unittest.TestCase):
             ["Source material", "Generated study guidance"],
         )
         self.assertEqual(
-            [section["generatedStudyGuidance"] for section in payload["materialSections"]],
+            [
+                section["generatedStudyGuidance"]
+                for section in payload["materialSections"]
+            ],
             [False, True],
         )
 
     def test_lesson_spec_defines_each_content_policy_mode(self):
-        text = Path(
-            "docs/study-site-factory/05-MATERIAL-LESSONS-SPEC.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/05-MATERIAL-LESSONS-SPEC.md").read_text(
+            encoding="utf-8"
+        )
 
         for mode in ("`source-only`", "`source-plus-generated`", "`generated-only`"):
             with self.subTest(mode=mode):
@@ -1479,27 +1701,51 @@ class FactoryKitValidatorTests(unittest.TestCase):
             "needsReview",
             "reviewNotes",
         }
-        self.assertEqual(tuple(set(section) for section in compiled), (expected_keys, expected_keys))
+        self.assertEqual(
+            tuple(set(section) for section in compiled), (expected_keys, expected_keys)
+        )
 
     def test_multi_origin_lesson_rejects_ambiguous_section_identity_and_origin(self):
         name = "examples/lesson.example.json"
         mutations = []
 
         duplicate_id = self.make_multi_origin_lesson()
-        duplicate_id["materialSections"][1]["id"] = duplicate_id["materialSections"][0]["id"]
-        mutations.append(("duplicate-id", duplicate_id, "materialSections: IDs must be unique"))
+        duplicate_id["materialSections"][1]["id"] = duplicate_id["materialSections"][0][
+            "id"
+        ]
+        mutations.append(
+            ("duplicate-id", duplicate_id, "materialSections: IDs must be unique")
+        )
 
         duplicate_order = self.make_multi_origin_lesson()
         duplicate_order["materialSections"][1]["order"] = 1
-        mutations.append(("duplicate-order", duplicate_order, "materialSections: order values must be unique"))
+        mutations.append(
+            (
+                "duplicate-order",
+                duplicate_order,
+                "materialSections: order values must be unique",
+            )
+        )
 
         wrong_sequence = self.make_multi_origin_lesson()
         wrong_sequence["materialSections"].reverse()
-        mutations.append(("wrong-sequence", wrong_sequence, "materialSections: must be sorted by ascending order"))
+        mutations.append(
+            (
+                "wrong-sequence",
+                wrong_sequence,
+                "materialSections: must be sorted by ascending order",
+            )
+        )
 
         wrong_id_index = self.make_multi_origin_lesson()
         wrong_id_index["materialSectionIds"].reverse()
-        mutations.append(("wrong-id-index", wrong_id_index, "materialSectionIds: must equal materialSections IDs in order"))
+        mutations.append(
+            (
+                "wrong-id-index",
+                wrong_id_index,
+                "materialSectionIds: must equal materialSections IDs in order",
+            )
+        )
 
         wrong_label = self.make_multi_origin_lesson()
         wrong_label["materialSections"][1]["label"] = "Source material"
@@ -1507,15 +1753,33 @@ class FactoryKitValidatorTests(unittest.TestCase):
 
         wrong_guidance = self.make_multi_origin_lesson()
         wrong_guidance["materialSections"][0]["generatedStudyGuidance"] = True
-        mutations.append(("wrong-guidance", wrong_guidance, "generatedStudyGuidance: must match origin"))
+        mutations.append(
+            (
+                "wrong-guidance",
+                wrong_guidance,
+                "generatedStudyGuidance: must match origin",
+            )
+        )
 
         missing_sources = self.make_multi_origin_lesson()
         missing_sources["materialSections"][1]["sourceRefs"] = []
-        mutations.append(("missing-sources", missing_sources, "sourceRefs: must contain at least one source reference"))
+        mutations.append(
+            (
+                "missing-sources",
+                missing_sources,
+                "sourceRefs: must contain at least one source reference",
+            )
+        )
 
         body_drift = self.make_multi_origin_lesson()
         body_drift["materialSections"][0]["body"] = "Drifted body."
-        mutations.append(("body-drift", body_drift, "body: must equal explanation paragraphs joined with two newlines"))
+        mutations.append(
+            (
+                "body-drift",
+                body_drift,
+                "body: must equal explanation paragraphs joined with two newlines",
+            )
+        )
 
         for label, payload, expected in mutations:
             with self.subTest(label=label):
@@ -1740,9 +2004,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertEqual(validate_example_payload(name, payload), [])
 
     def test_question_spec_honors_configured_mock_exam_review_gate(self):
-        text = Path(
-            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn(
             "When `generatedQuestionsRequireHumanReviewForExam` is false, a "
@@ -1765,9 +2029,7 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
         validated = self.make_generated_question("validated")
         human_reviewed = self.make_generated_question("human-reviewed")
-        human_reviewed["review"]["approval"]["notes"] = (
-            "Eligibility review completed."
-        )
+        human_reviewed["review"]["approval"]["notes"] = "Eligibility review completed."
         draft = self.make_generated_question("draft")
         needs_review = self.make_generated_question("needs-review")
         rejected = self.make_generated_question("rejected")
@@ -1860,6 +2122,36 @@ class FactoryKitValidatorTests(unittest.TestCase):
                         ),
                         False,
                     )
+
+    def test_reviewed_at_requires_a_real_utc_datetime(self):
+        invalid_values = (
+            "2026-99-22T10:30:00Z",
+            "2026-02-30T10:30:00Z",
+            "2026-08-22T25:30:00Z",
+            "2026-08-22T10:30:00+00:00",
+        )
+        for reviewed_at in invalid_values:
+            with self.subTest(reviewed_at=reviewed_at):
+                payload = self.make_generated_question("human-reviewed")
+                payload["review"]["approval"]["reviewedAt"] = reviewed_at
+
+                errors = validate_example_payload(
+                    "examples/generated-question.example.json", payload
+                )
+
+                self.assertIn(
+                    "examples/generated-question.example.json: "
+                    "review.approval.reviewedAt: must be ISO 8601 UTC",
+                    errors,
+                )
+                self.assertFalse(
+                    factory_validator.generated_question_is_mock_exam_eligible(
+                        payload,
+                        generated_questions_require_human_review=False,
+                        high_stakes=False,
+                        is_scoreable=True,
+                    )
+                )
 
     def test_mock_exam_eligibility_rejects_invalid_record_states(self):
         eligible = getattr(
@@ -2093,6 +2385,40 @@ class FactoryKitValidatorTests(unittest.TestCase):
             path.write_text("{", encoding="utf-8")
             self.assertTrue(validate_json_file(path))
 
+    def test_json_parsing_rejects_nested_duplicate_object_keys(self):
+        duplicate_json = '{"outer": {"stableId": "first", "stableId": "second"}}'
+        with self.assertRaisesRegex(ValueError, "duplicate JSON object key: stableId"):
+            factory_validator.parse_json(duplicate_json)
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "duplicate.json"
+            path.write_text(duplicate_json, encoding="utf-8")
+            errors = validate_json_file(path)
+
+        self.assertTrue(
+            any("duplicate JSON object key: stableId" in error for error in errors),
+            errors,
+        )
+
+    def test_complete_validation_rejects_nested_duplicate_object_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "factory"
+            shutil.copytree(Path("docs/study-site-factory"), root)
+            path = root / "examples" / "project-config.example.json"
+            text = path.read_text(encoding="utf-8").replace(
+                '"difficultyPercent": {"easy": 30,',
+                '"difficultyPercent": {"easy": 30, "easy": 30,',
+                1,
+            )
+            path.write_text(text, encoding="utf-8")
+
+            errors = validate_kit(root)
+
+        self.assertTrue(
+            any("duplicate JSON object key: easy" in error for error in errors),
+            errors,
+        )
+
     def test_prd_contains_complete_product_contract(self):
         path = Path("docs/study-site-factory/02-PRD-TEMPLATE.md")
         errors = validate_markdown_headings(
@@ -2189,6 +2515,74 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     '$RequiredJobs = @("build", "deploy")',
                 ):
                     self.assertIn(contract, text)
+
+    def test_deployment_verdict_accepts_complete_push_or_dispatch_evidence(self):
+        is_verified = getattr(
+            factory_validator, "deployment_is_verified", lambda *args, **kwargs: False
+        )
+        for event in ("push", "workflow_dispatch"):
+            with self.subTest(event=event):
+                evidence = self.make_deployment_evidence(event)
+                self.assertTrue(
+                    is_verified(evidence, expected_commit=evidence["releaseCommit"])
+                )
+
+    def test_deployment_verdict_rejects_incomplete_or_stale_gate_8_evidence(self):
+        is_verified = getattr(
+            factory_validator, "deployment_is_verified", lambda *args, **kwargs: True
+        )
+        mutations = []
+
+        invalid_event = self.make_deployment_evidence()
+        invalid_event["workflow"]["event"] = "schedule"
+        mutations.append(("invalid-event", invalid_event))
+
+        wrong_workflow_commit = self.make_deployment_evidence()
+        wrong_workflow_commit["workflow"]["headSha"] = "b" * 40
+        mutations.append(("wrong-workflow-commit", wrong_workflow_commit))
+
+        failed_job = self.make_deployment_evidence()
+        failed_job["workflow"]["jobs"]["deploy"] = "failure"
+        mutations.append(("failed-job", failed_job))
+
+        stale_html = self.make_deployment_evidence()
+        stale_html["publicHtml"]["commit"] = "b" * 40
+        mutations.append(("stale-html", stale_html))
+
+        missing_payload = self.make_deployment_evidence()
+        missing_payload["publicPayloads"].pop()
+        mutations.append(("missing-payload", missing_payload))
+
+        count_mismatch = self.make_deployment_evidence()
+        count_mismatch["publicPayloads"][0]["publicCount"] = 0
+        mutations.append(("count-mismatch", count_mismatch))
+
+        id_mismatch = self.make_deployment_evidence()
+        id_mismatch["publicPayloads"][0]["publicIds"] = ["lesson-stale"]
+        mutations.append(("id-mismatch", id_mismatch))
+
+        missing_viewport = self.make_deployment_evidence()
+        missing_viewport["browserSmokes"].pop()
+        mutations.append(("missing-viewport", missing_viewport))
+
+        browser_errors = self.make_deployment_evidence()
+        browser_errors["browserSmokes"][0]["consoleErrors"] = 1
+        mutations.append(("browser-errors", browser_errors))
+
+        missing_browser_check = self.make_deployment_evidence()
+        missing_browser_check["browserSmokes"][0]["checks"].remove("Material")
+        mutations.append(("missing-browser-check", missing_browser_check))
+
+        for label, evidence in mutations:
+            with self.subTest(label=label):
+                self.assertFalse(
+                    is_verified(
+                        evidence,
+                        expected_commit=self.make_deployment_evidence()[
+                            "releaseCommit"
+                        ],
+                    )
+                )
 
     def test_public_verification_checks_every_published_json_payload(self):
         for relative in ("09-QA-GATES.md", "11-HANDOFF-AND-DEPLOYMENT.md"):
@@ -2348,9 +2742,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 self.assertTrue(source["label"].strip())
 
     def test_ingestion_covers_compatible_document_and_slide_formats(self):
-        text = Path(
-            "docs/study-site-factory/03-SOURCE-INGESTION-SPEC.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/03-SOURCE-INGESTION-SPEC.md").read_text(
+            encoding="utf-8"
+        )
 
         for extension in ("`.doc`", "`.odt`", "`.rtf`", "`.ppt`", "`.odp`"):
             with self.subTest(extension=extension):
@@ -2410,9 +2804,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 self.assertIn(f"`{field}`", section)
 
     def test_true_false_answer_order_has_a_stable_reproducible_input(self):
-        text = Path(
-            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md").read_text(
+            encoding="utf-8"
+        )
 
         for contract in (
             "SHA-256",
@@ -2520,17 +2914,17 @@ class FactoryKitValidatorTests(unittest.TestCase):
         )
 
     def test_question_generation_profile_honors_configured_overrides(self):
-        text = Path(
-            "docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/06-QUESTION-GENERATION-SPEC.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("defaults unless project configuration overrides them", text)
         self.assertIn("largest-remainder allocation", text)
 
     def test_project_input_identifies_github_pages_as_fixed_provider(self):
-        text = Path(
-            "docs/study-site-factory/01-PROJECT-INPUT-TEMPLATE.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/01-PROJECT-INPUT-TEMPLATE.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("- Hosting provider: GitHub Pages (fixed for this kit).", text)
 
@@ -2559,9 +2953,9 @@ class FactoryKitValidatorTests(unittest.TestCase):
         self.assertIn("{{DEFAULT_PRACTICE_COUNT}}", prd)
 
     def test_source_corrections_invalidate_version_bound_approval(self):
-        text = Path(
-            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
-        ).read_text(encoding="utf-8")
+        text = Path("docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md").read_text(
+            encoding="utf-8"
+        )
         section = text.split("### Source-derived content", 1)[1].split(
             "### Generated content", 1
         )[0]
