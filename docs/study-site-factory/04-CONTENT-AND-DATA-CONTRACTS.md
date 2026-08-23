@@ -38,6 +38,20 @@ The source manifest has exactly `version` and `sources` as its required top-leve
 | Objective | `id`, `moduleId`, `text`, `order`, `sourceRefs` | ID begins `objective-`; parent module exists. |
 | Lesson | `id`, `moduleId`, `objectiveIds`, `title`, `body`, `sourceRefs`, `needsReview`, `reviewNotes` | ID begins `lesson-`; source-derived body has references. |
 
+## Material Sections
+
+Each material section requires exactly `id`, `lessonId`, `title`, `summaries`, `terms`, `examples`, `mistakes`, `examTips`, `recaps`, `sourceRefs`, `linkedQuestionIds`, `needsReview`, and `reviewNotes`. `id` is unique and `lessonId` must identify an existing `lesson-` record. `sourceRefs` is the section-level evidence set; every non-empty item below also carries its own non-empty `sourceRefs` so a learner-facing claim remains traceable.
+
+| Field | Type | Rule |
+| --- | --- | --- |
+| `summaries` | array of `{body, sourceRefs}` | Ordered source-grounded summaries. |
+| `terms` | array of `{term, definition, sourceRefs}` | Definitions without inferred meaning. |
+| `examples` | array of `{title, body, sourceRefs}` | Worked or contextual examples. |
+| `mistakes` | array of `{misconception, correction, sourceRefs}` | A mistake and its supported correction. |
+| `examTips` | array of `{body, sourceRefs}` | Exam-facing advice grounded in source material. |
+| `recaps` | array of `{body, sourceRefs}` | Short revision recaps. |
+| `linkedQuestionIds` | array | Unique existing `q-` or `gq-` IDs, in display order. |
+
 ## Questions
 
 All question types require `id`, `origin`, `type`, `prompt`, `topic`, `correctAnswer`, `sourceRefs`, `needsReview`, and `reviewNotes`. `origin` is exactly `official` or `generated`; `sourceRefs` use the contract above. Official question IDs begin `q-`; generated IDs begin `gq-`; IDs never change when a question is reviewed.
@@ -51,7 +65,23 @@ All question types require `id`, `origin`, `type`, `prompt`, `topic`, `correctAn
 | `matching` | `leftItems`, `rightItems`, each `{id, text}` | Object mapping every left ID to one right ID; right IDs are unique unless `allowManyToOne` is true. |
 | `ordering` | `items` array of `{id, text}` | Array of every item ID in correct order. |
 
-An official question additionally requires `duplicateSources` (array) and `officialExplanation` (string). Its answer may only come from an explicit official answer key. A generated question additionally requires `generationMethod`, `generatedExplanationId`, and `provenance` containing input `sourceRefs` and model/prompt version; it never overwrites an official record.
+An official question additionally requires `duplicateSources` (array) and `officialExplanation` (string). Its answer may only come from an explicit official answer key. It never overwrites an official record.
+
+## Generated Question Quality and Duplication
+
+A generated question requires the base question fields plus exactly `generationMethod`, `generatedExplanationId`, `provenance`, `difficulty`, `cognitiveLevel`, `evidenceMap`, `qualityState`, `reviewState`, `duplicateComparison`, and `duplicateDisposition`. `provenance` requires `sourceRefs`, `modelVersion`, and `promptVersion`; `generatedExplanationId` identifies an explanation record.
+
+| Field | Type | Allowed values or rule |
+| --- | --- | --- |
+| `difficulty` | string | Exactly `easy`, `medium`, or `hard`. |
+| `cognitiveLevel` | string | Exactly `remember`, `understand`, `apply`, `analyze`, `evaluate`, or `create` (Bloom level). |
+| `evidenceMap` | array | Non-empty `{claimId, sourceRefs, support}` records; `support` is exactly `direct` or `derived`. |
+| `qualityState` | string | Exactly `draft`, `validated`, `needs-review`, `approved`, or `rejected`. |
+| `reviewState` | string | Exactly `unreviewed`, `needs-review`, `approved`, or `rejected`. |
+| `duplicateComparison` | object | Exactly `algorithmVersion`, `normalizedPrompt`, `candidateIds`, and `matchClass`; `matchClass` is `none`, `exact`, `near`, or `conflict`. |
+| `duplicateDisposition` | string | Exactly `retain`, `reject-duplicate`, or `needs-review`. |
+
+Duplicate comparison is deterministic: normalize prompts with Unicode NFKC, trim, collapse internal whitespace, casefold, and remove punctuation; compare only questions with the same `type`; and process candidate IDs in lexicographic question ID order. No exact match yields `retain`. An exact match with an official `q-` yields `reject-duplicate`. Among exact generated matches, retain only the lexicographically lowest `gq-` ID and mark every other candidate `reject-duplicate`. A `near` match or conflicting evidence yields `needs-review`; it cannot be scoreable until reviewed. Detailed authoring rubrics belong to Task 4.
 
 ## Question Explanation
 
@@ -65,7 +95,13 @@ An official question additionally requires `duplicateSources` (array) and `offic
 
 ## Review State and Scoring
 
-Every reviewable record has `needsReview` and `reviewNotes`. `needsReview: true` means it is visibly labelled “Needs review — unscored”, excluded from every score, result, practice aggregate, and Mock Exam pool. A scoreable record must have `needsReview: false`, a valid type-specific answer, valid source references, and, for generated questions, explicit approval. Review approval records the reviewer, timestamp, decision, and reason; rejection retains the item and its provenance.
+Every reviewable record has `needsReview` and `reviewNotes`. Review decisions are immutable records; a new review supersedes a prior one without deleting it.
+
+| Record | Exact required fields | Allowed values and scoring effect |
+| --- | --- | --- |
+| Review approval | `reviewedRecordId`, `reviewedContentVersion`, `status`, `decision`, `reviewer`, `reviewedAt`, `reason`, `notes` | `status` is exactly `pending` or `completed`; `decision` is exactly `approved`, `rejected`, or `needs-review`. `reviewer` is a non-empty reviewer ID, `reviewedAt` is ISO 8601 UTC, and `reason`/`notes` are strings. The content/schema version reviewed is preserved in `reviewedContentVersion`. |
+
+`needsReview: true`, `decision: needs-review`, or `decision: rejected` means the record is visibly labelled “Needs review — unscored” and excluded from every score, result, practice aggregate, and Mock Exam pool. A scoreable official record must have `needsReview: false`, a valid type-specific answer, valid source references, and a completed approved review when the project policy requires review. A generated record is scoreable only when both `qualityState` and `reviewState` are `approved`, its duplicate disposition is `retain`, and its type-specific answer and source references are valid. Rejection retains the item and its provenance.
 
 ## LocalStorage Progress
 

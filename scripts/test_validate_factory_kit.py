@@ -139,6 +139,44 @@ class FactoryKitValidatorTests(unittest.TestCase):
             text,
         )
 
+    def test_content_contract_defines_complete_material_section_records(self):
+        text = Path(
+            "docs/study-site-factory/04-CONTENT-AND-DATA-CONTRACTS.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("## Material Sections", text)
+        for field in (
+            "`summaries`", "`terms`", "`examples`", "`mistakes`",
+            "`examTips`", "`recaps`", "`sourceRefs`", "`linkedQuestionIds`",
+        ):
+            self.assertIn(field, text)
+
+    def test_content_contract_defines_generated_question_quality_and_duplicates(self):
+        text = Path(
+            "docs/study-site-factory/04-CONTENT-AND-DATA-CONTRACTS.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("## Generated Question Quality and Duplication", text)
+        for field in (
+            "`difficulty`", "`cognitiveLevel`", "`evidenceMap`",
+            "`qualityState`", "`reviewState`", "`duplicateComparison`",
+            "`duplicateDisposition`",
+        ):
+            self.assertIn(field, text)
+        self.assertIn("Unicode NFKC", text)
+        self.assertIn("lexicographic question ID order", text)
+
+    def test_content_contract_defines_review_approval_records_and_scoring_effects(self):
+        text = Path(
+            "docs/study-site-factory/04-CONTENT-AND-DATA-CONTRACTS.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("| Review approval |", text)
+        for field in (
+            "`status`", "`decision`", "`reviewer`", "`reviewedAt`",
+            "`reason`", "`notes`", "`reviewedRecordId`",
+            "`reviewedContentVersion`",
+        ):
+            self.assertIn(field, text)
+        self.assertIn("only when both `qualityState` and `reviewState` are `approved`", text)
+
 
 if __name__ == "__main__":
     unittest.main()
