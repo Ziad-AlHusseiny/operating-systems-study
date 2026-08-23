@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "project": {
+    "title": "Operating Systems Study",
+    "shortTitle": "OS Study",
+    "slug": "operating-systems-study",
+    "description": "A bilingual, source-backed Operating Systems study and exam website.",
+    "brandInitials": "OS",
+    "sourceLanguage": "en",
+    "studyLanguage": "ar"
+  },
+  "contentPolicy": {
+    "mode": "source-plus-generated",
+    "allowOutsideSources": false,
+    "generatedQuestionsRequireHumanReviewForExam": true
+  },
+  "questionGeneration": {
+    "mcqPerLesson": 6,
+    "trueFalsePerLesson": 4,
+    "difficultyPercent": {
+      "easy": 30,
+      "medium": 50,
+      "hard": 20
+    },
+    "bloomPercent": {
+      "remember": 30,
+      "apply": 50,
+      "analyze": 20
+    }
+  },
+  "exam": {
+    "defaultCount": 25,
+    "defaultMinutes": 30
+  },
+  "deployment": {
+    "provider": "github-pages",
+    "repository": "Ziad-AlHusseiny/its-device-configuration-study",
+    "branch": "master",
+    "publicUrl": "https://ziad-alhusseiny.github.io/its-device-configuration-study/"
+  }
+}
