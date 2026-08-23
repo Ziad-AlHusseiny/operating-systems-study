@@ -31,7 +31,18 @@ exactly 100. `deployment.provider` is `github-pages`, `repository` uses
 
 ## Source Manifest and `sourceRef`
 
-The source manifest has exactly `version` and `sources` as its required top-level fields. Each source requires `id` (`source-` prefix), `fileName`, `format`, `checksum`, `status`, and its applicable count (`pages` or `slides`) plus `locations`. A source status is `inventoried`, `extracted`, `visually-checked`, `normalized`, `accepted`, or `needs-review`.
+The source manifest has exactly `version` and `sources` as its required top-level fields. Each source requires `id` (`source-` prefix), `fileName`, `format`, `checksum`, `status`, and `locations`. PDF sources additionally require `pages`; PPTX sources additionally require `slides`. No other source format permits a `pages` or `slides` field in the manifest. A source status is `inventoried`, `extracted`, `visually-checked`, `normalized`, `accepted`, or `needs-review`.
+
+| Source format | Required count | Only compatible `locationType` |
+| --- | --- | --- |
+| `pdf` | `pages` | `page` |
+| `pptx` | `slides` | `slide` |
+| `docx` | None | `section` |
+| `text` | None | `section` |
+| `markdown` | None | `section` |
+| `csv` | None | `row` |
+| `json` | None | `section` |
+| `image` | None | `image` |
 
 | Field | Type | Rule |
 | --- | --- | --- |

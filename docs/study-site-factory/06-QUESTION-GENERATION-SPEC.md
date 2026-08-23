@@ -42,7 +42,7 @@ Every True/False item must satisfy all of these checks:
 4. Absolutes such as “always” and “never” appear only when the evidence supports the absolute.
 5. Answer balance is enforced across the four-item lesson set.
 6. It includes a source-grounded rationale for the answer.
-7. When false, it includes a complete corrected false statement; when true, the correction field is null.
+7. When false, `correctedStatement` contains a complete corrected false statement; when true, `correctedStatement` is null.
 
 ## Evidence and Ambiguity
 

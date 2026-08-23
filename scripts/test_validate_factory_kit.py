@@ -332,6 +332,77 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 container[field_path[-1]] = []
                 self.assertTrue(validate_example_payload(name, payload))
 
+    def test_source_formats_enforce_compatible_counts_and_locations(self):
+        name = "examples/source-manifest.example.json"
+        cases = (
+            ("pdf", "pages", "page", 1),
+            ("pptx", "slides", "slide", 1),
+            ("docx", None, "section", "introduction"),
+            ("text", None, "section", "lines-1-4"),
+            ("markdown", None, "section", "format-rules"),
+            ("csv", None, "row", 2),
+            ("json", None, "section", "$.questions[0]"),
+            ("image", None, "image", "diagram-1"),
+        )
+        for source_format, count_field, location_type, location in cases:
+            with self.subTest(source_format=source_format):
+                source = {
+                    "id": "source-format",
+                    "fileName": f"example.{source_format}",
+                    "format": source_format,
+                    "checksum": "sha256:format-example",
+                    "status": "accepted",
+                    "locations": [
+                        {"locationType": location_type, "location": location}
+                    ],
+                }
+                if count_field is not None:
+                    source[count_field] = 3
+                payload = {"version": "1.0", "sources": [source]}
+                self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_source_formats_reject_incompatible_counts_and_locations(self):
+        name = "examples/source-manifest.example.json"
+        cases = (
+            ("pdf", "slides", "slide"),
+            ("pptx", "pages", "page"),
+            ("docx", "pages", "page"),
+            ("text", "slides", "row"),
+            ("markdown", "pages", "page"),
+            ("csv", "slides", "section"),
+            ("json", "pages", "row"),
+            ("image", "slides", "section"),
+        )
+        for source_format, incompatible_count, incompatible_location in cases:
+            with self.subTest(source_format=source_format):
+                source = {
+                    "id": "source-format",
+                    "fileName": f"example.{source_format}",
+                    "format": source_format,
+                    "checksum": "sha256:format-example",
+                    "status": "accepted",
+                    "locations": [
+                        {
+                            "locationType": incompatible_location,
+                            "location": 1,
+                        }
+                    ],
+                    incompatible_count: 3,
+                }
+                if source_format == "pdf":
+                    source["pages"] = 3
+                elif source_format == "pptx":
+                    source["slides"] = 3
+                errors = validate_example_payload(
+                    name, {"version": "1.0", "sources": [source]}
+                )
+                self.assertTrue(
+                    any("unexpected keys" in error for error in errors), errors
+                )
+                self.assertTrue(
+                    any("locationType must be" in error for error in errors), errors
+                )
+
     def test_question_examples_enforce_type_specific_fields(self):
         name = "examples/official-question.example.json"
         mutations = (
@@ -344,6 +415,167 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 payload = self.load_example(name)
                 payload[field] = value
                 self.assertTrue(validate_example_payload(name, payload))
+
+    def test_official_questions_accept_every_conditional_type_shape(self):
+        name = "examples/official-question.example.json"
+        cases = {
+            "mcq": ({"options": ["A", "B", "C", "D"]}, 0),
+            "true-false": ({"options": ["True", "False"]}, 0),
+            "true-false-group": (
+                {
+                    "statements": [
+                        {"id": "statement-a", "text": "A is true."},
+                        {"id": "statement-b", "text": "B is false."},
+                    ]
+                },
+                {"statement-a": True, "statement-b": False},
+            ),
+            "multi-select": ({"options": ["A", "B", "C"]}, [0, 2]),
+            "matching": (
+                {
+                    "leftItems": [{"id": "left-a", "text": "Left A"}],
+                    "rightItems": [{"id": "right-a", "text": "Right A"}],
+                },
+                {"left-a": "right-a"},
+            ),
+            "ordering": (
+                {
+                    "items": [
+                        {"id": "step-a", "text": "First"},
+                        {"id": "step-b", "text": "Second"},
+                    ]
+                },
+                ["step-a", "step-b"],
+            ),
+        }
+        conditional_fields = {
+            "options",
+            "statements",
+            "leftItems",
+            "rightItems",
+            "allowManyToOne",
+            "items",
+        }
+        for question_type, (fields, answer) in cases.items():
+            with self.subTest(question_type=question_type):
+                payload = self.load_example(name)
+                for field in conditional_fields:
+                    payload.pop(field, None)
+                payload.update(fields)
+                payload["type"] = question_type
+                payload["correctAnswer"] = answer
+                self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_official_questions_reject_missing_or_mixed_conditional_fields(self):
+        name = "examples/official-question.example.json"
+        missing = self.load_example(name)
+        missing.pop("options")
+        mixed = self.load_example(name)
+        mixed["items"] = [{"id": "step-a", "text": "First"}]
+
+        missing_errors = validate_example_payload(name, missing)
+        mixed_errors = validate_example_payload(name, mixed)
+
+        self.assertTrue(
+            any("missing required top-level keys: options" in e for e in missing_errors)
+        )
+        self.assertTrue(
+            any("unexpected top-level keys: items" in e for e in mixed_errors)
+        )
+
+    def test_generated_questions_accept_mcq_and_true_false_conditional_shapes(self):
+        name = "examples/generated-question.example.json"
+        mcq = self.make_generated_question()
+        true_false = self.make_generated_question()
+        true_false["type"] = "true-false"
+        true_false["options"] = ["True", "False"]
+        true_false["correctAnswer"] = 1
+        true_false["correctedStatement"] = "The corrected proposition is true."
+        true_false.pop("distractorRationales")
+        targets = (
+            "prompt",
+            "correctAnswer",
+            "rationale",
+            "options[0]",
+            "options[1]",
+            "correctedStatement",
+        )
+        true_false["evidenceMap"] = [
+            {
+                "claimId": f"claim-{index}",
+                "target": target,
+                "sourceRefs": [self.source_ref],
+                "support": "direct",
+            }
+            for index, target in enumerate(targets)
+        ]
+        true_statement = copy.deepcopy(true_false)
+        true_statement["correctAnswer"] = 0
+        true_statement["correctedStatement"] = None
+        true_statement["evidenceMap"] = [
+            evidence
+            for evidence in true_statement["evidenceMap"]
+            if evidence["target"] != "correctedStatement"
+        ]
+
+        self.assertEqual(validate_example_payload(name, mcq), [])
+        self.assertEqual(validate_example_payload(name, true_false), [])
+        self.assertEqual(validate_example_payload(name, true_statement), [])
+
+    def test_generated_questions_reject_mixed_or_unsupported_type_fields(self):
+        name = "examples/generated-question.example.json"
+        mixed = self.make_generated_question()
+        mixed["correctedStatement"] = None
+        mixed_true_false = self.make_generated_question()
+        mixed_true_false["type"] = "true-false"
+        mixed_true_false["options"] = ["True", "False"]
+        mixed_true_false["correctAnswer"] = 0
+        mixed_true_false["correctedStatement"] = None
+        unsupported = self.make_generated_question()
+        unsupported["type"] = "ordering"
+        unsupported.pop("options")
+        unsupported.pop("distractorRationales")
+        unsupported["items"] = [{"id": "step-a", "text": "First"}]
+        unsupported["correctAnswer"] = ["step-a"]
+
+        mixed_errors = validate_example_payload(name, mixed)
+        mixed_true_false_errors = validate_example_payload(name, mixed_true_false)
+        unsupported_errors = validate_example_payload(name, unsupported)
+
+        self.assertTrue(
+            any(
+                "unexpected top-level keys: correctedStatement" in e
+                for e in mixed_errors
+            )
+        )
+        self.assertTrue(
+            any(
+                "unexpected top-level keys: distractorRationales" in e
+                for e in mixed_true_false_errors
+            )
+        )
+        self.assertTrue(
+            any(
+                "type: generated questions support only mcq or true-false" in e
+                for e in unsupported_errors
+            )
+        )
+
+    def test_generated_true_false_enforces_correction_semantics(self):
+        name = "examples/generated-question.example.json"
+        for answer, correction, expected in (
+            (0, "Not allowed for true.", "must be null when correctAnswer is 0"),
+            (1, None, "must be a non-empty string when correctAnswer is 1"),
+        ):
+            with self.subTest(answer=answer):
+                payload = self.make_generated_question()
+                payload["type"] = "true-false"
+                payload["options"] = ["True", "False"]
+                payload["correctAnswer"] = answer
+                payload["correctedStatement"] = correction
+                payload.pop("distractorRationales")
+                errors = validate_example_payload(name, payload)
+                self.assertTrue(any(expected in error for error in errors), errors)
 
     def test_complete_validation_rejects_broken_example_identity_links(self):
         mutations = (
@@ -413,7 +645,13 @@ class FactoryKitValidatorTests(unittest.TestCase):
     def test_duplicate_candidate_ids_must_be_lexicographically_sorted(self):
         name = "examples/generated-question.example.json"
         payload = self.load_example(name)
-        payload["duplicateComparison"]["candidateIds"] = ["q-002", "q-001"]
+        payload["duplicateComparison"].update(
+            {
+                "candidateIds": ["q-002", "q-001"],
+                "matchClass": "exact",
+            }
+        )
+        payload["duplicateDisposition"] = "reject-duplicate"
 
         errors = validate_example_payload(name, payload)
 
@@ -423,6 +661,148 @@ class FactoryKitValidatorTests(unittest.TestCase):
                 for error in errors
             )
         )
+
+    def test_exact_duplicate_disposition_is_deterministic(self):
+        name = "examples/generated-question.example.json"
+        cases = (
+            ("gq-current", ["q-001"], "reject-duplicate"),
+            ("gq-002", ["gq-001"], "reject-duplicate"),
+            ("gq-001", ["gq-002"], "retain"),
+        )
+        for question_id, candidate_ids, disposition in cases:
+            with self.subTest(question_id=question_id, candidate_ids=candidate_ids):
+                payload = self.make_generated_question()
+                payload["id"] = question_id
+                payload["review"]["approval"]["reviewedRecordId"] = question_id
+                payload["duplicateComparison"].update(
+                    {"candidateIds": candidate_ids, "matchClass": "exact"}
+                )
+                payload["duplicateDisposition"] = disposition
+                self.assertEqual(validate_example_payload(name, payload), [])
+
+    def test_exact_duplicate_requires_candidates_and_correct_disposition(self):
+        name = "examples/generated-question.example.json"
+        empty = self.make_generated_question()
+        empty["duplicateComparison"]["matchClass"] = "exact"
+
+        empty_errors = validate_example_payload(name, empty)
+        self.assertTrue(
+            any(
+                "exact match requires at least one candidate" in e for e in empty_errors
+            )
+        )
+
+        cases = (
+            ("gq-current", ["q-001"], "retain", "reject-duplicate"),
+            ("gq-002", ["gq-001"], "retain", "reject-duplicate"),
+            ("gq-001", ["gq-002"], "reject-duplicate", "retain"),
+        )
+        for question_id, candidate_ids, disposition, expected in cases:
+            with self.subTest(question_id=question_id, candidate_ids=candidate_ids):
+                payload = self.make_generated_question()
+                payload["id"] = question_id
+                payload["review"]["approval"]["reviewedRecordId"] = question_id
+                payload["duplicateComparison"].update(
+                    {"candidateIds": candidate_ids, "matchClass": "exact"}
+                )
+                payload["duplicateDisposition"] = disposition
+                errors = validate_example_payload(name, payload)
+                self.assertTrue(
+                    any(
+                        f"must be {expected} for exact match" in error
+                        for error in errors
+                    ),
+                    errors,
+                )
+
+    def test_malformed_linkage_collections_aggregate_without_raising(self):
+        cases = (
+            (
+                "source-manifest.example.json",
+                ("sources",),
+                7,
+                "sources: must be a non-empty array",
+            ),
+            (
+                "source-manifest.example.json",
+                ("sources",),
+                {},
+                "sources: must be a non-empty array",
+            ),
+            (
+                "source-manifest.example.json",
+                ("sources", 0, "locations"),
+                7,
+                "locations: must be a non-empty array",
+            ),
+            (
+                "source-manifest.example.json",
+                ("sources", 0, "locations"),
+                {},
+                "locations: must be a non-empty array",
+            ),
+            (
+                "lesson.example.json",
+                ("linkedQuestionIds",),
+                7,
+                "linkedQuestionIds: must be an array",
+            ),
+            (
+                "lesson.example.json",
+                ("linkedQuestionIds",),
+                {},
+                "linkedQuestionIds: must be an array",
+            ),
+            (
+                "lesson.example.json",
+                ("linkedQuestionIds",),
+                [{}],
+                "linkedQuestionIds: must contain only non-empty strings",
+            ),
+            (
+                "official-question.example.json",
+                ("sourceRefs", 0, "sourceId"),
+                {},
+                "sourceId must use the source- prefix",
+            ),
+            (
+                "official-question.example.json",
+                ("sourceRefs", 0, "location"),
+                {},
+                "location must be a positive integer or string",
+            ),
+            (
+                "generated-question.example.json",
+                ("generatedExplanationId",),
+                {},
+                "generatedExplanationId: must be a non-empty string",
+            ),
+            (
+                "explanation.example.json",
+                ("questionId",),
+                {},
+                "questionId: must use q- or gq- prefix",
+            ),
+        )
+        for relative, field_path, value, expected in cases:
+            with self.subTest(relative=relative, field_path=field_path, value=value):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "factory"
+                    shutil.copytree(Path("docs/study-site-factory"), root)
+                    path = root / "examples" / relative
+                    payload = json.loads(path.read_text(encoding="utf-8"))
+                    container = payload
+                    for part in field_path[:-1]:
+                        container = container[part]
+                    container[field_path[-1]] = value
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+
+                    try:
+                        errors = validate_kit(root)
+                    except (TypeError, AttributeError) as error:
+                        self.fail(f"validation raised instead of aggregating: {error}")
+
+                self.assertTrue(any(expected in error for error in errors), errors)
 
     def test_complete_factory_kit_passes(self):
         root = Path("docs/study-site-factory")

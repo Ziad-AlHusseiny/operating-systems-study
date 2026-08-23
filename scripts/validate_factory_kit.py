@@ -274,6 +274,17 @@ SOURCE_FORMATS = {
     "json",
     "image",
 }
+SOURCE_FORMAT_LOCATION_TYPES = {
+    "pdf": "page",
+    "docx": "section",
+    "pptx": "slide",
+    "text": "section",
+    "markdown": "section",
+    "csv": "row",
+    "json": "section",
+    "image": "image",
+}
+SOURCE_FORMAT_COUNT_FIELDS = {"pdf": "pages", "pptx": "slides"}
 GENERATED_DIFFICULTIES = {"easy", "medium", "hard"}
 GENERATED_BLOOM_LEVELS = {"remember", "apply", "analyze"}
 CANONICAL_COGNITIVE_LEVELS = {
@@ -291,6 +302,51 @@ QUESTION_TYPES = {
     "multi-select",
     "matching",
     "ordering",
+}
+QUESTION_BASE_REQUIRED_FIELDS = {
+    "id",
+    "origin",
+    "type",
+    "prompt",
+    "topic",
+    "correctAnswer",
+    "sourceRefs",
+    "needsReview",
+    "reviewNotes",
+}
+QUESTION_TYPE_REQUIRED_FIELDS = {
+    "mcq": {"options"},
+    "true-false": {"options"},
+    "true-false-group": {"statements"},
+    "multi-select": {"options"},
+    "matching": {"leftItems", "rightItems"},
+    "ordering": {"items"},
+}
+QUESTION_TYPE_OPTIONAL_FIELDS = {"matching": {"allowManyToOne"}}
+OFFICIAL_QUESTION_FIELDS = {
+    "duplicateSources",
+    "officialExplanation",
+}
+GENERATED_QUESTION_COMMON_FIELDS = {
+    "rationale",
+    "difficulty",
+    "bloomLevel",
+    "cognitiveLevel",
+    "learningObjectiveId",
+    "generationMethod",
+    "generatedExplanationId",
+    "provenance",
+    "evidenceMap",
+    "contentVersion",
+    "qualityState",
+    "reviewState",
+    "duplicateComparison",
+    "duplicateDisposition",
+    "review",
+}
+GENERATED_QUESTION_TYPE_REQUIRED_FIELDS = {
+    "mcq": {"options", "distractorRationales"},
+    "true-false": {"options", "correctedStatement"},
 }
 GENERATED_REVIEW_STATUSES = {
     "draft",
@@ -588,7 +644,7 @@ def validate_manifest_location(
     location_type = value.get("locationType")
     if location_type not in SOURCE_REFERENCE_LOCATION_TYPES:
         errors.append(f"{path}: invalid locationType: {location_type}")
-    expected = {"pdf": "page", "pptx": "slide"}.get(source_format)
+    expected = SOURCE_FORMAT_LOCATION_TYPES.get(source_format)
     if expected is not None and location_type != expected:
         errors.append(f"{path}: locationType must be {expected} for {source_format}")
     location = value.get("location")
@@ -622,11 +678,10 @@ def validate_source_manifest_example(payload: dict, name: str) -> list[str]:
             continue
         source_format = source.get("format")
         required = set(common)
-        if source_format == "pdf":
-            required.add("pages")
-        elif source_format == "pptx":
-            required.add("slides")
-        allowed = required | {"pages", "slides"}
+        count_field = SOURCE_FORMAT_COUNT_FIELDS.get(source_format)
+        if count_field is not None:
+            required.add(count_field)
+        allowed = required
         errors.extend(validate_object_keys(source, path, required))
         unexpected = sorted(source.keys() - allowed)
         if unexpected:
@@ -971,11 +1026,30 @@ def validate_lesson_example(payload: dict, name: str) -> list[str]:
     return errors
 
 
+def generated_evidence_targets(payload: dict) -> set[str]:
+    question_type = payload.get("type")
+    if question_type == "mcq":
+        return GENERATED_MCQ_EVIDENCE_TARGETS
+    if question_type == "true-false":
+        targets = {
+            "prompt",
+            "correctAnswer",
+            "rationale",
+            "options[0]",
+            "options[1]",
+        }
+        if payload.get("correctAnswer") == 1:
+            targets.add("correctedStatement")
+        return targets
+    return {"prompt", "correctAnswer", "rationale"}
+
+
 def validate_generated_evidence_map(payload: dict, name: str) -> list[str]:
     evidence_map = payload.get("evidenceMap")
     if not isinstance(evidence_map, list) or not evidence_map:
         return [f"{name}: evidenceMap: must be a non-empty array"]
 
+    required_targets = generated_evidence_targets(payload)
     errors = []
     targets = []
     for index, evidence in enumerate(evidence_map):
@@ -994,7 +1068,7 @@ def validate_generated_evidence_map(payload: dict, name: str) -> list[str]:
         target = evidence.get("target")
         if isinstance(target, str):
             targets.append(target)
-        if not isinstance(target, str) or target not in GENERATED_MCQ_EVIDENCE_TARGETS:
+        if not isinstance(target, str) or target not in required_targets:
             errors.append(f"{path}: invalid claim target: {target}")
         if (
             not isinstance(evidence.get("claimId"), str)
@@ -1011,7 +1085,7 @@ def validate_generated_evidence_map(payload: dict, name: str) -> list[str]:
         if evidence.get("support") not in {"direct", "derived"}:
             errors.append(f"{path}: support must be direct or derived")
 
-    missing = sorted(GENERATED_MCQ_EVIDENCE_TARGETS - set(targets))
+    missing = sorted(required_targets - set(targets))
     if missing:
         errors.append(
             f"{name}: evidenceMap: missing claim targets: {', '.join(missing)}"
@@ -1198,13 +1272,33 @@ def validate_official_question_example(payload: dict, name: str) -> list[str]:
 
 def validate_generated_question_example(payload: dict, name: str) -> list[str]:
     errors = validate_question_base(payload, name, "generated")
+    question_type = payload.get("type")
+    if question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS:
+        errors.append(
+            f"{name}: type: generated questions support only mcq or true-false"
+        )
     if not payload.get("sourceRefs"):
         errors.append(f"{name}: sourceRefs: must contain at least one source reference")
-    rationales = payload.get("distractorRationales")
-    if not is_non_empty_string_list(rationales, 4, 4):
-        errors.append(
-            f"{name}: distractorRationales: must contain exactly four non-empty strings"
-        )
+    if question_type == "mcq":
+        rationales = payload.get("distractorRationales")
+        if not is_non_empty_string_list(rationales, 4, 4):
+            errors.append(
+                f"{name}: distractorRationales: must contain exactly four "
+                "non-empty strings"
+            )
+    elif question_type == "true-false":
+        correction = payload.get("correctedStatement")
+        if payload.get("correctAnswer") == 0 and correction is not None:
+            errors.append(
+                f"{name}: correctedStatement: must be null when correctAnswer is 0"
+            )
+        elif payload.get("correctAnswer") == 1 and (
+            not isinstance(correction, str) or not correction.strip()
+        ):
+            errors.append(
+                f"{name}: correctedStatement: must be a non-empty string when "
+                "correctAnswer is 1"
+            )
 
     errors.extend(
         validate_non_empty_string(payload.get("rationale"), f"{name}: rationale")
@@ -1317,15 +1411,36 @@ def validate_generated_question_example(payload: dict, name: str) -> list[str]:
     if disposition not in DUPLICATE_DISPOSITIONS:
         errors.append(f"{name}: duplicateDisposition: invalid value: {disposition}")
     if isinstance(duplicate, dict):
+        match_class = duplicate.get("matchClass")
+        candidates = duplicate.get("candidateIds")
         expected_disposition = {
             "none": "retain",
             "near": "needs-review",
             "conflict": "needs-review",
-        }.get(duplicate.get("matchClass"))
+        }.get(match_class)
+        if match_class == "exact":
+            if not isinstance(candidates, list) or not candidates:
+                errors.append(
+                    f"{name}: duplicateComparison: exact match requires at least "
+                    "one candidate"
+                )
+            elif all(
+                isinstance(candidate, str) and candidate.startswith(("q-", "gq-"))
+                for candidate in candidates
+            ):
+                question_id = payload.get("id")
+                if any(candidate.startswith("q-") for candidate in candidates):
+                    expected_disposition = "reject-duplicate"
+                elif isinstance(question_id, str):
+                    expected_disposition = (
+                        "retain"
+                        if question_id == min([question_id, *candidates])
+                        else "reject-duplicate"
+                    )
         if expected_disposition and disposition != expected_disposition:
             errors.append(
-                f"{name}: duplicateDisposition: must be {expected_disposition} "
-                f"when matchClass is {duplicate.get('matchClass')}"
+                f"{name}: duplicateDisposition: must be {expected_disposition} for "
+                f"{match_class} match"
             )
     errors.extend(validate_generated_evidence_map(payload, name))
     errors.extend(validate_generated_review(payload, name))
@@ -1369,11 +1484,35 @@ def validate_example_payload(name: str, payload: object) -> list[str]:
     if not isinstance(payload, dict):
         return [f"{name}: example JSON must be an object"]
 
-    missing = sorted(EXAMPLE_REQUIRED_KEYS.get(name, set()) - payload.keys())
+    required = EXAMPLE_REQUIRED_KEYS.get(name, set())
+    allowed = required
+    question_type = payload.get("type")
+    if name == "examples/official-question.example.json":
+        required = (
+            QUESTION_BASE_REQUIRED_FIELDS
+            | OFFICIAL_QUESTION_FIELDS
+            | QUESTION_TYPE_REQUIRED_FIELDS.get(question_type, set())
+        )
+        allowed = required | QUESTION_TYPE_OPTIONAL_FIELDS.get(question_type, set())
+    elif name == "examples/generated-question.example.json":
+        required = (
+            QUESTION_BASE_REQUIRED_FIELDS
+            | GENERATED_QUESTION_COMMON_FIELDS
+            | GENERATED_QUESTION_TYPE_REQUIRED_FIELDS.get(question_type, set())
+        )
+        allowed = required
+        if question_type not in GENERATED_QUESTION_TYPE_REQUIRED_FIELDS:
+            allowed = allowed | set().union(
+                *GENERATED_QUESTION_TYPE_REQUIRED_FIELDS.values(),
+                *QUESTION_TYPE_REQUIRED_FIELDS.values(),
+                *QUESTION_TYPE_OPTIONAL_FIELDS.values(),
+            )
+
+    missing = sorted(required - payload.keys())
     errors = []
     if missing:
         errors.append(f"{name}: missing required top-level keys: {', '.join(missing)}")
-    unexpected = sorted(payload.keys() - EXAMPLE_REQUIRED_KEYS.get(name, set()))
+    unexpected = sorted(payload.keys() - allowed)
     if unexpected:
         errors.append(f"{name}: unexpected top-level keys: {', '.join(unexpected)}")
     generated_validators = {
@@ -1514,26 +1653,44 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
     errors = []
     manifest = payloads.get("examples/source-manifest.example.json", {})
     sources = manifest.get("sources") if isinstance(manifest, dict) else None
+    source_list = sources if isinstance(sources, list) else []
     source_map = {
         source.get("id"): source
-        for source in sources or []
+        for source in source_list
         if isinstance(source, dict) and isinstance(source.get("id"), str)
     }
     for name, payload in payloads.items():
         if name == "examples/source-manifest.example.json":
             continue
         for path, reference in iter_source_references(payload, name):
-            source = source_map.get(reference.get("sourceId"))
+            source_id = reference.get("sourceId")
+            if not isinstance(source_id, str):
+                continue
+            source = source_map.get(source_id)
             if source is None:
                 errors.append(f"{path}: sourceId does not resolve")
                 continue
             locations = source.get("locations")
-            available = {
-                (location.get("locationType"), location.get("location"))
-                for location in locations or []
-                if isinstance(location, dict)
-            }
-            requested = (reference.get("locationType"), reference.get("location"))
+            location_list = locations if isinstance(locations, list) else []
+            available = set()
+            for location in location_list:
+                if not isinstance(location, dict):
+                    continue
+                location_type = location.get("locationType")
+                location_value = location.get("location")
+                if isinstance(location_type, str) and type(location_value) in {
+                    int,
+                    str,
+                }:
+                    available.add((location_type, location_value))
+            requested_type = reference.get("locationType")
+            requested_value = reference.get("location")
+            if not isinstance(requested_type, str) or type(requested_value) not in {
+                int,
+                str,
+            }:
+                continue
+            requested = (requested_type, requested_value)
             if requested not in available:
                 errors.append(f"{path}: source location does not resolve")
 
@@ -1552,17 +1709,23 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
         else set()
     )
 
+    generated_explanation_id = (
+        generated.get("generatedExplanationId") if isinstance(generated, dict) else None
+    )
     if (
-        isinstance(generated, dict)
-        and generated.get("generatedExplanationId") not in explanation_ids
+        isinstance(generated_explanation_id, str)
+        and generated_explanation_id not in explanation_ids
     ):
         errors.append(
             "examples/generated-question.example.json: "
             "generatedExplanationId does not resolve"
         )
+    explanation_question_id = (
+        explanation.get("questionId") if isinstance(explanation, dict) else None
+    )
     if (
-        isinstance(explanation, dict)
-        and explanation.get("questionId") not in question_ids
+        isinstance(explanation_question_id, str)
+        and explanation_question_id not in question_ids
     ):
         errors.append("examples/explanation.example.json: questionId does not resolve")
     if (
@@ -1576,8 +1739,12 @@ def validate_example_links(payloads: dict[str, dict]) -> list[str]:
             "describe generated question"
         )
     if isinstance(lesson, dict):
-        for index, question_id in enumerate(lesson.get("linkedQuestionIds") or []):
-            if question_id not in question_ids:
+        linked_question_ids = lesson.get("linkedQuestionIds")
+        linked_question_list = (
+            linked_question_ids if isinstance(linked_question_ids, list) else []
+        )
+        for index, question_id in enumerate(linked_question_list):
+            if isinstance(question_id, str) and question_id not in question_ids:
                 errors.append(
                     "examples/lesson.example.json: "
                     f"linkedQuestionIds[{index}] does not resolve"
