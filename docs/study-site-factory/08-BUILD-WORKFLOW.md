@@ -201,7 +201,9 @@ replace a final artifact only after the complete chunk validates.
   browser row; save commands, versions, results, screenshots/traces on failure,
   and relevant console output.
 - **Outputs:** automated and browser evidence consolidated in
-  `reports/FINAL_QA_REPORT.md`.
+  `reports/FINAL_QA_REPORT.md`, plus validated
+  `reports/FINAL_HANDOFF_EVIDENCE.json` generated from the canonical reports
+  and committed with the release.
 - **Gate:** Gates 6 and 7 both pass with no waived blocking failure.
 - **Resume condition:** unchanged automated checks may be reused only within the
   same commit and tool versions; resume failed browser rows individually, then

@@ -19,6 +19,7 @@ publication.
 | `content/explanations/` | Clearly labeled generated study guidance. | Keep separate from official answers and preserve evidence/review fields. |
 | `scripts/` | Validators, deterministic builders, migrations, and tests. | Change with tests; record runtime/tool versions. |
 | `reports/` | Source audit, coverage, question quality, QA, and review evidence. | Append or regenerate from evidence; never hide a failure or review item. |
+| `reports/FINAL_HANDOFF_EVIDENCE.json` | Machine-readable counts, review items, test evidence, and limitations used by the final handoff. | Generate from the canonical reports in Stage 11, validate it, and commit it with the release. |
 | `progress-ledger.md` | Stage/chunk hashes, validation, open reviews, and resume point. | Preserve history; invalidate from the earliest affected stage. |
 | `study-website/` | Final static application, generated data, assets, tests, and operating README. | Edit authored UI source when appropriate; do not hand-edit generated payloads. |
 | `.github/workflows/pages.yml` | GitHub Pages validation, artifact upload, and deployment. | Review permissions, branch trigger, source directory, and manual dispatch before use. |
@@ -341,14 +342,128 @@ remain in `FINAL_QA_REPORT.md`.
 ## Final handoff summary
 
 The final message and `reports/FINAL_QA_REPORT.md` must include every field.
-Populate the local values from the validated configuration, committed SHA,
-reports, and the commit-bound `$Run`; never leave variable names in the final
-record:
+Stage 11 must generate and commit `reports/FINAL_HANDOFF_EVIDENCE.json` from
+`SOURCE_AUDIT_REPORT.md`, `CONTENT_COVERAGE_REPORT.md`,
+`QUESTION_QUALITY_REPORT.md`, and `FINAL_QA_REPORT.md`. Its schema is exact:
+
+| Field | Type and rule |
+| --- | --- |
+| `schemaVersion` | Integer `1`. |
+| `counts` | Object with exactly non-negative integer `sources`, `lessons`, `official`, `generatedMcq`, `generatedTrueFalse`, `explanations`, and `reviewItems`. |
+| `reviewItems` | Array of exact objects with non-empty `id`, `location`, `disposition`, and `owner`; its length equals `counts.reviewItems`. |
+| `tests` | Non-empty array of exact objects with non-empty `command`, `toolVersion`, and repository-relative `evidence`, plus non-negative integer `passed` and integer `failed` equal to zero. |
+| `knownLimitations` | Array of exact objects with non-empty `description`, `impact`, and `workaround`; use an empty array when none exist. |
+
+The following block is self-contained. It refuses missing, untracked, modified,
+malformed, failed, or commit-mismatched evidence before formatting the handoff:
 
 ```powershell
+$DeploymentVerified = $false
+$EvidencePath = "reports/FINAL_HANDOFF_EVIDENCE.json"
+$RequiredEvidence = @(
+    "reports/SOURCE_AUDIT_REPORT.md",
+    "reports/CONTENT_COVERAGE_REPORT.md",
+    "reports/QUESTION_QUALITY_REPORT.md",
+    "reports/FINAL_QA_REPORT.md",
+    $EvidencePath
+)
+foreach ($Path in $RequiredEvidence) {
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required handoff evidence is missing: $Path" }
+    git ls-files --error-unmatch -- $Path *> $null
+    if ($LASTEXITCODE -ne 0) { throw "Required handoff evidence is not committed: $Path" }
+    git diff --quiet -- $Path
+    if ($LASTEXITCODE -ne 0) { throw "Required handoff evidence differs from the committed release: $Path" }
+}
+
+function Assert-ExactProperties {
+    param([object]$Object, [string[]]$Expected, [string]$Path)
+    if ($null -eq $Object) { throw "$Path is missing" }
+    $Actual = @($Object.PSObject.Properties.Name | Sort-Object)
+    $ExpectedSorted = @($Expected | Sort-Object)
+    if (@(Compare-Object $ExpectedSorted $Actual).Count -ne 0) { throw "$Path has an invalid field set" }
+}
+
+$Evidence = Get-Content -Raw $EvidencePath | ConvertFrom-Json -Depth 100
+Assert-ExactProperties $Evidence @("schemaVersion", "counts", "reviewItems", "tests", "knownLimitations") "handoff evidence"
+if ($Evidence.schemaVersion -ne 1) { throw "Unsupported handoff evidence schemaVersion" }
+
+$CountFields = @("sources", "lessons", "official", "generatedMcq", "generatedTrueFalse", "explanations", "reviewItems")
+Assert-ExactProperties $Evidence.counts $CountFields "handoff evidence counts"
+foreach ($Field in $CountFields) {
+    $Value = $Evidence.counts.PSObject.Properties[$Field].Value
+    if (($Value -isnot [int] -and $Value -isnot [long]) -or $Value -lt 0) { throw "Invalid non-negative integer count: $Field" }
+}
+$CountsSummary = "sources=$($Evidence.counts.sources), lessons=$($Evidence.counts.lessons), official=$($Evidence.counts.official), generated-mcq=$($Evidence.counts.generatedMcq), generated-true-false=$($Evidence.counts.generatedTrueFalse), explanations=$($Evidence.counts.explanations), review-items=$($Evidence.counts.reviewItems)"
+
+$ReviewItems = @($Evidence.reviewItems)
+if ($ReviewItems.Count -ne $Evidence.counts.reviewItems) { throw "Review-item count does not match evidence counts" }
+foreach ($Item in $ReviewItems) {
+    Assert-ExactProperties $Item @("id", "location", "disposition", "owner") "review item"
+    foreach ($Field in @("id", "location", "disposition", "owner")) {
+        if ([string]::IsNullOrWhiteSpace([string]$Item.PSObject.Properties[$Field].Value)) { throw "Review item has an empty field: $Field" }
+    }
+}
+$ReviewItemSummary = if ($ReviewItems.Count -eq 0) { "none" } else {
+    (@($ReviewItems | ForEach-Object { "$($_.id) at $($_.location); $($_.disposition); owner=$($_.owner)" }) -join " | ")
+}
+
+$Tests = @($Evidence.tests)
+if ($Tests.Count -eq 0) { throw "Handoff test evidence is empty" }
+foreach ($Test in $Tests) {
+    Assert-ExactProperties $Test @("command", "toolVersion", "passed", "failed", "evidence") "test evidence"
+    foreach ($Field in @("command", "toolVersion", "evidence")) {
+        if ([string]::IsNullOrWhiteSpace([string]$Test.PSObject.Properties[$Field].Value)) { throw "Test evidence has an empty field: $Field" }
+    }
+    if (($Test.passed -isnot [int] -and $Test.passed -isnot [long]) -or $Test.passed -lt 0) { throw "Test passed count is invalid" }
+    if (($Test.failed -isnot [int] -and $Test.failed -isnot [long]) -or $Test.failed -ne 0) { throw "Test evidence contains failures" }
+    if (-not (Test-Path -LiteralPath $Test.evidence -PathType Leaf)) { throw "Named test evidence is missing: $($Test.evidence)" }
+    git ls-files --error-unmatch -- $Test.evidence *> $null
+    if ($LASTEXITCODE -ne 0) { throw "Named test evidence is not committed: $($Test.evidence)" }
+    git diff --quiet -- $Test.evidence
+    if ($LASTEXITCODE -ne 0) { throw "Named test evidence differs from the committed release: $($Test.evidence)" }
+}
+$TestSummary = @($Tests | ForEach-Object { "$($_.command) [$($_.toolVersion)]: passed=$($_.passed), failed=$($_.failed), evidence=$($_.evidence)" }) -join " | "
+
+$KnownLimitations = @($Evidence.knownLimitations)
+foreach ($Limitation in $KnownLimitations) {
+    Assert-ExactProperties $Limitation @("description", "impact", "workaround") "known limitation"
+    foreach ($Field in @("description", "impact", "workaround")) {
+        if ([string]::IsNullOrWhiteSpace([string]$Limitation.PSObject.Properties[$Field].Value)) { throw "Known limitation has an empty field: $Field" }
+    }
+}
+$KnownLimitationsSummary = if ($KnownLimitations.Count -eq 0) { "none" } else {
+    (@($KnownLimitations | ForEach-Object { "$($_.description); impact=$($_.impact); workaround=$($_.workaround)" }) -join " | ")
+}
+
+$ProjectConfig = Get-Content -Raw input/project-config.json | ConvertFrom-Json
 $Repository = [string]$ProjectConfig.deployment.repository
 $Branch = [string]$ProjectConfig.deployment.branch
+$PublicUrl = ([string]$ProjectConfig.deployment.publicUrl).TrimEnd("/") + "/"
 $Commit = (git rev-parse HEAD).Trim().ToLowerInvariant()
+if ($Commit -notmatch "^[0-9a-f]{40}$") { throw "Release commit is not a full SHA" }
+$MatchingRuns = @(gh run list --workflow pages.yml --branch $Branch --event workflow_dispatch --commit $Commit --status success --limit 20 --json databaseId,headSha,conclusion,createdAt | ConvertFrom-Json | Where-Object {
+    $_.headSha -eq $Commit -and $_.conclusion -eq "success"
+} | Sort-Object createdAt -Descending)
+if ($LASTEXITCODE -ne 0) { throw "Could not query Pages runs for the committed release" }
+$RunId = $null
+$Run = $null
+if ($MatchingRuns.Count -gt 0) {
+    $RemoteRef = @(git ls-remote --heads origin "refs/heads/$Branch")
+    if ($LASTEXITCODE -ne 0 -or $RemoteRef.Count -ne 1) { throw "Configured remote branch was not found exactly once" }
+    $RemoteSha = (($RemoteRef[0] -split "\s+")[0]).ToLowerInvariant()
+    if ($RemoteSha -ne $Commit) { throw "Configured remote branch is not at the committed release" }
+    $RunId = [string]$MatchingRuns[0].databaseId
+    $Run = gh run view $RunId --json headSha,conclusion,jobs | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0 -or $Run.headSha -ne $Commit -or $Run.conclusion -ne "success") { throw "Pages run does not verify the committed release" }
+    foreach ($JobName in @("build", "deploy")) {
+        $Jobs = @($Run.jobs | Where-Object { $_.name -eq $JobName -and $_.conclusion -eq "success" })
+        if ($Jobs.Count -ne 1) { throw "Required Pages job did not succeed: $JobName" }
+    }
+    $HtmlResponse = Invoke-WebRequest -Uri $PublicUrl
+    if ($HtmlResponse.StatusCode -ne 200 -or [string]$HtmlResponse.Headers["Content-Type"] -notmatch "(?i)^text/html(?:\s*;|$)") { throw "Public release HTML verification failed" }
+    $DeploymentVerified = $true
+}
+
 $VerifiedUrl = if ($DeploymentVerified) { $PublicUrl } else { "not deployed" }
 $WorkflowRunSummary = if ($DeploymentVerified) {
     "run $RunId; commit $($Run.headSha); build/deploy success"

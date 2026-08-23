@@ -638,6 +638,26 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     r"replace-with-[A-Za-z0-9_-]+|<[^>\r\n]+>",
                 )
 
+    def test_final_handoff_assigns_all_runtime_values_before_use(self):
+        text = Path(
+            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
+        ).read_text(encoding="utf-8")
+        section = text.split("## Final handoff summary", 1)[1]
+        block = section.split("```powershell", 1)[1].split("```", 1)[0]
+
+        for name in (
+            "DeploymentVerified", "CountsSummary", "ReviewItemSummary",
+            "TestSummary", "KnownLimitationsSummary",
+        ):
+            with self.subTest(name=name):
+                reference = f"${name}"
+                assignment = f"{reference} ="
+                self.assertIn(assignment, block)
+                self.assertEqual(block.find(reference), block.find(assignment))
+                self.assertIn(reference, block[block.find(assignment) + len(
+                    assignment
+                ):])
+
     def test_prd_excludes_review_items_from_every_mock_exam_pool(self):
         text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
             encoding="utf-8"
