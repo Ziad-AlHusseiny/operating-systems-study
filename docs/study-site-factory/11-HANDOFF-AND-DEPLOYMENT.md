@@ -371,7 +371,7 @@ foreach ($Path in $RequiredEvidence) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required handoff evidence is missing: $Path" }
     git ls-files --error-unmatch -- $Path *> $null
     if ($LASTEXITCODE -ne 0) { throw "Required handoff evidence is not committed: $Path" }
-    git diff --quiet -- $Path
+    git diff --quiet HEAD -- $Path
     if ($LASTEXITCODE -ne 0) { throw "Required handoff evidence differs from the committed release: $Path" }
 }
 
@@ -419,7 +419,7 @@ foreach ($Test in $Tests) {
     if (-not (Test-Path -LiteralPath $Test.evidence -PathType Leaf)) { throw "Named test evidence is missing: $($Test.evidence)" }
     git ls-files --error-unmatch -- $Test.evidence *> $null
     if ($LASTEXITCODE -ne 0) { throw "Named test evidence is not committed: $($Test.evidence)" }
-    git diff --quiet -- $Test.evidence
+    git diff --quiet HEAD -- $Test.evidence
     if ($LASTEXITCODE -ne 0) { throw "Named test evidence differs from the committed release: $($Test.evidence)" }
 }
 $TestSummary = @($Tests | ForEach-Object { "$($_.command) [$($_.toolVersion)]: passed=$($_.passed), failed=$($_.failed), evidence=$($_.evidence)" }) -join " | "

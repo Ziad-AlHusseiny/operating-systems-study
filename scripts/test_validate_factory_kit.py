@@ -658,6 +658,28 @@ class FactoryKitValidatorTests(unittest.TestCase):
                     assignment
                 ):])
 
+    def test_final_handoff_compares_every_committed_evidence_path_to_head(self):
+        text = Path(
+            "docs/study-site-factory/11-HANDOFF-AND-DEPLOYMENT.md"
+        ).read_text(encoding="utf-8")
+        section = text.split("## Final handoff summary", 1)[1]
+        block = section.split("```powershell", 1)[1].split("```", 1)[0]
+
+        for evidence_path in ("$Path", "$Test.evidence"):
+            with self.subTest(evidence_path=evidence_path):
+                self.assertIn(
+                    f"git ls-files --error-unmatch -- {evidence_path}",
+                    block,
+                )
+                self.assertIn(
+                    f"git diff --quiet HEAD -- {evidence_path}",
+                    block,
+                )
+                self.assertNotIn(
+                    f"git diff --quiet -- {evidence_path}",
+                    block,
+                )
+
     def test_prd_excludes_review_items_from_every_mock_exam_pool(self):
         text = Path("docs/study-site-factory/02-PRD-TEMPLATE.md").read_text(
             encoding="utf-8"
