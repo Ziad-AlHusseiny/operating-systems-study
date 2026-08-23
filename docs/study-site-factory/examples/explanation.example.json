@@ -1,0 +1,32 @@
+{
+  "id": "explanation-gq-dhcp-apply-001-ar",
+  "questionId": "gq-dhcp-apply-001",
+  "language": "ar",
+  "generatedStudyGuidance": true,
+  "translation": "يرسل جهاز على شبكة فرعية جديدة رسائل DHCPDISCOVER بشكل متكرر، لكن لا تصله رسالة DHCPOFFER. خادم DHCP يعمل على شبكة فرعية أخرى، والموجّه لا يمرر البث الخاص بالجهاز. ما التغيير الأنسب لتفعيل إعداد عنوان IP تلقائيا؟",
+  "explanation": [
+    "الإجابة الصحيحة هي إعداد DHCP relay على واجهة الموجّه المتصلة بشبكة الجهاز. يستقبل relay رسالة DHCPDISCOVER المحلية ويمررها إلى خادم DHCP الموجود على الشبكة الأخرى، ثم يعيد رد الخادم إلى الجهاز.",
+    "إعداد DNS forwarder لا يمرر رسائل DHCP، وزيادة مدة الحجز لا تعالج وصول الطلب الأول، كما أن إدخال ARP ثابت لا ينقل البث عبر الموجّه. لذلك يجب فحص مسار DHCP relay عندما يظهر الطلب المتكرر من دون DHCPOFFER."
+  ],
+  "body": "إعداد DHCP relay هو الحل المدعوم لأنه يمرر تبادل DHCP بين شبكة الجهاز والخادم الموجود على شبكة فرعية أخرى.",
+  "note": "إرشاد دراسي مولد ومبني على المصادر المشار إليها، وليس سؤال امتحان رسميا.",
+  "sourceRefs": [
+    {"sourceId": "source-01", "locationType": "page", "location": 12},
+    {"sourceId": "source-02", "locationType": "slide", "location": 5}
+  ],
+  "needsReview": false,
+  "reviewNotes": "",
+  "review": {
+    "status": "human-reviewed",
+    "approval": {
+      "reviewedRecordId": "explanation-gq-dhcp-apply-001-ar",
+      "reviewedContentVersion": "1.0.0",
+      "status": "completed",
+      "decision": "approved",
+      "reviewer": "reviewer-network-01",
+      "reviewedAt": "2026-08-23T10:20:00Z",
+      "reason": "Arabic meaning, direction guidance, and source grounding were reviewed.",
+      "notes": ""
+    }
+  }
+}

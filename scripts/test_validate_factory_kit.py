@@ -9,6 +9,7 @@ from scripts.validate_factory_kit import (
     REQUIRED_EXAMPLES,
     collect_template_variables,
     validate_markdown_headings,
+    validate_example_payload,
     validate_json_file,
     validate_required_files,
     validate_kit,
@@ -16,6 +17,10 @@ from scripts.validate_factory_kit import (
 
 
 class FactoryKitValidatorTests(unittest.TestCase):
+    source_ref = {
+        "sourceId": "source-01", "locationType": "page", "location": 12
+    }
+
     def make_complete_kit(self, root, source_manifest, official_question):
         for name in REQUIRED_DOCS:
             (root / name).write_text("# placeholder\n", encoding="utf-8")
@@ -28,13 +33,162 @@ class FactoryKitValidatorTests(unittest.TestCase):
             (root / name).parent.mkdir(parents=True, exist_ok=True)
             (root / name).write_text(json.dumps(payload), encoding="utf-8")
 
-    def test_source_and_official_question_examples_have_required_keys(self):
+    def test_examples_have_required_keys(self):
         root = Path("docs/study-site-factory")
         for relative, required in EXAMPLE_REQUIRED_KEYS.items():
-            payload = json.loads(
-                (root / relative).read_text(encoding="utf-8")
-            )
-            self.assertTrue(required.issubset(payload))
+            with self.subTest(relative=relative):
+                payload = json.loads(
+                    (root / relative).read_text(encoding="utf-8")
+                )
+                self.assertTrue(required.issubset(payload))
+
+    def test_generated_mcq_example_has_complete_answer_contract(self):
+        payload = json.loads(
+            Path(
+                "docs/study-site-factory/examples/"
+                "generated-question.example.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(payload["origin"], "generated")
+        self.assertEqual(len(payload["options"]), 4)
+        self.assertEqual(len(payload["distractorRationales"]), 4)
+        self.assertIsInstance(payload["correctAnswer"], int)
+        self.assertIn(payload["correctAnswer"], range(4))
+        self.assertGreaterEqual(len(payload["sourceRefs"]), 1)
+
+    def test_lesson_rejects_explanation_outside_two_to_five_paragraphs(self):
+        for explanation in (["Only one."], ["One.", "", "Three."], [
+            "One.", "Two.", "Three.", "Four.", "Five.", "Six."
+        ]):
+            with self.subTest(explanation=explanation):
+                errors = validate_example_payload(
+                    "examples/lesson.example.json",
+                    {
+                        "explanation": explanation,
+                        "recap": ["One.", "Two.", "Three."],
+                        "review": {"status": "draft"},
+                    },
+                )
+                self.assertIn(
+                    "examples/lesson.example.json: explanation: must contain "
+                    "two to five non-empty paragraphs",
+                    errors,
+                )
+
+    def test_lesson_rejects_recap_outside_three_to_seven_points(self):
+        for recap in (["One.", "Two."], ["One.", "", "Three."], [
+            "One.", "Two.", "Three.", "Four.", "Five.", "Six.",
+            "Seven.", "Eight."
+        ]):
+            with self.subTest(recap=recap):
+                errors = validate_example_payload(
+                    "examples/lesson.example.json",
+                    {
+                        "explanation": ["One.", "Two."],
+                        "recap": recap,
+                        "review": {"status": "draft"},
+                    },
+                )
+                self.assertIn(
+                    "examples/lesson.example.json: recap: must contain three "
+                    "to seven non-empty strings",
+                    errors,
+                )
+
+    def test_generated_mcq_rejects_invalid_shape_and_rubric_values(self):
+        payload = {
+            "origin": "official",
+            "type": "mcq",
+            "options": ["A", "B", "C"],
+            "correctAnswer": 3,
+            "distractorRationales": ["A", "B", "C"],
+            "difficulty": "extreme",
+            "bloomLevel": "understand",
+            "sourceRefs": [],
+            "review": {"status": "queued"},
+        }
+
+        errors = validate_example_payload(
+            "examples/generated-question.example.json", payload
+        )
+
+        for error in (
+            "examples/generated-question.example.json: origin: must be generated",
+            "examples/generated-question.example.json: options: must contain exactly four non-empty strings",
+            "examples/generated-question.example.json: distractorRationales: must contain exactly four non-empty strings",
+            "examples/generated-question.example.json: correctAnswer: must be a valid zero-based option index",
+            "examples/generated-question.example.json: difficulty: invalid value: extreme",
+            "examples/generated-question.example.json: bloomLevel: invalid value: understand",
+            "examples/generated-question.example.json: sourceRefs: must contain at least one source reference",
+            "examples/generated-question.example.json: review.status: invalid value: queued",
+        ):
+            with self.subTest(error=error):
+                self.assertIn(error, errors)
+
+    def test_explanation_requires_true_guidance_and_two_or_three_paragraphs(self):
+        cases = (
+            (
+                1,
+                ["One.", "Two."],
+                "examples/explanation.example.json: generatedStudyGuidance: must be exactly true",
+            ),
+            (
+                True,
+                ["Only one."],
+                "examples/explanation.example.json: explanation: must contain two or three non-empty paragraphs",
+            ),
+            (
+                True,
+                ["One.", "", "Three."],
+                "examples/explanation.example.json: explanation: must contain two or three non-empty paragraphs",
+            ),
+            (
+                True,
+                ["One.", "Two.", "Three.", "Four."],
+                "examples/explanation.example.json: explanation: must contain two or three non-empty paragraphs",
+            ),
+        )
+        for guidance, explanation, expected in cases:
+            with self.subTest(guidance=guidance, explanation=explanation):
+                errors = validate_example_payload(
+                    "examples/explanation.example.json",
+                    {
+                        "generatedStudyGuidance": guidance,
+                        "explanation": explanation,
+                        "review": {"status": "validated"},
+                    },
+                )
+                self.assertIn(expected, errors)
+
+    def test_every_generated_content_review_rejects_unknown_status(self):
+        fixtures = {
+            "examples/lesson.example.json": {
+                "explanation": ["One.", "Two."],
+                "recap": ["One.", "Two.", "Three."],
+                "review": {"status": "approved"},
+            },
+            "examples/generated-question.example.json": {
+                "origin": "generated", "type": "mcq",
+                "options": ["A", "B", "C", "D"], "correctAnswer": 0,
+                "distractorRationales": ["A", "B", "C", "D"],
+                "difficulty": "medium", "bloomLevel": "apply",
+                "sourceRefs": [self.source_ref],
+                "review": {"status": "approved"},
+            },
+            "examples/explanation.example.json": {
+                "generatedStudyGuidance": True,
+                "explanation": ["One.", "Two."],
+                "review": {"status": "approved"},
+            },
+        }
+
+        for name, payload in fixtures.items():
+            with self.subTest(name=name):
+                errors = validate_example_payload(name, payload)
+                self.assertIn(
+                    f"{name}: review.status: invalid value: approved", errors
+                )
 
     def test_reports_missing_top_level_keys_in_required_examples(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -36,10 +36,29 @@ EXAMPLE_REQUIRED_KEYS = {
         "id", "origin", "type", "prompt", "topic", "correctAnswer",
         "sourceRefs", "needsReview", "reviewNotes"
     },
+    "examples/lesson.example.json": {
+        "id", "moduleId", "title", "learningObjectives", "summary",
+        "explanation", "keyTerms", "workedExamples", "commonMistakes",
+        "examTips", "recap", "sourceRefs", "review"
+    },
+    "examples/generated-question.example.json": {
+        "id", "origin", "type", "prompt", "options", "correctAnswer",
+        "rationale", "distractorRationales", "difficulty", "bloomLevel",
+        "learningObjectiveId", "sourceRefs", "review"
+    },
+    "examples/explanation.example.json": {
+        "questionId", "language", "generatedStudyGuidance", "translation",
+        "explanation", "note", "sourceRefs", "review"
+    },
 }
 
 SOURCE_REFERENCE_REQUIRED_KEYS = {"sourceId", "locationType", "location"}
 SOURCE_REFERENCE_LOCATION_TYPES = {"page", "slide", "section", "row", "image"}
+GENERATED_DIFFICULTIES = {"easy", "medium", "hard"}
+GENERATED_BLOOM_LEVELS = {"remember", "apply", "analyze"}
+GENERATED_REVIEW_STATUSES = {
+    "draft", "validated", "human-reviewed", "needs-review", "rejected"
+}
 
 
 def collect_template_variables(text: str) -> set[str]:
@@ -99,6 +118,90 @@ def validate_source_references(payload: object, path: str) -> list[str]:
     return errors
 
 
+def is_non_empty_string_list(value: object, minimum: int, maximum: int) -> bool:
+    return (
+        isinstance(value, list)
+        and minimum <= len(value) <= maximum
+        and all(isinstance(item, str) and item.strip() for item in value)
+    )
+
+
+def validate_generated_review(payload: dict, name: str) -> list[str]:
+    review = payload.get("review")
+    status = review.get("status") if isinstance(review, dict) else None
+    if status not in GENERATED_REVIEW_STATUSES:
+        return [f"{name}: review.status: invalid value: {status}"]
+    return []
+
+
+def validate_lesson_example(payload: dict, name: str) -> list[str]:
+    errors = []
+    if not is_non_empty_string_list(payload.get("explanation"), 2, 5):
+        errors.append(
+            f"{name}: explanation: must contain two to five non-empty paragraphs"
+        )
+    if not is_non_empty_string_list(payload.get("recap"), 3, 7):
+        errors.append(
+            f"{name}: recap: must contain three to seven non-empty strings"
+        )
+    errors.extend(validate_generated_review(payload, name))
+    return errors
+
+
+def validate_generated_question_example(payload: dict, name: str) -> list[str]:
+    errors = []
+    if payload.get("origin") != "generated":
+        errors.append(f"{name}: origin: must be generated")
+
+    options = payload.get("options")
+    if not is_non_empty_string_list(options, 4, 4):
+        errors.append(
+            f"{name}: options: must contain exactly four non-empty strings"
+        )
+    rationales = payload.get("distractorRationales")
+    if not is_non_empty_string_list(rationales, 4, 4):
+        errors.append(
+            f"{name}: distractorRationales: must contain exactly four "
+            "non-empty strings"
+        )
+
+    answer = payload.get("correctAnswer")
+    if type(answer) is not int or not isinstance(options, list) or not (
+        0 <= answer < len(options)
+    ):
+        errors.append(
+            f"{name}: correctAnswer: must be a valid zero-based option index"
+        )
+
+    difficulty = payload.get("difficulty")
+    if difficulty not in GENERATED_DIFFICULTIES:
+        errors.append(f"{name}: difficulty: invalid value: {difficulty}")
+    bloom_level = payload.get("bloomLevel")
+    if bloom_level not in GENERATED_BLOOM_LEVELS:
+        errors.append(f"{name}: bloomLevel: invalid value: {bloom_level}")
+    if not payload.get("sourceRefs"):
+        errors.append(
+            f"{name}: sourceRefs: must contain at least one source reference"
+        )
+    errors.extend(validate_generated_review(payload, name))
+    return errors
+
+
+def validate_explanation_example(payload: dict, name: str) -> list[str]:
+    errors = []
+    if payload.get("generatedStudyGuidance") is not True:
+        errors.append(
+            f"{name}: generatedStudyGuidance: must be exactly true"
+        )
+    if not is_non_empty_string_list(payload.get("explanation"), 2, 3):
+        errors.append(
+            f"{name}: explanation: must contain two or three non-empty "
+            "paragraphs"
+        )
+    errors.extend(validate_generated_review(payload, name))
+    return errors
+
+
 def validate_example_payload(name: str, payload: object) -> list[str]:
     if not isinstance(payload, dict):
         return [f"{name}: example JSON must be an object"]
@@ -109,6 +212,15 @@ def validate_example_payload(name: str, payload: object) -> list[str]:
         errors.append(
             f"{name}: missing required top-level keys: {', '.join(missing)}"
         )
+    generated_validators = {
+        "examples/lesson.example.json": validate_lesson_example,
+        "examples/generated-question.example.json": (
+            validate_generated_question_example
+        ),
+        "examples/explanation.example.json": validate_explanation_example,
+    }
+    if name in generated_validators:
+        errors.extend(generated_validators[name](payload, name))
     errors.extend(validate_source_references(payload, name))
     return errors
 

@@ -1,0 +1,84 @@
+{
+  "id": "lesson-dhcp-relay-01",
+  "moduleId": "module-network-services",
+  "objectiveIds": ["objective-dhcp-across-subnets"],
+  "title": "DHCP Address Assignment Across Subnets",
+  "learningObjectives": [
+    {
+      "id": "objective-dhcp-across-subnets",
+      "text": "Apply DHCP message flow to diagnose address-assignment failures across routed subnets.",
+      "sourceRefs": [
+        {"sourceId": "source-01", "locationType": "page", "location": 12},
+        {"sourceId": "source-02", "locationType": "slide", "location": 5}
+      ]
+    }
+  ],
+  "summary": "DHCP assigns client IP configuration through a broadcast-based exchange, so clients and servers separated by a router need a relay path for the initial messages.",
+  "explanation": [
+    "A client without valid configuration begins the DHCP exchange by broadcasting a DHCPDISCOVER message. A DHCP server that receives the request can answer with a DHCPOFFER containing proposed network settings.",
+    "Routers do not normally forward the client's local broadcast to another subnet. A DHCP relay on the client-facing router interface receives the request and forwards it to the configured DHCP server, then returns the server response toward the client.",
+    "When a capture shows repeated DHCPDISCOVER messages but no DHCPOFFER, check whether the server is reachable through a configured relay before investigating services such as DNS that act after IP configuration is available."
+  ],
+  "body": "A DHCP client broadcasts DHCPDISCOVER and expects DHCPOFFER. Across a routed boundary, a configured DHCP relay forwards the exchange between the client subnet and DHCP server.",
+  "keyTerms": [
+    {
+      "term": "DHCP relay",
+      "definition": "A router or relay-agent function that forwards DHCP messages between a client subnet and a DHCP server on another subnet.",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
+    },
+    {
+      "term": "DHCPOFFER",
+      "definition": "The DHCP server message that offers IP configuration to a requesting client.",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
+    }
+  ],
+  "workedExamples": [
+    {
+      "title": "No offer across a router",
+      "body": "A client broadcasts DHCPDISCOVER on one subnet while the DHCP server is active on another. Configure the client-facing router interface as a DHCP relay to forward the exchange.",
+      "sourceRefs": [
+        {"sourceId": "source-01", "locationType": "page", "location": 12},
+        {"sourceId": "source-02", "locationType": "slide", "location": 5}
+      ]
+    }
+  ],
+  "commonMistakes": [
+    {
+      "misconception": "Changing DNS settings will make the missing DHCPOFFER arrive.",
+      "correction": "DNS does not forward the DHCP broadcast; verify the DHCP relay path between subnets.",
+      "sourceRefs": [{"sourceId": "source-01", "locationType": "page", "location": 12}]
+    }
+  ],
+  "examTips": [
+    {
+      "body": "Repeated DHCPDISCOVER messages with no DHCPOFFER across a router point to the DHCP server or relay path, not name resolution.",
+      "sourceRefs": [{"sourceId": "source-02", "locationType": "slide", "location": 5}]
+    }
+  ],
+  "recap": [
+    "DHCP clients begin by broadcasting DHCPDISCOVER.",
+    "A remote DHCP server cannot receive the local broadcast without a relay path.",
+    "A DHCP relay forwards messages between the client subnet and the remote server.",
+    "Repeated discovery without an offer is evidence to inspect the server and relay path."
+  ],
+  "sourceRefs": [
+    {"sourceId": "source-01", "locationType": "page", "location": 12},
+    {"sourceId": "source-02", "locationType": "slide", "location": 5}
+  ],
+  "linkedQuestionIds": ["gq-dhcp-apply-001"],
+  "needsReview": false,
+  "reviewNotes": "",
+  "review": {
+    "status": "human-reviewed",
+    "approval": {
+      "reviewedRecordId": "lesson-dhcp-relay-01",
+      "reviewedContentVersion": "1.0.0",
+      "status": "completed",
+      "decision": "approved",
+      "reviewer": "reviewer-network-01",
+      "reviewedAt": "2026-08-23T10:00:00Z",
+      "reason": "Lesson claims and mappings were checked against the cited locations.",
+      "notes": ""
+    }
+  }
+}

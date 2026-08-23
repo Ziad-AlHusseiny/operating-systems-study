@@ -1,0 +1,73 @@
+{
+  "id": "gq-dhcp-apply-001",
+  "origin": "generated",
+  "type": "mcq",
+  "prompt": "A client on a new subnet repeatedly sends DHCPDISCOVER, but no DHCPOFFER returns. The DHCP server is active on another subnet, and the router does not forward the client's broadcast. Which change best enables automatic IP configuration?",
+  "topic": "DHCP across routed subnets",
+  "options": [
+    "Configure a DHCP relay on the router interface connected to the client subnet.",
+    "Configure a DNS forwarder for the client subnet.",
+    "Increase the DHCP lease duration on the server.",
+    "Add a static ARP entry for the DHCP server on the client."
+  ],
+  "correctAnswer": 0,
+  "rationale": "A DHCP relay forwards the client's broadcast request to the DHCP server on the other subnet and returns the server response.",
+  "distractorRationales": [
+    "This is the correct option because the relay carries the DHCP exchange across the routed boundary.",
+    "DNS resolves names after the client has IP connectivity; it does not forward DHCPDISCOVER.",
+    "Lease duration controls how long assigned configuration remains valid, not whether the initial broadcast reaches a remote server.",
+    "A static ARP entry maps an IP address to a link-layer address and does not relay the DHCP broadcast across the router."
+  ],
+  "difficulty": "medium",
+  "bloomLevel": "apply",
+  "cognitiveLevel": "apply",
+  "learningObjectiveId": "objective-dhcp-across-subnets",
+  "sourceRefs": [
+    {"sourceId": "source-01", "locationType": "page", "location": 12},
+    {"sourceId": "source-02", "locationType": "slide", "location": 5}
+  ],
+  "generationMethod": "source-grounded-scenario-v1",
+  "generatedExplanationId": "explanation-gq-dhcp-apply-001-ar",
+  "provenance": {
+    "sourceRefs": [
+      {"sourceId": "source-01", "locationType": "page", "location": 12},
+      {"sourceId": "source-02", "locationType": "slide", "location": 5}
+    ],
+    "modelVersion": "example-model-1",
+    "promptVersion": "question-generation-1.0"
+  },
+  "evidenceMap": [
+    {
+      "claimId": "claim-dhcp-relay-path",
+      "sourceRefs": [
+        {"sourceId": "source-01", "locationType": "page", "location": 12},
+        {"sourceId": "source-02", "locationType": "slide", "location": 5}
+      ],
+      "support": "direct"
+    }
+  ],
+  "qualityState": "approved",
+  "reviewState": "approved",
+  "duplicateComparison": {
+    "algorithmVersion": "question-dedup-1.0",
+    "normalizedPrompt": "a client on a new subnet repeatedly sends dhcpdiscover but no dhcpoffer returns the dhcp server is active on another subnet and the router does not forward the clients broadcast which change best enables automatic ip configuration",
+    "candidateIds": [],
+    "matchClass": "none"
+  },
+  "duplicateDisposition": "retain",
+  "needsReview": false,
+  "reviewNotes": "",
+  "review": {
+    "status": "human-reviewed",
+    "approval": {
+      "reviewedRecordId": "gq-dhcp-apply-001",
+      "reviewedContentVersion": "1.0.0",
+      "status": "completed",
+      "decision": "approved",
+      "reviewer": "reviewer-network-01",
+      "reviewedAt": "2026-08-23T10:15:00Z",
+      "reason": "The answer, distractors, evidence, and application level were reviewed.",
+      "notes": ""
+    }
+  }
+}
