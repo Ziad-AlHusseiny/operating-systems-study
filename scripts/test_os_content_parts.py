@@ -437,7 +437,7 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
  'gq-os-ch08-part2-004': ('objective-os-ch08-part2-1', 'Single-instance grant check', 'material-section-os-ch08-part2-rag-avoidance'),
  'gq-os-ch08-part2-005': ('objective-os-ch08-part2-2', 'Need computation', 'material-section-os-ch08-part2-banker'),
  'gq-os-ch08-part2-006': ('objective-os-ch08-part2-3', 'Banker vector comparison', 'material-section-os-ch08-part2-banker-example'),
- 'gq-os-ch08-part2-007': ('objective-os-ch08-part2-2', 'Banker instance scope', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-007': ('objective-os-ch08-part2-2', 'Banker instance scope', 'material-section-os-ch08-part2-safety'),
  'gq-os-ch08-part2-008': ('objective-os-ch08-part2-2', 'Request-algorithm order', 'material-section-os-ch08-part2-banker'),
  'gq-os-ch08-part2-009': ('objective-os-ch08-part2-3', 'P0 request safety analysis', 'material-section-os-ch08-part2-banker-example'),
  'gq-os-ch08-part2-010': ('objective-os-ch08-part2-3', 'P1 request update', 'material-section-os-ch08-part2-banker-example'),
@@ -516,7 +516,7 @@ PART_THREE_MANUAL_SOURCE_FACTS = {
     "gq-os-ch08-part2-004": (2, "os-lec-18", 10, "cycle"),
     "gq-os-ch08-part2-005": (1, "os-lec-18", 14, "max [i,j]"),
     "gq-os-ch08-part2-006": (1, "os-lec-18", 18, "select p1"),
-    "gq-os-ch08-part2-007": (False, "os-lec-18", 13, "multiple instances"),
+    "gq-os-ch08-part2-007": (False, "os-lec-18", 8, "single instance of a resource type"),
     "gq-os-ch08-part2-008": (True, "os-lec-18", 16, "need"),
     "gq-os-ch08-part2-009": (False, "os-lec-18", 19, "unsafe"),
     "gq-os-ch08-part2-010": (True, "os-lec-18", 19, "p1 requests"),
@@ -526,7 +526,7 @@ PART_THREE_MANUAL_SOURCE_FACTS = {
     "gq-os-ch08-part3-004": (1, "os-lec-19", 8, "finish[i] = false"),
     "gq-os-ch08-part3-005": (1, "os-lec-19", 9, "o(m"),
     "gq-os-ch08-part3-006": (2, "os-lec-19", 11, "p1 , p2 , p3 , and p4"),
-    "gq-os-ch08-part3-007": (True, "os-lec-19", 17, "processes are still deadlocked"),
+    "gq-os-ch08-part3-007": (True, "os-lec-19", 18, "total rollback"),
     "gq-os-ch08-part3-008": (True, "os-lec-19", 12, "considerable overhead"),
     "gq-os-ch08-part3-009": (False, "os-lec-19", 15, "one process at a time"),
     "gq-os-ch08-part3-010": (False, "os-lec-19", 18, "minimize cost"),
@@ -548,8 +548,17 @@ PART_THREE_MANUAL_SOURCE_FACTS = {
     "gq-os-ch09-part2-006": (2, "os-lec-21", 14, "three processes"),
     "gq-os-ch09-part2-007": (False, "os-lec-21", 3, "internal fragmentation"),
     "gq-os-ch09-part2-008": (False, "os-lec-21", 17, "page out"),
-    "gq-os-ch09-part2-009": (True, "os-lec-21", 20, "no longer constrained by limits of physical memory"),
+    "gq-os-ch09-part2-009": (True, "os-lec-21", 21, "logical address space can therefore be much larger"),
     "gq-os-ch09-part2-010": (True, "os-lec-21", 28, "restart the instruction"),
+}
+
+# Manual review page corrections: (source id, required page, rejected prior
+# page, source phrase, linked material section). These are intentionally
+# separate from authored question/evidence records.
+PART_THREE_REVIEWED_PAGE_CORRECTIONS = {
+    "gq-os-ch08-part3-007": ("os-lec-19", 18, 17, "total rollback", "material-section-os-ch08-part3-recovery"),
+    "gq-os-ch09-part2-009": ("os-lec-21", 21, 20, "logical address space can therefore be much larger", "material-section-os-ch09-part2-virtual"),
+    "gq-os-ch08-part2-007": ("os-lec-18", 8, 13, "single instance of a resource type", "material-section-os-ch08-part2-safety"),
 }
 
 # Independently reviewed option bindings: (correct index, main-rationale
@@ -1735,6 +1744,48 @@ class OSContentPartTests(unittest.TestCase):
         self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_ORACLES))
         for question_id, question in true_false.items():
             self.assertTrue(self.part_three_true_false_matches_oracle(question), question_id)
+
+    def test_part_three_reviewed_page_corrections_reject_prior_pages(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        explanations = {item["questionId"]: item for item in part["explanations"]}
+        sections = {
+            section["id"]: section
+            for lesson in part["lessons"]
+            for section in lesson["materialSections"]
+        }
+        source_text = {
+            (page["sourceId"], page["page"]): re.sub(r"\s+", " ", page["text"].casefold())
+            for page in self.extraction["pages"]
+        }
+        for question_id, (source_id, required_page, prior_page, source_phrase, section_id) in PART_THREE_REVIEWED_PAGE_CORRECTIONS.items():
+            question = questions[question_id]
+            required_ref = (source_id, required_page)
+            prior_ref = (source_id, prior_page)
+            self.assertIn(source_phrase, source_text[required_ref], question_id)
+            self.assertEqual(
+                {(ref["sourceId"], ref["location"]) for ref in question["sourceRefs"]},
+                {required_ref},
+                question_id,
+            )
+            self.assertNotIn(prior_ref, {(ref["sourceId"], ref["location"]) for ref in question["sourceRefs"]}, question_id)
+            expected_supports = {"prompt": "direct", "correctAnswer": "derived", "rationale": "derived"}
+            if question["correctedStatement"] is not None:
+                expected_supports["correctedStatement"] = "derived"
+            for target, support in expected_supports.items():
+                claims = [claim for claim in question["evidenceMap"] if claim["target"] == target]
+                self.assertEqual(len(claims), 1, f"{question_id} / {target}")
+                self.assertEqual(claims[0]["support"], support, f"{question_id} / {target}")
+                claim_refs = {(ref["sourceId"], ref["location"]) for ref in claims[0]["sourceRefs"]}
+                self.assertEqual(claim_refs, {required_ref}, f"{question_id} / {target}")
+                self.assertNotIn(prior_ref, claim_refs, f"{question_id} / {target}")
+            self.assertEqual(
+                {(ref["sourceId"], ref["location"]) for ref in explanations[question_id]["sourceRefs"]},
+                {required_ref},
+                question_id,
+            )
+            self.assertIn(required_ref, {(ref["sourceId"], ref["location"]) for ref in sections[section_id]["sourceRefs"]}, question_id)
+            self.assertIn(question_id, sections[section_id]["linkedQuestionIds"], question_id)
 
     def test_part_three_objective_topic_and_section_mapping_is_semantic(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")

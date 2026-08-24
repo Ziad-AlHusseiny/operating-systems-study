@@ -2115,7 +2115,8 @@
           ],
           "linkedQuestionIds": [
             "gq-os-ch08-part2-001",
-            "gq-os-ch08-part2-002"
+            "gq-os-ch08-part2-002",
+            "gq-os-ch08-part2-007"
           ],
           "needsReview": false,
           "reviewNotes": ""
@@ -2311,7 +2312,6 @@
           ],
           "linkedQuestionIds": [
             "gq-os-ch08-part2-005",
-            "gq-os-ch08-part2-007",
             "gq-os-ch08-part2-008"
           ],
           "needsReview": false,
@@ -11119,7 +11119,7 @@
         {
           "sourceId": "os-lec-18",
           "locationType": "page",
-          "location": 13
+          "location": 8
         }
       ],
       "generationMethod": "source-grounded-authoring-v1",
@@ -11129,7 +11129,7 @@
           {
             "sourceId": "os-lec-18",
             "locationType": "page",
-            "location": 13
+            "location": 8
           }
         ],
         "modelVersion": "codex-gpt-5-authoring-2026-08-24",
@@ -11159,7 +11159,7 @@
             {
               "sourceId": "os-lec-18",
               "locationType": "page",
-              "location": 13
+              "location": 8
             }
           ],
           "support": "direct"
@@ -11171,7 +11171,7 @@
             {
               "sourceId": "os-lec-18",
               "locationType": "page",
-              "location": 13
+              "location": 8
             }
           ],
           "support": "derived"
@@ -11183,7 +11183,7 @@
             {
               "sourceId": "os-lec-18",
               "locationType": "page",
-              "location": 13
+              "location": 8
             }
           ],
           "support": "derived"
@@ -11195,7 +11195,7 @@
             {
               "sourceId": "os-lec-18",
               "locationType": "page",
-              "location": 13
+              "location": 8
             }
           ],
           "support": "derived"
@@ -12895,7 +12895,7 @@
         {
           "sourceId": "os-lec-19",
           "locationType": "page",
-          "location": 17
+          "location": 18
         }
       ],
       "generationMethod": "source-grounded-authoring-v1",
@@ -12905,7 +12905,7 @@
           {
             "sourceId": "os-lec-19",
             "locationType": "page",
-            "location": 17
+            "location": 18
           }
         ],
         "modelVersion": "codex-gpt-5-authoring-2026-08-24",
@@ -12935,7 +12935,7 @@
             {
               "sourceId": "os-lec-19",
               "locationType": "page",
-              "location": 17
+              "location": 18
             }
           ],
           "support": "direct"
@@ -12947,7 +12947,7 @@
             {
               "sourceId": "os-lec-19",
               "locationType": "page",
-              "location": 17
+              "location": 18
             }
           ],
           "support": "derived"
@@ -12959,7 +12959,7 @@
             {
               "sourceId": "os-lec-19",
               "locationType": "page",
-              "location": 17
+              "location": 18
             }
           ],
           "support": "derived"
@@ -16645,7 +16645,7 @@
         {
           "sourceId": "os-lec-21",
           "locationType": "page",
-          "location": 20
+          "location": 21
         }
       ],
       "generationMethod": "source-grounded-authoring-v1",
@@ -16655,7 +16655,7 @@
           {
             "sourceId": "os-lec-21",
             "locationType": "page",
-            "location": 20
+            "location": 21
           }
         ],
         "modelVersion": "codex-gpt-5-authoring-2026-08-24",
@@ -16685,7 +16685,7 @@
             {
               "sourceId": "os-lec-21",
               "locationType": "page",
-              "location": 20
+              "location": 21
             }
           ],
           "support": "direct"
@@ -16697,7 +16697,7 @@
             {
               "sourceId": "os-lec-21",
               "locationType": "page",
-              "location": 20
+              "location": 21
             }
           ],
           "support": "derived"
@@ -16709,7 +16709,7 @@
             {
               "sourceId": "os-lec-21",
               "locationType": "page",
-              "location": 20
+              "location": 21
             }
           ],
           "support": "derived"
@@ -17758,7 +17758,7 @@
         {
           "sourceId": "os-lec-18",
           "locationType": "page",
-          "location": 13
+          "location": 8
         }
       ],
       "needsReview": false,
@@ -18018,7 +18018,7 @@
         {
           "sourceId": "os-lec-19",
           "locationType": "page",
-          "location": 17
+          "location": 18
         }
       ],
       "needsReview": false,
@@ -18590,7 +18590,7 @@
         {
           "sourceId": "os-lec-21",
           "locationType": "page",
-          "location": 20
+          "location": 21
         }
       ],
       "needsReview": false,
