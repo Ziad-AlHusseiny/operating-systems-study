@@ -1,0 +1,4286 @@
+{
+  "contentPolicy": {
+    "allowOutsideSources": false,
+    "generatedQuestionsRequireHumanReviewForExam": false,
+    "mode": "source-plus-generated"
+  },
+  "coverage": {
+    "classificationCounts": {
+      "closing": 21,
+      "cover": 21,
+      "divider": 21,
+      "teaching": 454
+    },
+    "referencedTeachingPages": [
+      "os-lec-01:10",
+      "os-lec-01:11",
+      "os-lec-01:12",
+      "os-lec-01:13",
+      "os-lec-01:14",
+      "os-lec-01:15",
+      "os-lec-01:16",
+      "os-lec-01:17",
+      "os-lec-01:18",
+      "os-lec-01:19",
+      "os-lec-01:20",
+      "os-lec-01:21",
+      "os-lec-01:22",
+      "os-lec-01:23",
+      "os-lec-01:24",
+      "os-lec-01:25",
+      "os-lec-01:26",
+      "os-lec-01:27",
+      "os-lec-01:28",
+      "os-lec-01:3",
+      "os-lec-01:4",
+      "os-lec-01:5",
+      "os-lec-01:6",
+      "os-lec-01:7",
+      "os-lec-01:8",
+      "os-lec-01:9",
+      "os-lec-02:10",
+      "os-lec-02:11",
+      "os-lec-02:12",
+      "os-lec-02:13",
+      "os-lec-02:14",
+      "os-lec-02:15",
+      "os-lec-02:16",
+      "os-lec-02:17",
+      "os-lec-02:18",
+      "os-lec-02:19",
+      "os-lec-02:20",
+      "os-lec-02:21",
+      "os-lec-02:22",
+      "os-lec-02:23",
+      "os-lec-02:24",
+      "os-lec-02:25",
+      "os-lec-02:26",
+      "os-lec-02:27",
+      "os-lec-02:28",
+      "os-lec-02:29",
+      "os-lec-02:3",
+      "os-lec-02:4",
+      "os-lec-02:5",
+      "os-lec-02:6",
+      "os-lec-02:7",
+      "os-lec-02:8",
+      "os-lec-02:9",
+      "os-lec-03:10",
+      "os-lec-03:11",
+      "os-lec-03:12",
+      "os-lec-03:13",
+      "os-lec-03:14",
+      "os-lec-03:15",
+      "os-lec-03:16",
+      "os-lec-03:17",
+      "os-lec-03:18",
+      "os-lec-03:19",
+      "os-lec-03:3",
+      "os-lec-03:4",
+      "os-lec-03:5",
+      "os-lec-03:6",
+      "os-lec-03:7",
+      "os-lec-03:8",
+      "os-lec-03:9",
+      "os-lec-04:10",
+      "os-lec-04:11",
+      "os-lec-04:12",
+      "os-lec-04:13",
+      "os-lec-04:14",
+      "os-lec-04:15",
+      "os-lec-04:16",
+      "os-lec-04:17",
+      "os-lec-04:18",
+      "os-lec-04:19",
+      "os-lec-04:20",
+      "os-lec-04:21",
+      "os-lec-04:22",
+      "os-lec-04:23",
+      "os-lec-04:24",
+      "os-lec-04:25",
+      "os-lec-04:26",
+      "os-lec-04:27",
+      "os-lec-04:28",
+      "os-lec-04:3",
+      "os-lec-04:4",
+      "os-lec-04:5",
+      "os-lec-04:6",
+      "os-lec-04:7",
+      "os-lec-04:8",
+      "os-lec-04:9",
+      "os-lec-05:10",
+      "os-lec-05:11",
+      "os-lec-05:12",
+      "os-lec-05:13",
+      "os-lec-05:14",
+      "os-lec-05:15",
+      "os-lec-05:16",
+      "os-lec-05:17",
+      "os-lec-05:18",
+      "os-lec-05:19",
+      "os-lec-05:20",
+      "os-lec-05:21",
+      "os-lec-05:22",
+      "os-lec-05:23",
+      "os-lec-05:3",
+      "os-lec-05:4",
+      "os-lec-05:5",
+      "os-lec-05:6",
+      "os-lec-05:7",
+      "os-lec-05:8",
+      "os-lec-05:9",
+      "os-lec-06:10",
+      "os-lec-06:11",
+      "os-lec-06:12",
+      "os-lec-06:13",
+      "os-lec-06:14",
+      "os-lec-06:15",
+      "os-lec-06:16",
+      "os-lec-06:17",
+      "os-lec-06:18",
+      "os-lec-06:19",
+      "os-lec-06:20",
+      "os-lec-06:21",
+      "os-lec-06:22",
+      "os-lec-06:23",
+      "os-lec-06:24",
+      "os-lec-06:25",
+      "os-lec-06:3",
+      "os-lec-06:4",
+      "os-lec-06:5",
+      "os-lec-06:6",
+      "os-lec-06:7",
+      "os-lec-06:8",
+      "os-lec-06:9",
+      "os-lec-07:10",
+      "os-lec-07:11",
+      "os-lec-07:12",
+      "os-lec-07:13",
+      "os-lec-07:14",
+      "os-lec-07:15",
+      "os-lec-07:16",
+      "os-lec-07:17",
+      "os-lec-07:18",
+      "os-lec-07:19",
+      "os-lec-07:20",
+      "os-lec-07:21",
+      "os-lec-07:22",
+      "os-lec-07:23",
+      "os-lec-07:24",
+      "os-lec-07:25",
+      "os-lec-07:26",
+      "os-lec-07:27",
+      "os-lec-07:28",
+      "os-lec-07:3",
+      "os-lec-07:4",
+      "os-lec-07:5",
+      "os-lec-07:6",
+      "os-lec-07:7",
+      "os-lec-07:8",
+      "os-lec-07:9",
+      "os-lec-08:10",
+      "os-lec-08:11",
+      "os-lec-08:12",
+      "os-lec-08:13",
+      "os-lec-08:14",
+      "os-lec-08:15",
+      "os-lec-08:16",
+      "os-lec-08:17",
+      "os-lec-08:18",
+      "os-lec-08:19",
+      "os-lec-08:20",
+      "os-lec-08:21",
+      "os-lec-08:22",
+      "os-lec-08:23",
+      "os-lec-08:3",
+      "os-lec-08:4",
+      "os-lec-08:5",
+      "os-lec-08:6",
+      "os-lec-08:7",
+      "os-lec-08:8",
+      "os-lec-08:9",
+      "os-lec-09:10",
+      "os-lec-09:11",
+      "os-lec-09:12",
+      "os-lec-09:13",
+      "os-lec-09:14",
+      "os-lec-09:15",
+      "os-lec-09:16",
+      "os-lec-09:17",
+      "os-lec-09:18",
+      "os-lec-09:19",
+      "os-lec-09:20",
+      "os-lec-09:21",
+      "os-lec-09:22",
+      "os-lec-09:23",
+      "os-lec-09:24",
+      "os-lec-09:3",
+      "os-lec-09:4",
+      "os-lec-09:5",
+      "os-lec-09:6",
+      "os-lec-09:7",
+      "os-lec-09:8",
+      "os-lec-09:9",
+      "os-lec-10:10",
+      "os-lec-10:11",
+      "os-lec-10:12",
+      "os-lec-10:13",
+      "os-lec-10:14",
+      "os-lec-10:15",
+      "os-lec-10:16",
+      "os-lec-10:17",
+      "os-lec-10:18",
+      "os-lec-10:19",
+      "os-lec-10:20",
+      "os-lec-10:21",
+      "os-lec-10:22",
+      "os-lec-10:23",
+      "os-lec-10:24",
+      "os-lec-10:25",
+      "os-lec-10:26",
+      "os-lec-10:27",
+      "os-lec-10:3",
+      "os-lec-10:4",
+      "os-lec-10:5",
+      "os-lec-10:6",
+      "os-lec-10:7",
+      "os-lec-10:8",
+      "os-lec-10:9",
+      "os-lec-11:10",
+      "os-lec-11:11",
+      "os-lec-11:12",
+      "os-lec-11:13",
+      "os-lec-11:14",
+      "os-lec-11:15",
+      "os-lec-11:16",
+      "os-lec-11:17",
+      "os-lec-11:18",
+      "os-lec-11:19",
+      "os-lec-11:20",
+      "os-lec-11:21",
+      "os-lec-11:3",
+      "os-lec-11:4",
+      "os-lec-11:5",
+      "os-lec-11:6",
+      "os-lec-11:7",
+      "os-lec-11:8",
+      "os-lec-11:9",
+      "os-lec-12:10",
+      "os-lec-12:11",
+      "os-lec-12:12",
+      "os-lec-12:13",
+      "os-lec-12:14",
+      "os-lec-12:15",
+      "os-lec-12:16",
+      "os-lec-12:17",
+      "os-lec-12:18",
+      "os-lec-12:19",
+      "os-lec-12:3",
+      "os-lec-12:4",
+      "os-lec-12:5",
+      "os-lec-12:6",
+      "os-lec-12:7",
+      "os-lec-12:8",
+      "os-lec-12:9",
+      "os-lec-13:10",
+      "os-lec-13:11",
+      "os-lec-13:12",
+      "os-lec-13:13",
+      "os-lec-13:14",
+      "os-lec-13:15",
+      "os-lec-13:16",
+      "os-lec-13:17",
+      "os-lec-13:18",
+      "os-lec-13:19",
+      "os-lec-13:20",
+      "os-lec-13:3",
+      "os-lec-13:4",
+      "os-lec-13:5",
+      "os-lec-13:6",
+      "os-lec-13:7",
+      "os-lec-13:8",
+      "os-lec-13:9",
+      "os-lec-14:10",
+      "os-lec-14:11",
+      "os-lec-14:12",
+      "os-lec-14:13",
+      "os-lec-14:14",
+      "os-lec-14:15",
+      "os-lec-14:16",
+      "os-lec-14:17",
+      "os-lec-14:18",
+      "os-lec-14:19",
+      "os-lec-14:20",
+      "os-lec-14:21",
+      "os-lec-14:22",
+      "os-lec-14:3",
+      "os-lec-14:4",
+      "os-lec-14:5",
+      "os-lec-14:6",
+      "os-lec-14:7",
+      "os-lec-14:8",
+      "os-lec-14:9",
+      "os-lec-15:10",
+      "os-lec-15:11",
+      "os-lec-15:12",
+      "os-lec-15:13",
+      "os-lec-15:14",
+      "os-lec-15:15",
+      "os-lec-15:16",
+      "os-lec-15:17",
+      "os-lec-15:18",
+      "os-lec-15:19",
+      "os-lec-15:20",
+      "os-lec-15:21",
+      "os-lec-15:22",
+      "os-lec-15:3",
+      "os-lec-15:4",
+      "os-lec-15:5",
+      "os-lec-15:6",
+      "os-lec-15:7",
+      "os-lec-15:8",
+      "os-lec-15:9",
+      "os-lec-16:10",
+      "os-lec-16:11",
+      "os-lec-16:12",
+      "os-lec-16:13",
+      "os-lec-16:14",
+      "os-lec-16:15",
+      "os-lec-16:16",
+      "os-lec-16:17",
+      "os-lec-16:18",
+      "os-lec-16:19",
+      "os-lec-16:20",
+      "os-lec-16:21",
+      "os-lec-16:22",
+      "os-lec-16:23",
+      "os-lec-16:3",
+      "os-lec-16:4",
+      "os-lec-16:5",
+      "os-lec-16:6",
+      "os-lec-16:7",
+      "os-lec-16:8",
+      "os-lec-16:9",
+      "os-lec-17:10",
+      "os-lec-17:11",
+      "os-lec-17:12",
+      "os-lec-17:13",
+      "os-lec-17:14",
+      "os-lec-17:15",
+      "os-lec-17:16",
+      "os-lec-17:17",
+      "os-lec-17:18",
+      "os-lec-17:3",
+      "os-lec-17:4",
+      "os-lec-17:5",
+      "os-lec-17:6",
+      "os-lec-17:7",
+      "os-lec-17:8",
+      "os-lec-17:9",
+      "os-lec-18:10",
+      "os-lec-18:11",
+      "os-lec-18:12",
+      "os-lec-18:13",
+      "os-lec-18:14",
+      "os-lec-18:15",
+      "os-lec-18:16",
+      "os-lec-18:17",
+      "os-lec-18:18",
+      "os-lec-18:19",
+      "os-lec-18:3",
+      "os-lec-18:4",
+      "os-lec-18:5",
+      "os-lec-18:6",
+      "os-lec-18:7",
+      "os-lec-18:8",
+      "os-lec-18:9",
+      "os-lec-19:10",
+      "os-lec-19:11",
+      "os-lec-19:12",
+      "os-lec-19:13",
+      "os-lec-19:14",
+      "os-lec-19:15",
+      "os-lec-19:16",
+      "os-lec-19:17",
+      "os-lec-19:18",
+      "os-lec-19:3",
+      "os-lec-19:4",
+      "os-lec-19:5",
+      "os-lec-19:6",
+      "os-lec-19:7",
+      "os-lec-19:8",
+      "os-lec-19:9",
+      "os-lec-20:10",
+      "os-lec-20:11",
+      "os-lec-20:12",
+      "os-lec-20:13",
+      "os-lec-20:14",
+      "os-lec-20:15",
+      "os-lec-20:16",
+      "os-lec-20:17",
+      "os-lec-20:18",
+      "os-lec-20:19",
+      "os-lec-20:20",
+      "os-lec-20:21",
+      "os-lec-20:22",
+      "os-lec-20:23",
+      "os-lec-20:24",
+      "os-lec-20:25",
+      "os-lec-20:26",
+      "os-lec-20:27",
+      "os-lec-20:28",
+      "os-lec-20:29",
+      "os-lec-20:3",
+      "os-lec-20:30",
+      "os-lec-20:31",
+      "os-lec-20:4",
+      "os-lec-20:5",
+      "os-lec-20:6",
+      "os-lec-20:7",
+      "os-lec-20:8",
+      "os-lec-20:9",
+      "os-lec-21:10",
+      "os-lec-21:11",
+      "os-lec-21:12",
+      "os-lec-21:13",
+      "os-lec-21:14",
+      "os-lec-21:15",
+      "os-lec-21:16",
+      "os-lec-21:17",
+      "os-lec-21:18",
+      "os-lec-21:19",
+      "os-lec-21:20",
+      "os-lec-21:21",
+      "os-lec-21:22",
+      "os-lec-21:23",
+      "os-lec-21:24",
+      "os-lec-21:25",
+      "os-lec-21:26",
+      "os-lec-21:27",
+      "os-lec-21:28",
+      "os-lec-21:29",
+      "os-lec-21:3",
+      "os-lec-21:4",
+      "os-lec-21:5",
+      "os-lec-21:6",
+      "os-lec-21:7",
+      "os-lec-21:8",
+      "os-lec-21:9"
+    ],
+    "teachingPageIds": [
+      "os-lec-01:10",
+      "os-lec-01:11",
+      "os-lec-01:12",
+      "os-lec-01:13",
+      "os-lec-01:14",
+      "os-lec-01:15",
+      "os-lec-01:16",
+      "os-lec-01:17",
+      "os-lec-01:18",
+      "os-lec-01:19",
+      "os-lec-01:20",
+      "os-lec-01:21",
+      "os-lec-01:22",
+      "os-lec-01:23",
+      "os-lec-01:24",
+      "os-lec-01:25",
+      "os-lec-01:26",
+      "os-lec-01:27",
+      "os-lec-01:28",
+      "os-lec-01:3",
+      "os-lec-01:4",
+      "os-lec-01:5",
+      "os-lec-01:6",
+      "os-lec-01:7",
+      "os-lec-01:8",
+      "os-lec-01:9",
+      "os-lec-02:10",
+      "os-lec-02:11",
+      "os-lec-02:12",
+      "os-lec-02:13",
+      "os-lec-02:14",
+      "os-lec-02:15",
+      "os-lec-02:16",
+      "os-lec-02:17",
+      "os-lec-02:18",
+      "os-lec-02:19",
+      "os-lec-02:20",
+      "os-lec-02:21",
+      "os-lec-02:22",
+      "os-lec-02:23",
+      "os-lec-02:24",
+      "os-lec-02:25",
+      "os-lec-02:26",
+      "os-lec-02:27",
+      "os-lec-02:28",
+      "os-lec-02:29",
+      "os-lec-02:3",
+      "os-lec-02:4",
+      "os-lec-02:5",
+      "os-lec-02:6",
+      "os-lec-02:7",
+      "os-lec-02:8",
+      "os-lec-02:9",
+      "os-lec-03:10",
+      "os-lec-03:11",
+      "os-lec-03:12",
+      "os-lec-03:13",
+      "os-lec-03:14",
+      "os-lec-03:15",
+      "os-lec-03:16",
+      "os-lec-03:17",
+      "os-lec-03:18",
+      "os-lec-03:19",
+      "os-lec-03:3",
+      "os-lec-03:4",
+      "os-lec-03:5",
+      "os-lec-03:6",
+      "os-lec-03:7",
+      "os-lec-03:8",
+      "os-lec-03:9",
+      "os-lec-04:10",
+      "os-lec-04:11",
+      "os-lec-04:12",
+      "os-lec-04:13",
+      "os-lec-04:14",
+      "os-lec-04:15",
+      "os-lec-04:16",
+      "os-lec-04:17",
+      "os-lec-04:18",
+      "os-lec-04:19",
+      "os-lec-04:20",
+      "os-lec-04:21",
+      "os-lec-04:22",
+      "os-lec-04:23",
+      "os-lec-04:24",
+      "os-lec-04:25",
+      "os-lec-04:26",
+      "os-lec-04:27",
+      "os-lec-04:28",
+      "os-lec-04:3",
+      "os-lec-04:4",
+      "os-lec-04:5",
+      "os-lec-04:6",
+      "os-lec-04:7",
+      "os-lec-04:8",
+      "os-lec-04:9",
+      "os-lec-05:10",
+      "os-lec-05:11",
+      "os-lec-05:12",
+      "os-lec-05:13",
+      "os-lec-05:14",
+      "os-lec-05:15",
+      "os-lec-05:16",
+      "os-lec-05:17",
+      "os-lec-05:18",
+      "os-lec-05:19",
+      "os-lec-05:20",
+      "os-lec-05:21",
+      "os-lec-05:22",
+      "os-lec-05:23",
+      "os-lec-05:3",
+      "os-lec-05:4",
+      "os-lec-05:5",
+      "os-lec-05:6",
+      "os-lec-05:7",
+      "os-lec-05:8",
+      "os-lec-05:9",
+      "os-lec-06:10",
+      "os-lec-06:11",
+      "os-lec-06:12",
+      "os-lec-06:13",
+      "os-lec-06:14",
+      "os-lec-06:15",
+      "os-lec-06:16",
+      "os-lec-06:17",
+      "os-lec-06:18",
+      "os-lec-06:19",
+      "os-lec-06:20",
+      "os-lec-06:21",
+      "os-lec-06:22",
+      "os-lec-06:23",
+      "os-lec-06:24",
+      "os-lec-06:25",
+      "os-lec-06:3",
+      "os-lec-06:4",
+      "os-lec-06:5",
+      "os-lec-06:6",
+      "os-lec-06:7",
+      "os-lec-06:8",
+      "os-lec-06:9",
+      "os-lec-07:10",
+      "os-lec-07:11",
+      "os-lec-07:12",
+      "os-lec-07:13",
+      "os-lec-07:14",
+      "os-lec-07:15",
+      "os-lec-07:16",
+      "os-lec-07:17",
+      "os-lec-07:18",
+      "os-lec-07:19",
+      "os-lec-07:20",
+      "os-lec-07:21",
+      "os-lec-07:22",
+      "os-lec-07:23",
+      "os-lec-07:24",
+      "os-lec-07:25",
+      "os-lec-07:26",
+      "os-lec-07:27",
+      "os-lec-07:28",
+      "os-lec-07:3",
+      "os-lec-07:4",
+      "os-lec-07:5",
+      "os-lec-07:6",
+      "os-lec-07:7",
+      "os-lec-07:8",
+      "os-lec-07:9",
+      "os-lec-08:10",
+      "os-lec-08:11",
+      "os-lec-08:12",
+      "os-lec-08:13",
+      "os-lec-08:14",
+      "os-lec-08:15",
+      "os-lec-08:16",
+      "os-lec-08:17",
+      "os-lec-08:18",
+      "os-lec-08:19",
+      "os-lec-08:20",
+      "os-lec-08:21",
+      "os-lec-08:22",
+      "os-lec-08:23",
+      "os-lec-08:3",
+      "os-lec-08:4",
+      "os-lec-08:5",
+      "os-lec-08:6",
+      "os-lec-08:7",
+      "os-lec-08:8",
+      "os-lec-08:9",
+      "os-lec-09:10",
+      "os-lec-09:11",
+      "os-lec-09:12",
+      "os-lec-09:13",
+      "os-lec-09:14",
+      "os-lec-09:15",
+      "os-lec-09:16",
+      "os-lec-09:17",
+      "os-lec-09:18",
+      "os-lec-09:19",
+      "os-lec-09:20",
+      "os-lec-09:21",
+      "os-lec-09:22",
+      "os-lec-09:23",
+      "os-lec-09:24",
+      "os-lec-09:3",
+      "os-lec-09:4",
+      "os-lec-09:5",
+      "os-lec-09:6",
+      "os-lec-09:7",
+      "os-lec-09:8",
+      "os-lec-09:9",
+      "os-lec-10:10",
+      "os-lec-10:11",
+      "os-lec-10:12",
+      "os-lec-10:13",
+      "os-lec-10:14",
+      "os-lec-10:15",
+      "os-lec-10:16",
+      "os-lec-10:17",
+      "os-lec-10:18",
+      "os-lec-10:19",
+      "os-lec-10:20",
+      "os-lec-10:21",
+      "os-lec-10:22",
+      "os-lec-10:23",
+      "os-lec-10:24",
+      "os-lec-10:25",
+      "os-lec-10:26",
+      "os-lec-10:27",
+      "os-lec-10:3",
+      "os-lec-10:4",
+      "os-lec-10:5",
+      "os-lec-10:6",
+      "os-lec-10:7",
+      "os-lec-10:8",
+      "os-lec-10:9",
+      "os-lec-11:10",
+      "os-lec-11:11",
+      "os-lec-11:12",
+      "os-lec-11:13",
+      "os-lec-11:14",
+      "os-lec-11:15",
+      "os-lec-11:16",
+      "os-lec-11:17",
+      "os-lec-11:18",
+      "os-lec-11:19",
+      "os-lec-11:20",
+      "os-lec-11:21",
+      "os-lec-11:3",
+      "os-lec-11:4",
+      "os-lec-11:5",
+      "os-lec-11:6",
+      "os-lec-11:7",
+      "os-lec-11:8",
+      "os-lec-11:9",
+      "os-lec-12:10",
+      "os-lec-12:11",
+      "os-lec-12:12",
+      "os-lec-12:13",
+      "os-lec-12:14",
+      "os-lec-12:15",
+      "os-lec-12:16",
+      "os-lec-12:17",
+      "os-lec-12:18",
+      "os-lec-12:19",
+      "os-lec-12:3",
+      "os-lec-12:4",
+      "os-lec-12:5",
+      "os-lec-12:6",
+      "os-lec-12:7",
+      "os-lec-12:8",
+      "os-lec-12:9",
+      "os-lec-13:10",
+      "os-lec-13:11",
+      "os-lec-13:12",
+      "os-lec-13:13",
+      "os-lec-13:14",
+      "os-lec-13:15",
+      "os-lec-13:16",
+      "os-lec-13:17",
+      "os-lec-13:18",
+      "os-lec-13:19",
+      "os-lec-13:20",
+      "os-lec-13:3",
+      "os-lec-13:4",
+      "os-lec-13:5",
+      "os-lec-13:6",
+      "os-lec-13:7",
+      "os-lec-13:8",
+      "os-lec-13:9",
+      "os-lec-14:10",
+      "os-lec-14:11",
+      "os-lec-14:12",
+      "os-lec-14:13",
+      "os-lec-14:14",
+      "os-lec-14:15",
+      "os-lec-14:16",
+      "os-lec-14:17",
+      "os-lec-14:18",
+      "os-lec-14:19",
+      "os-lec-14:20",
+      "os-lec-14:21",
+      "os-lec-14:22",
+      "os-lec-14:3",
+      "os-lec-14:4",
+      "os-lec-14:5",
+      "os-lec-14:6",
+      "os-lec-14:7",
+      "os-lec-14:8",
+      "os-lec-14:9",
+      "os-lec-15:10",
+      "os-lec-15:11",
+      "os-lec-15:12",
+      "os-lec-15:13",
+      "os-lec-15:14",
+      "os-lec-15:15",
+      "os-lec-15:16",
+      "os-lec-15:17",
+      "os-lec-15:18",
+      "os-lec-15:19",
+      "os-lec-15:20",
+      "os-lec-15:21",
+      "os-lec-15:22",
+      "os-lec-15:3",
+      "os-lec-15:4",
+      "os-lec-15:5",
+      "os-lec-15:6",
+      "os-lec-15:7",
+      "os-lec-15:8",
+      "os-lec-15:9",
+      "os-lec-16:10",
+      "os-lec-16:11",
+      "os-lec-16:12",
+      "os-lec-16:13",
+      "os-lec-16:14",
+      "os-lec-16:15",
+      "os-lec-16:16",
+      "os-lec-16:17",
+      "os-lec-16:18",
+      "os-lec-16:19",
+      "os-lec-16:20",
+      "os-lec-16:21",
+      "os-lec-16:22",
+      "os-lec-16:23",
+      "os-lec-16:3",
+      "os-lec-16:4",
+      "os-lec-16:5",
+      "os-lec-16:6",
+      "os-lec-16:7",
+      "os-lec-16:8",
+      "os-lec-16:9",
+      "os-lec-17:10",
+      "os-lec-17:11",
+      "os-lec-17:12",
+      "os-lec-17:13",
+      "os-lec-17:14",
+      "os-lec-17:15",
+      "os-lec-17:16",
+      "os-lec-17:17",
+      "os-lec-17:18",
+      "os-lec-17:3",
+      "os-lec-17:4",
+      "os-lec-17:5",
+      "os-lec-17:6",
+      "os-lec-17:7",
+      "os-lec-17:8",
+      "os-lec-17:9",
+      "os-lec-18:10",
+      "os-lec-18:11",
+      "os-lec-18:12",
+      "os-lec-18:13",
+      "os-lec-18:14",
+      "os-lec-18:15",
+      "os-lec-18:16",
+      "os-lec-18:17",
+      "os-lec-18:18",
+      "os-lec-18:19",
+      "os-lec-18:3",
+      "os-lec-18:4",
+      "os-lec-18:5",
+      "os-lec-18:6",
+      "os-lec-18:7",
+      "os-lec-18:8",
+      "os-lec-18:9",
+      "os-lec-19:10",
+      "os-lec-19:11",
+      "os-lec-19:12",
+      "os-lec-19:13",
+      "os-lec-19:14",
+      "os-lec-19:15",
+      "os-lec-19:16",
+      "os-lec-19:17",
+      "os-lec-19:18",
+      "os-lec-19:3",
+      "os-lec-19:4",
+      "os-lec-19:5",
+      "os-lec-19:6",
+      "os-lec-19:7",
+      "os-lec-19:8",
+      "os-lec-19:9",
+      "os-lec-20:10",
+      "os-lec-20:11",
+      "os-lec-20:12",
+      "os-lec-20:13",
+      "os-lec-20:14",
+      "os-lec-20:15",
+      "os-lec-20:16",
+      "os-lec-20:17",
+      "os-lec-20:18",
+      "os-lec-20:19",
+      "os-lec-20:20",
+      "os-lec-20:21",
+      "os-lec-20:22",
+      "os-lec-20:23",
+      "os-lec-20:24",
+      "os-lec-20:25",
+      "os-lec-20:26",
+      "os-lec-20:27",
+      "os-lec-20:28",
+      "os-lec-20:29",
+      "os-lec-20:3",
+      "os-lec-20:30",
+      "os-lec-20:31",
+      "os-lec-20:4",
+      "os-lec-20:5",
+      "os-lec-20:6",
+      "os-lec-20:7",
+      "os-lec-20:8",
+      "os-lec-20:9",
+      "os-lec-21:10",
+      "os-lec-21:11",
+      "os-lec-21:12",
+      "os-lec-21:13",
+      "os-lec-21:14",
+      "os-lec-21:15",
+      "os-lec-21:16",
+      "os-lec-21:17",
+      "os-lec-21:18",
+      "os-lec-21:19",
+      "os-lec-21:20",
+      "os-lec-21:21",
+      "os-lec-21:22",
+      "os-lec-21:23",
+      "os-lec-21:24",
+      "os-lec-21:25",
+      "os-lec-21:26",
+      "os-lec-21:27",
+      "os-lec-21:28",
+      "os-lec-21:29",
+      "os-lec-21:3",
+      "os-lec-21:4",
+      "os-lec-21:5",
+      "os-lec-21:6",
+      "os-lec-21:7",
+      "os-lec-21:8",
+      "os-lec-21:9"
+    ],
+    "teachingPages": 454,
+    "totalPages": 517
+  },
+  "exam": {
+    "defaultCount": 25,
+    "defaultMinutes": 30
+  },
+  "modules": [
+    {
+      "id": "module-os-ch01",
+      "objectiveIds": [
+        "objective-os-ch01-part1-1",
+        "objective-os-ch01-part1-2",
+        "objective-os-ch01-part1-3",
+        "objective-os-ch01-part2-1",
+        "objective-os-ch01-part2-2",
+        "objective-os-ch01-part2-3",
+        "objective-os-ch01-part3-1",
+        "objective-os-ch01-part3-2",
+        "objective-os-ch01-part3-3",
+        "objective-os-ch01-part4-1",
+        "objective-os-ch01-part4-2",
+        "objective-os-ch01-part4-3"
+      ],
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        }
+      ],
+      "title": "Chapter 1: Introduction"
+    },
+    {
+      "id": "module-os-ch02",
+      "objectiveIds": [
+        "objective-os-ch02-part1-1",
+        "objective-os-ch02-part1-2",
+        "objective-os-ch02-part1-3",
+        "objective-os-ch02-part2-1",
+        "objective-os-ch02-part2-2",
+        "objective-os-ch02-part2-3",
+        "objective-os-ch02-part3-1",
+        "objective-os-ch02-part3-2",
+        "objective-os-ch02-part3-3"
+      ],
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        }
+      ],
+      "title": "Chapter 2: Operating-System Structures"
+    },
+    {
+      "id": "module-os-ch03",
+      "objectiveIds": [
+        "objective-os-ch03-part1-1",
+        "objective-os-ch03-part1-2",
+        "objective-os-ch03-part1-3",
+        "objective-os-ch03-part2-1",
+        "objective-os-ch03-part2-2",
+        "objective-os-ch03-part2-3",
+        "objective-os-ch03-part3-1",
+        "objective-os-ch03-part3-2",
+        "objective-os-ch03-part3-3"
+      ],
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        }
+      ],
+      "title": "Chapter 3: Processes"
+    },
+    {
+      "id": "module-os-ch05",
+      "objectiveIds": [
+        "objective-os-ch05-part1-1",
+        "objective-os-ch05-part1-2",
+        "objective-os-ch05-part1-3",
+        "objective-os-ch05-part2-1",
+        "objective-os-ch05-part2-2",
+        "objective-os-ch05-part2-3",
+        "objective-os-ch05-part3-1",
+        "objective-os-ch05-part3-2",
+        "objective-os-ch05-part3-3",
+        "objective-os-ch05-part4-1",
+        "objective-os-ch05-part4-2",
+        "objective-os-ch05-part4-3"
+      ],
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        }
+      ],
+      "title": "Chapter 5: CPU Scheduling"
+    },
+    {
+      "id": "module-os-ch06",
+      "objectiveIds": [
+        "objective-os-ch06-part1-1",
+        "objective-os-ch06-part1-2",
+        "objective-os-ch06-part1-3",
+        "objective-os-ch06-part2-1",
+        "objective-os-ch06-part2-2",
+        "objective-os-ch06-part2-3"
+      ],
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        }
+      ],
+      "title": "Chapter 6: Synchronization Tools"
+    },
+    {
+      "id": "module-os-ch08",
+      "objectiveIds": [
+        "objective-os-ch08-part1-1",
+        "objective-os-ch08-part1-2",
+        "objective-os-ch08-part1-3",
+        "objective-os-ch08-part2-1",
+        "objective-os-ch08-part2-2",
+        "objective-os-ch08-part2-3",
+        "objective-os-ch08-part3-1",
+        "objective-os-ch08-part3-2",
+        "objective-os-ch08-part3-3"
+      ],
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        }
+      ],
+      "title": "Chapter 8: Deadlocks"
+    },
+    {
+      "id": "module-os-ch09",
+      "objectiveIds": [
+        "objective-os-ch09-part1-1",
+        "objective-os-ch09-part1-2",
+        "objective-os-ch09-part1-3",
+        "objective-os-ch09-part2-1",
+        "objective-os-ch09-part2-2",
+        "objective-os-ch09-part2-3"
+      ],
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        }
+      ],
+      "title": "Chapter 9: Main Memory"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "objective-os-ch01-part1-1",
+      "moduleId": "module-os-ch01",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        }
+      ],
+      "text": "Explain the operating system's goals, boundaries, and place among computer-system components."
+    },
+    {
+      "id": "objective-os-ch01-part1-2",
+      "moduleId": "module-os-ch01",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        }
+      ],
+      "text": "Trace instruction and I/O data flow through CPU registers, memory, controllers, and device drivers."
+    },
+    {
+      "id": "objective-os-ch01-part1-3",
+      "moduleId": "module-os-ch01",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-01"
+        }
+      ],
+      "text": "Analyze how interrupts transfer control and improve processor utilization during I/O."
+    },
+    {
+      "id": "objective-os-ch01-part2-1",
+      "moduleId": "module-os-ch01",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        }
+      ],
+      "text": "Compare sequential and priority-based handling of multiple interrupts and relate OS user and system views."
+    },
+    {
+      "id": "objective-os-ch01-part2-2",
+      "moduleId": "module-os-ch01",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        }
+      ],
+      "text": "Compare storage levels and select programmed, interrupt-driven, or DMA I/O from transfer requirements."
+    },
+    {
+      "id": "objective-os-ch01-part2-3",
+      "moduleId": "module-os-ch01",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        },
+        {
+          "location": 29,
+          "locationType": "page",
+          "sourceId": "os-lec-02"
+        }
+      ],
+      "text": "Differentiate single-processor, multiprocessor, multicore, NUMA, and clustered architectures."
+    },
+    {
+      "id": "objective-os-ch01-part3-1",
+      "moduleId": "module-os-ch01",
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        }
+      ],
+      "text": "Explain bootstrap, interrupt-driven OS operation, multiprogramming, and time sharing."
+    },
+    {
+      "id": "objective-os-ch01-part3-2",
+      "moduleId": "module-os-ch01",
+      "order": 8,
+      "sourceRefs": [
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        }
+      ],
+      "text": "Apply dual-mode and timer mechanisms to operating-system protection scenarios."
+    },
+    {
+      "id": "objective-os-ch01-part3-3",
+      "moduleId": "module-os-ch01",
+      "order": 9,
+      "sourceRefs": [
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-03"
+        }
+      ],
+      "text": "Distinguish programs, processes, threads, concurrency, and process-management responsibilities."
+    },
+    {
+      "id": "objective-os-ch01-part4-1",
+      "moduleId": "module-os-ch01",
+      "order": 10,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        }
+      ],
+      "text": "Explain OS memory, file, mass-storage, cache, protection, and security management."
+    },
+    {
+      "id": "objective-os-ch01-part4-2",
+      "moduleId": "module-os-ch01",
+      "order": 11,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        }
+      ],
+      "text": "Compare virtualization, distributed-system models, and networked computing environments."
+    },
+    {
+      "id": "objective-os-ch01-part4-3",
+      "moduleId": "module-os-ch01",
+      "order": 12,
+      "sourceRefs": [
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-04"
+        }
+      ],
+      "text": "Differentiate real-time constraints and interrupt classes and reason about privileged operations."
+    },
+    {
+      "id": "objective-os-ch02-part1-1",
+      "moduleId": "module-os-ch02",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        }
+      ],
+      "text": "Classify OS services for users, programs, and efficient shared-system operation."
+    },
+    {
+      "id": "objective-os-ch02-part1-2",
+      "moduleId": "module-os-ch02",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        }
+      ],
+      "text": "Compare CLI, GUI, and touch interfaces and their command-execution models."
+    },
+    {
+      "id": "objective-os-ch02-part1-3",
+      "moduleId": "module-os-ch02",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-05"
+        }
+      ],
+      "text": "Trace API calls through the run-time and system-call interface, including parameter passing."
+    },
+    {
+      "id": "objective-os-ch02-part2-1",
+      "moduleId": "module-os-ch02",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        }
+      ],
+      "text": "Classify system calls and trace a robust file-copy sequence with error handling."
+    },
+    {
+      "id": "objective-os-ch02-part2-2",
+      "moduleId": "module-os-ch02",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        }
+      ],
+      "text": "Differentiate system services, background services, and application programs."
+    },
+    {
+      "id": "objective-os-ch02-part2-3",
+      "moduleId": "module-os-ch02",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-06"
+        }
+      ],
+      "text": "Trace compilation, linking, loading, OS-specific execution, and contrasting Arduino and FreeBSD behavior."
+    },
+    {
+      "id": "objective-os-ch02-part3-1",
+      "moduleId": "module-os-ch02",
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        }
+      ],
+      "text": "Relate OS goals, policy/mechanism separation, and implementation-language trade-offs."
+    },
+    {
+      "id": "objective-os-ch02-part3-2",
+      "moduleId": "module-os-ch02",
+      "order": 8,
+      "sourceRefs": [
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        }
+      ],
+      "text": "Compare monolithic, layered, microkernel, modular, and hybrid OS structures."
+    },
+    {
+      "id": "objective-os-ch02-part3-3",
+      "moduleId": "module-os-ch02",
+      "order": 9,
+      "sourceRefs": [
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-07"
+        }
+      ],
+      "text": "Trace OS build and boot processes and distinguish logs, core dumps, crash dumps, tracing, and performance tuning."
+    },
+    {
+      "id": "objective-os-ch03-part1-1",
+      "moduleId": "module-os-ch03",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        }
+      ],
+      "text": "Explain process memory layout, execution state, and lifecycle transitions."
+    },
+    {
+      "id": "objective-os-ch03-part1-2",
+      "moduleId": "module-os-ch03",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        }
+      ],
+      "text": "Identify PCB fields and relate them to Linux task_struct and context preservation."
+    },
+    {
+      "id": "objective-os-ch03-part1-3",
+      "moduleId": "module-os-ch03",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-08"
+        }
+      ],
+      "text": "Analyze threads, multithreading benefits, process scheduling, and queue migration."
+    },
+    {
+      "id": "objective-os-ch03-part2-1",
+      "moduleId": "module-os-ch03",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        }
+      ],
+      "text": "Explain context switches and the isolation benefits of multiprocess browser architecture."
+    },
+    {
+      "id": "objective-os-ch03-part2-2",
+      "moduleId": "module-os-ch03",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        }
+      ],
+      "text": "Trace UNIX process creation, execution choices, and termination states."
+    },
+    {
+      "id": "objective-os-ch03-part2-3",
+      "moduleId": "module-os-ch03",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-09"
+        }
+      ],
+      "text": "Compare IPC models and apply the bounded-buffer shared-memory protocol."
+    },
+    {
+      "id": "objective-os-ch03-part3-1",
+      "moduleId": "module-os-ch03",
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        }
+      ],
+      "text": "Explain message-passing links, send/receive operations, and implementation choices."
+    },
+    {
+      "id": "objective-os-ch03-part3-2",
+      "moduleId": "module-os-ch03",
+      "order": 8,
+      "sourceRefs": [
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        }
+      ],
+      "text": "Compare direct and indirect naming, synchronization, and buffering semantics."
+    },
+    {
+      "id": "objective-os-ch03-part3-3",
+      "moduleId": "module-os-ch03",
+      "order": 9,
+      "sourceRefs": [
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-10"
+        }
+      ],
+      "text": "Apply pipe and socket properties to process and network communication scenarios."
+    },
+    {
+      "id": "objective-os-ch05-part1-1",
+      "moduleId": "module-os-ch05",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        }
+      ],
+      "text": "Explain CPU-I/O burst behavior, scheduler decisions, and preemption."
+    },
+    {
+      "id": "objective-os-ch05-part1-2",
+      "moduleId": "module-os-ch05",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        }
+      ],
+      "text": "Apply dispatcher and scheduling criteria to performance goals."
+    },
+    {
+      "id": "objective-os-ch05-part1-3",
+      "moduleId": "module-os-ch05",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-11"
+        }
+      ],
+      "text": "Trace FCFS schedules, waiting times, turnaround times, and convoy effects."
+    },
+    {
+      "id": "objective-os-ch05-part2-1",
+      "moduleId": "module-os-ch05",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        }
+      ],
+      "text": "Apply nonpreemptive SJF and explain burst prediction by exponential averaging."
+    },
+    {
+      "id": "objective-os-ch05-part2-2",
+      "moduleId": "module-os-ch05",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        }
+      ],
+      "text": "Compare preemptive SRTF with nonpreemptive SJF through arrival-time traces."
+    },
+    {
+      "id": "objective-os-ch05-part2-3",
+      "moduleId": "module-os-ch05",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-12"
+        }
+      ],
+      "text": "Apply round-robin timing, bounds, and numerical schedules."
+    },
+    {
+      "id": "objective-os-ch05-part3-1",
+      "moduleId": "module-os-ch05",
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        }
+      ],
+      "text": "Analyze round-robin quantum effects on switches and turnaround."
+    },
+    {
+      "id": "objective-os-ch05-part3-2",
+      "moduleId": "module-os-ch05",
+      "order": 8,
+      "sourceRefs": [
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        }
+      ],
+      "text": "Apply priority scheduling, aging, and priority-plus-RR rules."
+    },
+    {
+      "id": "objective-os-ch05-part3-3",
+      "moduleId": "module-os-ch05",
+      "order": 9,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-13"
+        }
+      ],
+      "text": "Compare multilevel queue and feedback-queue movement policies."
+    },
+    {
+      "id": "objective-os-ch05-part4-1",
+      "moduleId": "module-os-ch05",
+      "order": 10,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        }
+      ],
+      "text": "Compare asymmetric and symmetric multiprocessor scheduling structures."
+    },
+    {
+      "id": "objective-os-ch05-part4-2",
+      "moduleId": "module-os-ch05",
+      "order": 11,
+      "sourceRefs": [
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        }
+      ],
+      "text": "Analyze multicore hardware threads, load balancing, affinity, and NUMA placement."
+    },
+    {
+      "id": "objective-os-ch05-part4-3",
+      "moduleId": "module-os-ch05",
+      "order": 12,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-14"
+        }
+      ],
+      "text": "Evaluate scheduling algorithms with deterministic, queueing, simulation, and implementation methods."
+    },
+    {
+      "id": "objective-os-ch06-part1-1",
+      "moduleId": "module-os-ch06",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        }
+      ],
+      "text": "Explain races, critical sections, and the three critical-section requirements."
+    },
+    {
+      "id": "objective-os-ch06-part1-2",
+      "moduleId": "module-os-ch06",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        }
+      ],
+      "text": "Trace Peterson’s two-process protocol and justify its mutual exclusion, progress, and bounded waiting properties."
+    },
+    {
+      "id": "objective-os-ch06-part1-3",
+      "moduleId": "module-os-ch06",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-15"
+        }
+      ],
+      "text": "Analyze why instruction reordering can invalidate a software synchronization protocol on modern architectures."
+    },
+    {
+      "id": "objective-os-ch06-part2-1",
+      "moduleId": "module-os-ch06",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        }
+      ],
+      "text": "Explain memory barriers, test-and-set, compare-and-swap, and atomic variables."
+    },
+    {
+      "id": "objective-os-ch06-part2-2",
+      "moduleId": "module-os-ch06",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        }
+      ],
+      "text": "Apply mutex and semaphore operations to mutual exclusion and event ordering."
+    },
+    {
+      "id": "objective-os-ch06-part2-3",
+      "moduleId": "module-os-ch06",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-16"
+        }
+      ],
+      "text": "Analyze semaphore failure modes and bounded-buffer sequencing."
+    },
+    {
+      "id": "objective-os-ch08-part1-1",
+      "moduleId": "module-os-ch08",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        }
+      ],
+      "text": "Interpret resource-allocation graphs and the conditions under which a cycle indicates deadlock."
+    },
+    {
+      "id": "objective-os-ch08-part1-2",
+      "moduleId": "module-os-ch08",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        }
+      ],
+      "text": "Compare prevention, avoidance, detection-recovery, and ignoring deadlocks."
+    },
+    {
+      "id": "objective-os-ch08-part1-3",
+      "moduleId": "module-os-ch08",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-17"
+        }
+      ],
+      "text": "Apply prevention protocols that invalidate hold-and-wait, no-preemption, or circular-wait conditions."
+    },
+    {
+      "id": "objective-os-ch08-part2-1",
+      "moduleId": "module-os-ch08",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        }
+      ],
+      "text": "Explain safe and unsafe states and resource-allocation graph avoidance."
+    },
+    {
+      "id": "objective-os-ch08-part2-2",
+      "moduleId": "module-os-ch08",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        }
+      ],
+      "text": "Use Banker’s data structures, safety algorithm, and resource-request algorithm."
+    },
+    {
+      "id": "objective-os-ch08-part2-3",
+      "moduleId": "module-os-ch08",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-18"
+        }
+      ],
+      "text": "Analyze the supplied Banker’s snapshot and resource requests."
+    },
+    {
+      "id": "objective-os-ch08-part3-1",
+      "moduleId": "module-os-ch08",
+      "order": 7,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        }
+      ],
+      "text": "Use wait-for graphs and detection data structures for single and multiple resource instances."
+    },
+    {
+      "id": "objective-os-ch08-part3-2",
+      "moduleId": "module-os-ch08",
+      "order": 8,
+      "sourceRefs": [
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        }
+      ],
+      "text": "Trace the supplied deadlock-detection example and decide when detection is invoked."
+    },
+    {
+      "id": "objective-os-ch08-part3-3",
+      "moduleId": "module-os-ch08",
+      "order": 9,
+      "sourceRefs": [
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-19"
+        }
+      ],
+      "text": "Compare termination and resource-preemption recovery choices and their costs."
+    },
+    {
+      "id": "objective-os-ch09-part1-1",
+      "moduleId": "module-os-ch09",
+      "order": 1,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        }
+      ],
+      "text": "Explain memory protection, address binding, logical addresses, physical addresses, and MMU relocation."
+    },
+    {
+      "id": "objective-os-ch09-part1-2",
+      "moduleId": "module-os-ch09",
+      "order": 2,
+      "sourceRefs": [
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        }
+      ],
+      "text": "Apply contiguous allocation, variable partitions, and dynamic hole-selection rules."
+    },
+    {
+      "id": "objective-os-ch09-part1-3",
+      "moduleId": "module-os-ch09",
+      "order": 3,
+      "sourceRefs": [
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 29,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 30,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        },
+        {
+          "location": 31,
+          "locationType": "page",
+          "sourceId": "os-lec-20"
+        }
+      ],
+      "text": "Analyze fragmentation, compaction, and segmentation concepts."
+    },
+    {
+      "id": "objective-os-ch09-part2-1",
+      "moduleId": "module-os-ch09",
+      "order": 4,
+      "sourceRefs": [
+        {
+          "location": 3,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 4,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 5,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 6,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 7,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 8,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 9,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 10,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 11,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 12,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 13,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 14,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        }
+      ],
+      "text": "Apply paging address translation, page-table structures, protection, and sharing."
+    },
+    {
+      "id": "objective-os-ch09-part2-2",
+      "moduleId": "module-os-ch09",
+      "order": 5,
+      "sourceRefs": [
+        {
+          "location": 15,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 16,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 17,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 18,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        }
+      ],
+      "text": "Explain swapping and swapping with paging."
+    },
+    {
+      "id": "objective-os-ch09-part2-3",
+      "moduleId": "module-os-ch09",
+      "order": 6,
+      "sourceRefs": [
+        {
+          "location": 19,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 20,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 21,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 22,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 23,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 24,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 25,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 26,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 27,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 28,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        },
+        {
+          "location": 29,
+          "locationType": "page",
+          "sourceId": "os-lec-21"
+        }
+      ],
+      "text": "Analyze virtual memory, demand paging, valid-invalid bits, and page-fault handling."
+    }
+  ],
+  "project": {
+    "brandInitials": "OS",
+    "description": "A bilingual, source-backed Operating Systems study and exam website.",
+    "shortTitle": "OS Study",
+    "slug": "operating-systems-study",
+    "sourceLanguage": "en",
+    "studyLanguage": "ar",
+    "title": "Operating Systems Study"
+  },
+  "projectId": "operating-systems-study",
+  "questionGeneration": {
+    "bloomPercent": {
+      "analyze": 20,
+      "apply": 50,
+      "remember": 30
+    },
+    "difficultyPercent": {
+      "easy": 30,
+      "hard": 20,
+      "medium": 50
+    },
+    "mcqPerLesson": 6,
+    "trueFalsePerLesson": 4
+  },
+  "schemaVersion": "1",
+  "sources": [
+    {
+      "checksum": "sha256:c35bdc94cd9e9f965bd06b7c97e2bf880485c74bc77790d6ec2f4f3a6c64a45a",
+      "collection": "Chapter 1 lectures",
+      "fileName": "1-ch1_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-01",
+      "label": "Chapter 1: Introduction (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 29,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:e598157b043c7911ae4c1e58249be4b26e974d38e6f039b675b31819fa38eea6",
+      "collection": "Chapter 1 lectures",
+      "fileName": "2-ch1_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-02",
+      "label": "Chapter 1: Introduction (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 30,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:f026f5ffa0b1ecc33b3518e8ec9ad66cf3d70d76a560c0ba66bff5d34dcbb962",
+      "collection": "Chapter 1 lectures",
+      "fileName": "3-ch1_part3.pdf",
+      "format": "pdf",
+      "id": "os-lec-03",
+      "label": "Chapter 1: Introduction (Part 3)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 20,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:0ac24794ac03b14779b706c9c0c7084b0786bcf18c03006839a38d153e2b7b37",
+      "collection": "Chapter 1 lectures",
+      "fileName": "4-ch1_part4.pdf",
+      "format": "pdf",
+      "id": "os-lec-04",
+      "label": "Chapter 1: Introduction (Part 4)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 29,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:0ba363046c36547c9ff6f7357301921ba94606e262f6f7841b7eff7d1f7d9c0d",
+      "collection": "Chapter 2 lectures",
+      "fileName": "5-ch2_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-05",
+      "label": "Chapter 2: Operating-System Services (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 24,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:ec8b4c8209c2aac89b1f696473440b2ab1304506bd6b763fe3c6fb51ae78a9db",
+      "collection": "Chapter 2 lectures",
+      "fileName": "6-ch2_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-06",
+      "label": "Chapter 2: Operating-System Services (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 26,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:1d78df26cb27b6d0c758ec00ec7c5ea766e8040cca9ab61f2541b2e5409f44d1",
+      "collection": "Chapter 2 lectures",
+      "fileName": "7-ch2_part3.pdf",
+      "format": "pdf",
+      "id": "os-lec-07",
+      "label": "Chapter 2: Operating-System Services (Part 3)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 29,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:742264f6d8e5947b664f3cee6eece5fcfd3d3827b4f87558e8a98df114126ef0",
+      "collection": "Chapter 3 lectures",
+      "fileName": "8-ch3_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-08",
+      "label": "Chapter 3: Processes (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 24,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:325230370dd71e385e484aefb3a2e4f9996d86e4ccbadd29ec34ce0d96524226",
+      "collection": "Chapter 3 lectures",
+      "fileName": "9-ch3_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-09",
+      "label": "Chapter 3: Processes (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 25,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:5f3af9f4e8212a25ceeb1f50bffa85b184aa067e02dfcccbe72f898e16be34f6",
+      "collection": "Chapter 3 lectures",
+      "fileName": "10-ch3_part3.pdf",
+      "format": "pdf",
+      "id": "os-lec-10",
+      "label": "Chapter 3: Processes (Part 3)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 28,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:a7a8a44c9b1b6e56af9da0d0cac093c57aaec8b7c9da99a92844f771dc7aca35",
+      "collection": "Chapter 5 lectures",
+      "fileName": "11-ch5_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-11",
+      "label": "Chapter 5: CPU Scheduling (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 22,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:eefcf2f76fcb832f3f52c329adfadb66bc6974c8dad42f2e7ddc754837d56f20",
+      "collection": "Chapter 5 lectures",
+      "fileName": "12-ch5_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-12",
+      "label": "Chapter 5: CPU Scheduling (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 20,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:7618cb9fb8db7c4ab7d4d1e0bf8e928f1636e3ee70bfcc42b2747dc5d020969f",
+      "collection": "Chapter 5 lectures",
+      "fileName": "13-ch5_part3.pdf",
+      "format": "pdf",
+      "id": "os-lec-13",
+      "label": "Chapter 5: CPU Scheduling (Part 3)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 21,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:da992b858e54794f980f08ef12f57313557b2075a28b11c1debc63529422b123",
+      "collection": "Chapter 5 lectures",
+      "fileName": "14-ch5_part4.pdf",
+      "format": "pdf",
+      "id": "os-lec-14",
+      "label": "Chapter 5: CPU Scheduling (Part 4)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 23,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:533b9e61871dc7a9dd7f73f40e57a2a14f2cafb5d62ba22240f7054a60aeacac",
+      "collection": "Chapter 6 lectures",
+      "fileName": "15-ch6_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-15",
+      "label": "Chapter 6: Synchronization Tools (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 23,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:f5bc643e31a679d8de1caf962feb09e576a74f8899ed3a7fa660f6434a3da367",
+      "collection": "Chapter 6 lectures",
+      "fileName": "16-ch6_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-16",
+      "label": "Chapter 6: Synchronization Tools (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 24,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:a5ae9f63a5964dfa260aef8260c710e31d4d89dd8f706194c88339046bfc11e0",
+      "collection": "Chapter 8 lectures",
+      "fileName": "17-ch8_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-17",
+      "label": "Chapter 8: Deadlocks (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 19,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:b0db972dfc07f0df8bc003880a6a014ad4f29fd958b6e9b5d0035a5e9c154c5a",
+      "collection": "Chapter 8 lectures",
+      "fileName": "18-ch8_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-18",
+      "label": "Chapter 8: Deadlocks (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 20,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:543d7af9bfdc675479d5fa7ac1c3fbd637f449c6502bea8f85a8c2f3507e0a21",
+      "collection": "Chapter 8 lectures",
+      "fileName": "19-ch8_part3.pdf",
+      "format": "pdf",
+      "id": "os-lec-19",
+      "label": "Chapter 8: Deadlocks (Part 3)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 19,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:09b846d552e334789de3149e470ed4a19aef392987c3d46fae39219ca5e9eb48",
+      "collection": "Chapter 9 lectures",
+      "fileName": "20-ch9_part1.pdf",
+      "format": "pdf",
+      "id": "os-lec-20",
+      "label": "Chapter 9: Main Memory (Part 1)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 32,
+      "status": "accepted"
+    },
+    {
+      "checksum": "sha256:b9f040d8a058b1537d7cf92f1e8eaf289a8e57a50fd60409204f158bc487fb97",
+      "collection": "Chapter 9 lectures",
+      "fileName": "21-ch9_part2.pdf",
+      "format": "pdf",
+      "id": "os-lec-21",
+      "label": "Chapter 9: Main Memory (Part 2)",
+      "locations": [
+        {
+          "location": 1,
+          "locationType": "page"
+        }
+      ],
+      "pages": 30,
+      "status": "accepted"
+    }
+  ],
+  "version": "1.0.0"
+}

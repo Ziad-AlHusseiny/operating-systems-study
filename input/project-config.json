@@ -12,7 +12,7 @@
   "contentPolicy": {
     "mode": "source-plus-generated",
     "allowOutsideSources": false,
-    "generatedQuestionsRequireHumanReviewForExam": true
+    "generatedQuestionsRequireHumanReviewForExam": false
   },
   "questionGeneration": {
     "mcqPerLesson": 6,
