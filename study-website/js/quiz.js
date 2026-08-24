@@ -1,87 +1,101 @@
-import { scoreResponse } from "./question-renderer.js";
-import { shuffleQuestions } from "./questions.js";
-import { getSessionStats } from "./statistics.js";
+import { isScoreable, scoreResponse, shuffleQuestions } from "./questions.js";
 
-export function createSession(questions, config = {}, random = Math.random, now = Date.now()) {
-  const mode = config.mode || "practice";
-  const eligible = questions.filter((question) => {
-    if (config.topic && config.topic !== "all" && question.topic !== config.topic) return false;
-    if (
-      config.source &&
-      config.source !== "all" &&
-      !question.sources?.some((source) => source.collection === config.source)
-    ) {
-      return false;
-    }
-    if ((mode === "exam" || config.excludeReview) && question.needsReview) return false;
-    return true;
-  });
-  const ordered = config.shuffle === false ? [...eligible] : shuffleQuestions(eligible, random);
-  const requested = Math.max(1, Number(config.count) || 10);
-  const selected = ordered.slice(0, Math.min(requested, ordered.length));
-  return {
-    id: `${mode}-${now}`,
-    mode,
+const contexts = new WeakMap();
+
+function clone(value) {
+  return structuredClone(value);
+}
+
+function freeze(value, seen = new Set()) {
+  if (!value || typeof value !== "object" || seen.has(value)) return value;
+  seen.add(value);
+  for (const item of Object.values(value)) freeze(item, seen);
+  return Object.freeze(value);
+}
+
+function explanationIndex(explanations) {
+  const index = new Map();
+  const values = Array.isArray(explanations) ? explanations : Object.values(explanations || {});
+  for (const explanation of values) {
+    if (explanation?.questionId) index.set(explanation.questionId, explanation);
+  }
+  return index;
+}
+
+function attach(session, questions, explanations) {
+  contexts.set(session, { questions: new Map(questions.map((question) => [question.id, clone(question)])), explanations: explanationIndex(explanations) });
+  return session;
+}
+
+function boundedCount(count, fallback, available) {
+  const requested = Number.isInteger(Number(count)) && Number(count) >= 0 ? Number(count) : fallback;
+  return Math.min(requested, available);
+}
+
+export function createPracticeSession(questions, config = {}, now = Date.now()) {
+  const eligible = (Array.isArray(questions) ? questions : []).filter(isScoreable);
+  const ordered = config.order === "random" || config.shuffle === true ? shuffleQuestions(eligible, config.random ?? Math.random) : [...eligible];
+  const selected = ordered.slice(0, boundedCount(config.count, eligible.length, eligible.length));
+  const session = freeze({
+    id: config.id ?? `practice-${now}`,
+    mode: "practice",
+    status: selected.length ? "active" : "empty",
     questionIds: selected.map((question) => question.id),
     index: 0,
     answers: {},
-    flagged: [],
     startedAt: now,
-    durationMinutes: Math.max(0, Number(config.durationMinutes) || 0),
-    finishedAt: null,
-    config: { ...config },
-  };
+    feedbackVisible: false,
+    emptyReason: selected.length ? null : "No eligible practice questions match this selection.",
+  });
+  return attach(session, selected, config.explanations);
 }
 
-export function answerSessionQuestion(session, question, response, now = Date.now()) {
+export function hydratePracticeSession(session, questions, explanations = []) {
+  const known = new Map((questions || []).map((question) => [question.id, question]));
+  const selected = (session.questionIds || []).map((id) => known.get(id)).filter(Boolean);
+  return attach(freeze(clone(session)), selected, explanations);
+}
+
+function contextFor(session) {
+  const context = contexts.get(session);
+  if (!context) throw new Error("Practice session questions are unavailable. Hydrate the session before answering.");
+  return context;
+}
+
+export function answerPracticeQuestion(session, response, now = Date.now()) {
+  if (session.status !== "active") return freeze(clone(session));
+  const context = contextFor(session);
+  const questionId = session.questionIds[session.index];
+  const question = context.questions.get(questionId);
+  if (!question) throw new Error("The current practice question is unavailable.");
   const result = scoreResponse(question, response);
-  return {
-    ...session,
+  if (!result.valid) return attach(freeze({ ...clone(session), feedbackVisible: false }), [...context.questions.values()], [...context.explanations.values()]);
+  const explanation = context.explanations.get(question.id) ?? null;
+  const next = freeze({
+    ...clone(session),
     answers: {
-      ...session.answers,
-      [question.id]: {
-        response,
-        ...result,
-        answeredAt: now,
-      },
+      ...clone(session.answers),
+      [question.id]: { response: clone(response), answeredAt: now, ...result },
     },
-  };
+    feedbackVisible: true,
+    feedback: {
+      questionId: question.id,
+      ...result,
+      rationale: question.rationale ?? null,
+      sourceRefs: clone(question.sourceRefs ?? []),
+      explanation: explanation ? clone(explanation) : null,
+    },
+  });
+  return attach(next, [...context.questions.values()], [...context.explanations.values()]);
 }
 
-export function moveSession(session, direction) {
-  const target = Math.min(
-    Math.max(0, session.index + Number(direction || 0)),
-    Math.max(0, session.questionIds.length - 1)
-  );
-  return { ...session, index: target };
-}
-
-export function goToSessionQuestion(session, index) {
+export function goToPracticeQuestion(session, index) {
   const target = Math.min(Math.max(0, Number(index) || 0), Math.max(0, session.questionIds.length - 1));
-  return { ...session, index: target };
+  const next = freeze({ ...clone(session), index: target, feedbackVisible: false });
+  const context = contexts.get(session);
+  return context ? attach(next, [...context.questions.values()], [...context.explanations.values()]) : next;
 }
 
-export function toggleSessionFlag(session, questionId) {
-  const flags = new Set(session.flagged || []);
-  if (flags.has(questionId)) flags.delete(questionId);
-  else flags.add(questionId);
-  return { ...session, flagged: [...flags] };
-}
-
-export function getRemainingSeconds(session, now = Date.now()) {
-  if (!session.durationMinutes) return null;
-  const elapsed = Math.floor((now - session.startedAt) / 1000);
-  return Math.max(0, session.durationMinutes * 60 - elapsed);
-}
-
-export function finishSession(session, now = Date.now()) {
-  return {
-    ...session,
-    finishedAt: now,
-    stats: getSessionStats(
-      session.questionIds,
-      session.answers,
-      Math.max(0, (now - session.startedAt) / 1000)
-    ),
-  };
+export function movePracticeQuestion(session, direction) {
+  return goToPracticeQuestion(session, session.index + Number(direction || 0));
 }
