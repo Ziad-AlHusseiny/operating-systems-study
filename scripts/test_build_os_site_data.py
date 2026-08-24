@@ -12,12 +12,14 @@ from scripts.build_os_site_data import (
     ROOT,
     build_payloads,
     build_reports,
+    measure_payloads,
     eligible_question_ids,
     load_content_parts,
     payload_bytes,
     validate_payloads,
     write_artifacts,
 )
+from scripts.validate_os_site import _independent_checks
 
 
 class BuildOperatingSystemsSiteDataTests(unittest.TestCase):
@@ -266,6 +268,95 @@ class BuildOperatingSystemsSiteDataTests(unittest.TestCase):
         self.assertIn("Evidence/source references: failed", reports["quality"])
         self.assertIn("Arabic records: failed", reports["quality"])
         self.assertIn("duplicate normalized prompts: failed", reports["quality"])
+
+    def test_incomplete_claim_level_evidence_excludes_human_approved_eligibility(self):
+        mutated = copy.deepcopy(self.payloads)
+        question = mutated["questions"]["questions"][0]
+        question["qualityState"] = "approved"
+        question["reviewState"] = "approved"
+        question["review"] = {"status": "human-reviewed", "approval": {"reviewedRecordId": question["id"], "reviewedContentVersion": question["contentVersion"], "status": "completed", "decision": "approved", "reviewer": "reviewer-1", "reviewedAt": "2026-08-23T12:00:00Z", "reason": "checked", "notes": "checked"}}
+        question["evidenceMap"] = [question["evidenceMap"][0]]
+        mutated["course"]["contentPolicy"]["generatedQuestionsRequireHumanReviewForExam"] = True
+        self.assertNotIn(question["id"], eligible_question_ids(mutated, "mock-exam"))
+        self.assertTrue(any("evidence map" in error.lower() for error in validate_payloads(mutated)))
+        source_mutated = copy.deepcopy(self.payloads)
+        question = source_mutated["questions"]["questions"][0]
+        question["qualityState"] = "approved"
+        question["reviewState"] = "approved"
+        question["review"] = {"status": "human-reviewed", "approval": {"reviewedRecordId": question["id"], "reviewedContentVersion": question["contentVersion"], "status": "completed", "decision": "approved", "reviewer": "reviewer-1", "reviewedAt": "2026-08-23T12:00:00Z", "reason": "checked", "notes": "checked"}}
+        question["evidenceMap"][0]["sourceRefs"][0]["location"] = 1
+        source_mutated["course"]["contentPolicy"]["generatedQuestionsRequireHumanReviewForExam"] = True
+        self.assertNotIn(question["id"], eligible_question_ids(source_mutated, "mock-exam"))
+        self.assertIn("Evidence/source references: failed", build_reports(source_mutated)["quality"])
+
+    def test_reports_fail_for_arabic_bijection_and_non_dict_question(self):
+        mutated = copy.deepcopy(self.payloads)
+        mutated["explanations-ar"]["explanations"][1] = copy.deepcopy(mutated["explanations-ar"]["explanations"][0])
+        mutated["questions"]["questions"][2] = []
+        reports = build_reports(mutated)
+        self.assertIn("Arabic records: failed", reports["quality"])
+        self.assertIn("Evidence/source references: failed", reports["quality"])
+        self.assertTrue(measure_payloads(mutated)["errors"])
+
+    def test_every_artifact_root_and_distribution_mutation_returns_errors(self):
+        for name in self.payloads:
+            mutated = copy.deepcopy(self.payloads)
+            mutated[name] = []
+            self.assertTrue(validate_payloads(mutated), name)
+        mutated = copy.deepcopy(self.payloads)
+        mutated["questions"]["questions"][0]["difficulty"] = "hard"
+        self.assertTrue(any("difficulty distribution" in error.lower() for error in validate_payloads(mutated)))
+
+    def test_every_acceptance_total_and_question_distribution_is_enforced(self):
+        mutations = (
+            ("course", "modules", "module total"),
+            ("lessons", "lessons", "lesson total"),
+            ("questions", "questions", "question total"),
+            ("explanations-ar", "explanations", "arabic explanation total"),
+        )
+        for root, key, expected_error in mutations:
+            mutated = copy.deepcopy(self.payloads)
+            mutated[root][key].pop()
+            self.assertTrue(any(expected_error in error.lower() for error in validate_payloads(mutated)), expected_error)
+        for field, value, expected_error in (
+            ("type", "true-false", "question type distribution"),
+            ("bloomLevel", "analyze", "bloom distribution"),
+        ):
+            mutated = copy.deepcopy(self.payloads)
+            mutated["questions"]["questions"][0][field] = value
+            self.assertTrue(any(expected_error in error.lower() for error in validate_payloads(mutated)), expected_error)
+        mutated = copy.deepcopy(self.payloads)
+        true_false = next(question for question in mutated["questions"]["questions"] if question["type"] == "true-false")
+        true_false["correctAnswer"] = not true_false["correctAnswer"]
+        self.assertTrue(any("answer balance" in error.lower() for error in validate_payloads(mutated)))
+
+    def test_standalone_checks_reject_malformed_config_and_source_inputs(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+        malformed_config = copy.deepcopy(config)
+        malformed_config["questionGeneration"]["difficultyPercent"] = {"easy": 101, "medium": -1, "hard": 0}
+        errors, _, _ = _independent_checks(self.payloads, malformed_config, manifest, extraction)
+        self.assertTrue(any("question generation" in error.lower() for error in errors))
+        malformed_config = {"version": 1}
+        errors, _, _ = _independent_checks(self.payloads, malformed_config, manifest, extraction)
+        self.assertTrue(errors)
+        duplicate_manifest = copy.deepcopy(manifest)
+        duplicate_manifest["sources"].append(copy.deepcopy(duplicate_manifest["sources"][0]))
+        errors, _, _ = _independent_checks(self.payloads, config, duplicate_manifest, extraction)
+        self.assertTrue(any("duplicate source" in error.lower() for error in errors))
+        malformed_manifest = copy.deepcopy(manifest)
+        malformed_manifest["sources"][0]["pages"] = "twenty-nine"
+        errors, _, _ = _independent_checks(self.payloads, config, malformed_manifest, extraction)
+        self.assertTrue(any("malformed source" in error.lower() for error in errors))
+        malformed_extraction_source = copy.deepcopy(extraction)
+        malformed_extraction_source["sources"][0]["pages"] = "twenty-nine"
+        errors, _, _ = _independent_checks(self.payloads, config, manifest, malformed_extraction_source)
+        self.assertTrue(any("malformed source" in error.lower() for error in errors))
+        malformed_extraction = copy.deepcopy(extraction)
+        malformed_extraction["pages"][0] = []
+        errors, _, _ = _independent_checks(self.payloads, config, manifest, malformed_extraction)
+        self.assertTrue(any("malformed page" in error.lower() for error in errors))
 
 
 if __name__ == "__main__":

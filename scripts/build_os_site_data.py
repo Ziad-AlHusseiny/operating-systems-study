@@ -225,7 +225,7 @@ def _question_lesson_id(question_id: str) -> str | None:
 
 
 def _is_utc_timestamp(value: Any) -> bool:
-    if not isinstance(value, str):
+    if not isinstance(value, str) or not value.endswith("Z"):
         return False
     try:
         return datetime.fromisoformat(value.replace("Z", "+00:00")).tzinfo is not None and datetime.fromisoformat(value.replace("Z", "+00:00")).utcoffset() == timezone.utc.utcoffset(None)
@@ -244,20 +244,30 @@ def _review_valid(record: dict) -> bool:
     return isinstance(approval, dict) and set(approval) == APPROVAL_KEYS and approval.get("reviewedRecordId") == record.get("id") and approval.get("reviewedContentVersion") == record.get("contentVersion") and approval.get("status") == "completed" and approval.get("decision") == "approved" and _non_empty(approval.get("reviewer")) and _is_utc_timestamp(approval.get("reviewedAt")) and _non_empty(approval.get("reason")) and _non_empty(approval.get("notes"))
 
 
-def _answer_and_evidence_valid(question: dict) -> bool:
+def _refs_resolve_for_eligibility(refs: Any, sources: dict[str, dict], classifications: dict[tuple[str, int], str]) -> bool:
+    return isinstance(refs, list) and bool(refs) and all(isinstance(ref, dict) and set(ref).issubset(SOURCE_REF_KEYS) and {"sourceId", "locationType", "location"}.issubset(ref) and ref.get("locationType") == "page" and isinstance(ref.get("location"), int) and ref["sourceId"] in sources and 1 <= ref["location"] <= sources[ref["sourceId"]].get("pages", 0) and classifications.get((ref["sourceId"], ref["location"])) == "teaching" for ref in refs)
+
+
+def _answer_and_evidence_valid(question: dict, sources: dict[str, dict] | None = None, classifications: dict[tuple[str, int], str] | None = None) -> bool:
     if not _non_empty(question.get("rationale")) or not isinstance(question.get("sourceRefs"), list) or not question["sourceRefs"]:
         return False
     if question.get("type") == "mcq":
         options, answer, rationales = question.get("options"), question.get("correctAnswer"), question.get("distractorRationales")
         if not isinstance(options, list) or len(options) != 4 or len(set(options)) != 4 or not all(_non_empty(item) for item in options) or isinstance(answer, bool) or not isinstance(answer, int) or not 0 <= answer < 4 or not isinstance(rationales, list) or len(rationales) != 4 or not all(_non_empty(item) for item in rationales):
             return False
+        expected_targets = {"prompt", "correctAnswer", "rationale", *(f"options[{index}]" for index in range(4)), *(f"distractorRationales[{index}]" for index in range(4))}
     elif question.get("type") == "true-false":
         if not isinstance(question.get("correctAnswer"), bool) or (question["correctAnswer"] is False and not _non_empty(question.get("correctedStatement"))) or (question["correctAnswer"] is True and question.get("correctedStatement") is not None):
             return False
+        expected_targets = {"prompt", "correctAnswer", "rationale", "correctedStatement"} if question["correctAnswer"] is False else {"prompt", "correctAnswer", "rationale"}
     else:
         return False
     evidence = question.get("evidenceMap")
-    return isinstance(evidence, list) and bool(evidence) and all(isinstance(entry, dict) and set(entry) == EVIDENCE_KEYS and _non_empty(entry.get("claimId")) and entry.get("support") in {"direct", "derived"} and isinstance(entry.get("sourceRefs"), list) and bool(entry["sourceRefs"]) for entry in evidence)
+    if not isinstance(evidence, list) or len(evidence) != len(expected_targets) or {entry.get("target") for entry in evidence if isinstance(entry, dict)} != expected_targets:
+        return False
+    if sources is None or classifications is None:
+        return all(isinstance(entry, dict) and set(entry) == EVIDENCE_KEYS and _non_empty(entry.get("claimId")) and entry.get("support") in {"direct", "derived"} and isinstance(entry.get("sourceRefs"), list) and bool(entry["sourceRefs"]) for entry in evidence)
+    return _refs_resolve_for_eligibility(question.get("sourceRefs"), sources, classifications) and all(isinstance(entry, dict) and set(entry) == EVIDENCE_KEYS and _non_empty(entry.get("claimId")) and entry.get("support") in {"direct", "derived"} and _refs_resolve_for_eligibility(entry.get("sourceRefs"), sources, classifications) for entry in evidence)
 
 
 def _source_index(course: dict, extraction: dict) -> tuple[dict[str, dict], dict[tuple[str, int], str]]:
@@ -310,7 +320,9 @@ def _reference_pages(lessons: Iterable[dict]) -> set[str]:
 def eligible_question_ids(payloads: dict[str, dict], mode: str) -> list[str]:
     questions = payloads["questions"]["questions"]
     policy = payloads["course"]["contentPolicy"]
-    eligible = [question for question in questions if isinstance(question, dict) and _review_valid(question) and _answer_and_evidence_valid(question) and question.get("duplicateDisposition") == "retain"]
+    _, _, extraction = _inputs()
+    sources, classifications = _source_index(payloads["course"], extraction)
+    eligible = [question for question in questions if isinstance(question, dict) and _review_valid(question) and _answer_and_evidence_valid(question, sources, classifications) and question.get("duplicateDisposition") == "retain"]
     if mode == "practice":
         return [question["id"] for question in eligible]
     if mode == "mock-exam":
@@ -329,6 +341,8 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
     for name, allowed in ROOT_KEYS.items():
         _exact_keys(payloads[name], allowed, name, errors)
         _check_json_safe(payloads[name], name, errors)
+    if any(not isinstance(payloads[name], dict) for name in ROOT_KEYS):
+        return errors
     course = payloads["course"]
     if not isinstance(course, dict):
         return errors
@@ -531,7 +545,7 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
         if not _non_empty(question.get("rationale")):
             errors.append(f"question {question_id} has empty rationale")
         evidence = question.get("evidenceMap")
-        if not isinstance(evidence, list) or {entry.get("target") for entry in evidence if isinstance(entry, dict)} != expected_targets:
+        if not isinstance(evidence, list) or len(evidence) != len(expected_targets) or {entry.get("target") for entry in evidence if isinstance(entry, dict)} != expected_targets:
             errors.append(f"question {question_id} has incomplete evidence map")
         else:
             for entry in evidence:
@@ -541,7 +555,7 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
                 if not _non_empty(entry.get("claimId")) or entry.get("support") not in {"direct", "derived"}:
                     errors.append(f"question {question_id} has invalid evidence entry")
                 _validate_refs(entry.get("sourceRefs"), sources, classifications, f"question {question_id} evidence", errors, non_teaching)
-    if [question.get("id") for question in questions] != sorted(question.get("id") for question in questions):
+    if all(isinstance(question, dict) for question in questions) and [question.get("id") for question in questions] != sorted(question.get("id") for question in questions):
         errors.append("questions are not in deterministic ID order")
     answer_counts = Counter(question.get("correctAnswer") for question in questions if isinstance(question, dict) and question.get("type") == "true-false")
     if Counter(question.get("type") for question in questions if isinstance(question, dict)) != Counter({"mcq": 126, "true-false": 84}):
@@ -616,11 +630,14 @@ def payload_bytes(payload: dict) -> bytes:
 
 def _counts(payloads: dict[str, dict]) -> dict[str, Any]:
     course, lessons, questions, explanations = (payloads["course"], payloads["lessons"]["lessons"], payloads["questions"]["questions"], payloads["explanations-ar"]["explanations"])
+    lesson_records = [item for item in lessons if isinstance(item, dict)]
+    question_records = [item for item in questions if isinstance(item, dict)]
+    explanation_records = [item for item in explanations if isinstance(item, dict)]
     return {
         "sources": len(course["sources"]), "modules": len(course["modules"]), "lessons": len(lessons), "questions": len(questions), "explanations": len(explanations),
-        "types": Counter(item["type"] for item in questions), "difficulty": Counter(item["difficulty"] for item in questions), "bloom": Counter(item["bloomLevel"] for item in questions),
-        "module": Counter(item["moduleId"] for item in lessons), "lesson": Counter("lesson-" + re.sub(r"-\d{3}$", "", item["id"])[3:] for item in questions),
-        "review": Counter(item["review"]["status"] for item in questions), "answers": Counter(item["correctAnswer"] for item in questions if item["type"] == "true-false"),
+        "types": Counter(item.get("type", "invalid") for item in question_records), "difficulty": Counter(item.get("difficulty", "invalid") for item in question_records), "bloom": Counter(item.get("bloomLevel", "invalid") for item in question_records),
+        "module": Counter(item.get("moduleId", "invalid") for item in lesson_records), "lesson": Counter("lesson-" + re.sub(r"-\d{3}$", "", item.get("id", "invalid"))[3:] for item in question_records),
+        "review": Counter(item.get("review", {}).get("status", "invalid") if isinstance(item.get("review"), dict) else "invalid" for item in question_records), "answers": Counter(item.get("correctAnswer") for item in question_records if item.get("type") == "true-false"),
         "practice": len(eligible_question_ids(payloads, "practice")), "mock": len(eligible_question_ids(payloads, "mock-exam")),
     }
 
@@ -644,7 +661,45 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
     actual_sections = {section.get("id") for lesson in lessons if isinstance(lesson, dict) for section in lesson.get("materialSections", []) if isinstance(section, dict)}
     questions = payloads["questions"].get("questions", [])
     explanations = payloads["explanations-ar"].get("explanations", [])
+    if not isinstance(questions, list):
+        questions = []
+    if not isinstance(explanations, list):
+        explanations = []
+    sources, indexed_classifications = _source_index(course, extraction)
     normalized = [(question.get("type"), _normalize_prompt(question.get("prompt", ""))) for question in questions if isinstance(question, dict)]
+    question_records = [question for question in questions if isinstance(question, dict)]
+    explanation_records = [explanation for explanation in explanations if isinstance(explanation, dict)]
+    question_ids = [question.get("id") for question in question_records]
+    explanation_ids = [explanation.get("id") for explanation in explanation_records]
+    explanation_by_question = {explanation.get("questionId"): explanation for explanation in explanation_records}
+    arabic_records_ok = all(
+        set(explanation) == EXPLANATION_KEYS
+        and explanation.get("language") == "ar"
+        and explanation.get("generatedStudyGuidance") is True
+        and _non_empty(explanation.get("translation"))
+        and ARABIC_RE.search(explanation["translation"]) is not None
+        and isinstance(explanation.get("explanation"), list)
+        and 2 <= len(explanation["explanation"]) <= 3
+        and all(_non_empty(paragraph) for paragraph in explanation["explanation"])
+        and _review_valid(explanation)
+        and _refs_resolve_for_eligibility(explanation.get("sourceRefs"), sources, indexed_classifications)
+        for explanation in explanation_records
+    )
+    arabic_links_ok = (
+        len(question_records) == len(questions)
+        and len(explanation_records) == len(explanations)
+        and len(question_ids) == len(set(question_ids))
+        and len(explanation_ids) == len(set(explanation_ids))
+        and set(explanation_by_question) == set(question_ids)
+        and len(explanation_by_question) == len(explanations)
+        and all(
+            explanation_by_question[question.get("id")].get("id") == f"explanation-{question.get('id')}-ar"
+            and explanation_by_question[question.get("id")].get("contentVersion") == question.get("contentVersion")
+            and explanation_by_question[question.get("id")].get("sourceRefs") == question.get("sourceRefs")
+            for question in question_records
+        )
+    )
+    validation_errors = validate_payloads(payloads)
     return {
         "classificationCounts": Counter(page["classification"] for page in extraction["pages"]),
         "totalPages": len(extraction["pages"]),
@@ -657,9 +712,10 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
         "omittedLessons": expected_lessons - actual_lessons,
         "omittedObjectives": expected_objectives - actual_objectives,
         "omittedSections": expected_sections - actual_sections,
-        "evidenceOk": len(questions) == 210 and all(_answer_and_evidence_valid(question) for question in questions if isinstance(question, dict)),
-        "arabicOk": len(explanations) == len(questions) and all(isinstance(explanation, dict) and explanation.get("language") == "ar" and explanation.get("generatedStudyGuidance") is True and _non_empty(explanation.get("translation")) and isinstance(explanation.get("explanation"), list) and 2 <= len(explanation["explanation"]) <= 3 for explanation in explanations),
-        "duplicatesOk": len(normalized) == len(set(normalized)),
+        "evidenceOk": len(questions) == 210 and len(question_records) == len(questions) and all(_answer_and_evidence_valid(question, sources, indexed_classifications) for question in question_records),
+        "arabicOk": len(explanations) == len(questions) and arabic_records_ok and arabic_links_ok,
+        "duplicatesOk": len(question_records) == len(questions) and len(normalized) == len(set(normalized)),
+        "errors": validation_errors,
     }
 
 
