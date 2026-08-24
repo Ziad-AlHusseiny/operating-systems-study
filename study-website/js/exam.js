@@ -155,7 +155,7 @@ export function submitExam(exam, nowOrQuestions = Date.now(), maybeNow, maybeExp
       explanation: explanation ? clone(explanation) : null,
     };
   });
-  const scoreable = reviews.length;
+  const scoreable = reviews.filter((review) => review.scored).length;
   const correct = reviews.filter((review) => review.scored && review.correct).length;
   const incorrect = reviews.filter((review) => review.scored && !review.correct).length;
   const submittedAt = Math.max(exam.startedAt, Math.min(now, exam.endsAt));

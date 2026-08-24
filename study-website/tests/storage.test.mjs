@@ -12,6 +12,24 @@ function memoryStorage(initial = {}) {
 }
 const stamp = "2026-08-23T10:00:00.000Z";
 
+function canonicalQuestion(id, correctAnswer = 1) {
+  const type = typeof correctAnswer === "boolean" ? "true-false" : "mcq";
+  const targets = type === "mcq"
+    ? ["prompt", "correctAnswer", "rationale", "options[0]", "options[1]", "options[2]", "options[3]", "distractorRationales[0]", "distractorRationales[1]", "distractorRationales[2]", "distractorRationales[3]"]
+    : ["prompt", "correctAnswer", "rationale", ...(correctAnswer === false ? ["correctedStatement"] : [])];
+  return {
+    id, origin: "generated", type, prompt: `Prompt ${id}`, options: type === "mcq" ? ["a", "b", "c", "d"] : undefined, correctAnswer, correctedStatement: type === "true-false" ? (correctAnswer ? null : "The statement is false.") : undefined,
+    needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain",
+    contentVersion: "1.0.0", reviewNotes: "", rationale: "Rationale", distractorRationales: type === "mcq" ? ["one", "two", "three", "four"] : undefined,
+    sourceRefs: [{ sourceId: "os-lec-01" }], evidenceMap: targets.map((target, index) => ({ claimId: `${id}-${index}`, target, support: "direct", sourceRefs: [{ sourceId: "os-lec-01" }] })),
+  };
+}
+
+const canonical = {
+  lessons: [{ id: "lesson-one" }],
+  questions: [canonicalQuestion("gq-one", 1), canonicalQuestion("gq-true-false", false)],
+};
+
 test("creates a frozen OS default state and loads missing, corrupt, foreign, and unknown-version values safely", () => {
   const defaults = createDefaultState(stamp);
   assert.deepEqual(defaults, { version: STATE_VERSION, projectId: PROJECT_ID, updatedAt: stamp, lessonProgress: {}, questionProgress: {}, bookmarks: { lessonIds: [], questionIds: [] }, mistakes: {}, recentSessions: [], activeExam: null });
@@ -77,4 +95,31 @@ test("records compact finalized sessions and resets only this site's progress an
   assert.equal(storage.getItem(STORAGE_KEY), null);
   assert.equal(storage.getItem(BACKUP_STORAGE_KEY), null);
   assert.equal(storage.getItem("unrelated"), "keep");
+});
+
+test("canonical records reject stale progress, invalid answer values, and empty active-exam restoration", () => {
+  const defaults = createDefaultState(stamp);
+  const answered = {
+    attempts: 1, correctAttempts: 0, incorrectAttempts: 1, lastAnswer: 1,
+    lastAttemptAt: stamp, lastCorrect: false, lastCorrectAt: null,
+  };
+  const valid = { ...defaults, questionProgress: { "gq-one": answered }, mistakes: { "gq-one": { count: 1, lastAttemptAt: stamp } } };
+  assert.deepEqual(importState(JSON.stringify(valid), canonical), valid);
+  assert.throws(() => importState(JSON.stringify({ ...valid, questionProgress: { "gq-stale": answered } }), canonical), /canonical|question/i);
+  assert.throws(() => importState(JSON.stringify({ ...valid, questionProgress: { "gq-one": { ...answered, lastAnswer: 4 } } }), canonical), /answer/i);
+  assert.throws(() => importState(JSON.stringify({ ...valid, questionProgress: { "gq-true-false": { ...answered, lastAnswer: 1 } } }), canonical), /answer/i);
+  assert.throws(() => importState(JSON.stringify({ ...defaults, bookmarks: { lessonIds: ["lesson-stale"], questionIds: [] } }), canonical), /canonical|lesson/i);
+
+  const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify({ ...valid, questionProgress: { "gq-stale": answered } }) });
+  assert.deepEqual(loadState(storage, stamp, canonical), defaults);
+  assert.match(storage.getItem(BACKUP_STORAGE_KEY), /gq-stale/);
+  assert.throws(() => saveState({ ...defaults, bookmarks: { lessonIds: [], questionIds: ["gq-stale"] } }, memoryStorage(), canonical), /canonical|question/i);
+  assert.throws(() => recordAttempt(defaults, { questionId: "gq-one", response: 4, correct: false, scored: true, finalized: true, at: stamp }, stamp, canonical), /answer/i);
+  assert.throws(() => toggleBookmark(defaults, "question", "gq-stale", stamp, canonical), /canonical|question/i);
+  assert.throws(() => markLessonComplete(defaults, "lesson-stale", "completed", stamp, canonical), /canonical|lesson/i);
+
+  const emptyExam = { id: "exam-empty", projectId: PROJECT_ID, mode: "exam", status: "active", questionIds: [], answers: {}, index: 0, flagged: [], bookmarked: [], startedAt: 0, endsAt: 60_000 };
+  assert.throws(() => setActiveExam(defaults, emptyExam, stamp, canonical), /empty|question/i);
+  const invalidExamAnswer = { ...emptyExam, id: "exam-answer", questionIds: ["gq-one"], answers: { "gq-one": { response: 4, answeredAt: 1 } } };
+  assert.throws(() => setActiveExam(defaults, invalidExamAnswer, stamp, canonical), /answer/i);
 });

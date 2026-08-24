@@ -50,8 +50,8 @@ export function getMistakeQuestions(questions, state = {}) {
     if (!mistake?.count) return null;
     const entry = progress[question.id] || {};
     const masteredAfterMistake = Boolean(entry.lastCorrect && entry.lastCorrectAt && entry.lastCorrectAt >= mistake.lastAttemptAt);
-    return { ...clone(question), mistakeCount: mistake.count, lastMistakeAt: mistake.lastAttemptAt, masteredAfterMistake };
-  }).filter(Boolean).sort((left, right) => right.mistakeCount - left.mistakeCount || right.lastMistakeAt.localeCompare(left.lastMistakeAt) || left.id.localeCompare(right.id));
+    return { ...clone(question), mistakeCount: mistake.count, lastMistakeAt: mistake.lastAttemptAt, lastAttemptAt: entry.lastAttemptAt ?? mistake.lastAttemptAt, masteredAfterMistake };
+  }).filter(Boolean).sort((left, right) => right.mistakeCount - left.mistakeCount || right.lastAttemptAt.localeCompare(left.lastAttemptAt) || left.id.localeCompare(right.id));
 }
 
 export function getBookmarkedQuestions(questions, state = {}) {

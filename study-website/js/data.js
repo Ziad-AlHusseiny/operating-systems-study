@@ -106,6 +106,9 @@ function validateLinks(course, lessonsPayload, questionsPayload, explanationsPay
     if (!Array.isArray(question.sourceRefs) || !question.sourceRefs.length) {
       throw new Error(`Question ${question.id} has no evidence link.`);
     }
+    if (question.origin === "generated" && (typeof question.generatedExplanationId !== "string" || !question.generatedExplanationId)) {
+      throw new Error(`Generated question ${question.id} has a missing explanation link.`);
+    }
     if (question.generatedExplanationId && !explanationById[question.generatedExplanationId]) {
       throw new Error(`Question ${question.id} has a missing explanation link.`);
     }
@@ -117,7 +120,7 @@ function validateLinks(course, lessonsPayload, questionsPayload, explanationsPay
     explanationByQuestionId[explanation.questionId] = explanation;
   }
   for (const question of questionsPayload.questions) {
-    if (question.generatedExplanationId && explanationByQuestionId[question.id]?.id !== question.generatedExplanationId) {
+    if (question.origin === "generated" && (!explanationByQuestionId[question.id] || explanationByQuestionId[question.id].id !== question.generatedExplanationId || explanationByQuestionId[question.id].language !== "ar" || explanationByQuestionId[question.id].contentVersion !== question.contentVersion)) {
       throw new Error(`Question ${question.id} has a mismatched explanation link.`);
     }
   }

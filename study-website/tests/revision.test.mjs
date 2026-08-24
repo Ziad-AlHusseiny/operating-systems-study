@@ -5,7 +5,8 @@ import { getBookmarkedLessons, getBookmarkedQuestions, getMistakeQuestions, getR
 
 const stamp = "2026-08-23T10:00:00.000Z";
 function question(id, topic, objectiveId, overrides = {}) {
-  return { id, origin: "generated", type: "mcq", options: ["a", "b", "c", "d"], correctAnswer: 0, topic, learningObjectiveId: objectiveId, needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", sourceRefs: [{ sourceId: "os-lec-01" }], ...overrides };
+  const targets = ["prompt", "correctAnswer", "rationale", "options[0]", "options[1]", "options[2]", "options[3]", "distractorRationales[0]", "distractorRationales[1]", "distractorRationales[2]", "distractorRationales[3]"];
+  return { id, origin: "generated", type: "mcq", prompt: `Prompt ${id}`, options: ["a", "b", "c", "d"], correctAnswer: 0, topic, learningObjectiveId: objectiveId, needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", contentVersion: "1.0.0", reviewNotes: "", rationale: "Rationale", distractorRationales: ["one", "two", "three", "four"], sourceRefs: [{ sourceId: "os-lec-01" }], evidenceMap: targets.map((target, index) => ({ claimId: `${id}-${index}`, target, support: "direct", sourceRefs: [{ sourceId: "os-lec-01" }] })), ...overrides };
 }
 const lessons = [{ id: "lesson-one", moduleId: "module-one", title: "Processes" }, { id: "lesson-two", moduleId: "module-two", title: "Memory" }];
 const modules = [{ id: "module-one", title: "Processes" }, { id: "module-two", title: "Memory" }];
@@ -43,6 +44,25 @@ test("ranks historical mistakes by count then recency and reports mastered-after
   const ranked = getMistakeQuestions(questions, state());
   assert.deepEqual(ranked.map((item) => item.id), ["gq-one"]);
   assert.equal(ranked[0].mistakeCount, 2);
+  assert.equal(ranked[0].masteredAfterMistake, true);
+});
+
+test("uses the latest question attempt, not the historical mistake timestamp, to break mistake-count ties", () => {
+  const left = question("gq-left", "Processes", "objective-one");
+  const right = question("gq-right", "Memory", "objective-two");
+  const current = {
+    ...createDefaultState(stamp),
+    questionProgress: {
+      "gq-left": { attempts: 2, correctAttempts: 0, incorrectAttempts: 2, lastAnswer: 1, lastAttemptAt: "2026-08-23T10:01:00.000Z", lastCorrect: false, lastCorrectAt: null },
+      "gq-right": { attempts: 2, correctAttempts: 1, incorrectAttempts: 1, lastAnswer: 0, lastAttemptAt: "2026-08-23T10:03:00.000Z", lastCorrect: true, lastCorrectAt: "2026-08-23T10:03:00.000Z" },
+    },
+    mistakes: {
+      "gq-left": { count: 2, lastAttemptAt: "2026-08-23T10:05:00.000Z" },
+      "gq-right": { count: 2, lastAttemptAt: "2026-08-23T10:00:00.000Z" },
+    },
+  };
+  const ranked = getMistakeQuestions([left, right], current);
+  assert.deepEqual(ranked.map((item) => item.id), ["gq-right", "gq-left"]);
   assert.equal(ranked[0].masteredAfterMistake, true);
 });
 
