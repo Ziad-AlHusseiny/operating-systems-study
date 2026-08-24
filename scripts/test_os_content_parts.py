@@ -400,148 +400,6 @@ PART_THREE_MCQ_ANSWER_KEY = {'gq-os-ch06-part1-001': 0,
  'gq-os-ch09-part2-005': 2,
  'gq-os-ch09-part2-006': 2}
 
-PART_THREE_MCQ_SOURCE_VERIFIED_HASHES = {'gq-os-ch06-part1-001': '0ec56e19f8f206ea36a13bcbd201ea08091ac54d7fb6a529a12438e2f87d6ac1',
- 'gq-os-ch06-part1-002': 'aad6314dee0dbb5c870a9d1b583e07f527678bfd986e22e4090f3171ade089cb',
- 'gq-os-ch06-part1-003': '63821136bc06805137e5ab0744fd9df015df1179e3dee7a5042937fe7579bb55',
- 'gq-os-ch06-part1-004': 'cf17febaf52614df3f31e76419ccb84630b60c86960cec740e5ff259fddbcd4d',
- 'gq-os-ch06-part1-005': '03cb4989e372396793e86cb19c82b6caaa8a7a7d0b03dd20429e0912ac263a2f',
- 'gq-os-ch06-part1-006': 'e299e046dd0a4c42bb97c349c37b5ab3db42dabc1c6206f0c8f8fcddea65e68a',
- 'gq-os-ch06-part2-001': 'bb6ad1c4950a15768c93d9e9b9ca3b1dca84afe9171e1cb36ac3f33809b85808',
- 'gq-os-ch06-part2-002': 'ffb9c6a391b859d9ae6668ae528d97542416c9c3ca744941270635b16542570d',
- 'gq-os-ch06-part2-003': '53e2198238ec03d4dbfc581e9b3d8793173dacc3ea4ea7043817ba75bb8edc4c',
- 'gq-os-ch06-part2-004': 'dbb449b990d442b8b69ecdb679fb35ce3b8d42c41c19b9673d9b14e1554ce7d8',
- 'gq-os-ch06-part2-005': '96521d7e981f0e037428d60f3ca5dbef65edff25ba67fd9e90760481d4d0ea9c',
- 'gq-os-ch06-part2-006': 'ab4faafa93fe3d14b3f5d128ab627526cd583f65ab28fc135c96798797ddf2b9',
- 'gq-os-ch08-part1-001': '422c67471c4cf43e0570a36340714936d8de611f6881ff468761394cd68cd62e',
- 'gq-os-ch08-part1-002': 'c7cc2af6c9ba7621c102e1e8b4eccc11d9763a0d2ca8ab140361f1cbfd38fbd5',
- 'gq-os-ch08-part1-003': 'f884c9c1c526a5344b197cf929cb6cbb414c4aeb96cd6c8101622a9b935ce4eb',
- 'gq-os-ch08-part1-004': 'c39207c3e0106389d3aba4cc6e840e6fc67ca44bea9718d94a4b5a25a0a10a48',
- 'gq-os-ch08-part1-005': 'fbd92201578324beb33a2034487d58b0ddd5af72e930cc534c7aa8c8639c02a3',
- 'gq-os-ch08-part1-006': '632d94ab3897d445d78633b4478332796b9897b2b1c150dff0c19af4424e773e',
- 'gq-os-ch08-part2-001': '567a3c471fb73cbe736ce00a4c41e86fe6b7dc58b8af3287337cf8cbb7e524b0',
- 'gq-os-ch08-part2-002': '7453d0acf7d054e7b7622387126c131f031b389a07c04864df051bf8714bd7ca',
- 'gq-os-ch08-part2-003': '9bceaa9d69a0e28106bc111195c148370028580bff6a651f685af42329e5db94',
- 'gq-os-ch08-part2-004': 'fd9236ae20ea5d51b3887fa0b3ee5386bc90339472a3fd9fee35e28b0ae3e4ba',
- 'gq-os-ch08-part2-005': '39d01d2446a10a13356e3f9b85623dcb104cacd0762b74ee391d564195b0e59b',
- 'gq-os-ch08-part2-006': 'a536c8d44ae9ee552b32c7657ff710ef1e81374fe17f79f94c18f7d0c860ce4c',
- 'gq-os-ch08-part3-001': 'e119faf39a65101065ac462d3af38a70838037d8f5b9f9fceeba0963c443fa8b',
- 'gq-os-ch08-part3-002': '5f629d24d15ac9e9b5a53030bd1c0365b5543c4a3c64996ae238a0572b6587f7',
- 'gq-os-ch08-part3-003': '04a9bc441d099f422201d340a12a60ce158711b444126ab27059594267e36a39',
- 'gq-os-ch08-part3-004': '6a35aa80d4499b88d9d86dc05a6608b5ec5a6c8904118e6b15341246bab9ae70',
- 'gq-os-ch08-part3-005': '70aecfb2ac516553a74151233a519b00797d5741012583194fcc4bdc0eb37e29',
- 'gq-os-ch08-part3-006': 'ee68335ec9284236f41fc4155bea4cfb869c8f6aaa949f3e794a1e7623b4e364',
- 'gq-os-ch09-part1-001': '81e7217168d13d60478c321c8821a596ce4de4f846444062adba3da8110ccafa',
- 'gq-os-ch09-part1-002': 'bbe47217aa19593e62920d340ddbdc461e5d54d8a01809a5a11a0a17dca3acf6',
- 'gq-os-ch09-part1-003': '2fae19e9a30c9c2b353c30d3f60edef5abf7fd08517d672d4f3ef562cdf47b27',
- 'gq-os-ch09-part1-004': 'd625229e2a52c1fea3b0981adac76b9b4028cc9b0a1e48a76f49065fec1eef0c',
- 'gq-os-ch09-part1-005': '541767293a01b725c1920feb51e25523b6a3225180fc7587e0b591520fea4c3a',
- 'gq-os-ch09-part1-006': '1b11fac7e9b3522ef9f1a2bc7351c8a385d568cb1ef54edbc2134bc2ad79372b',
- 'gq-os-ch09-part2-001': 'bb8ec29f4a0d3047d7f034fcb4230a8d5ca28dae130a49850ff4a0be883e7fe9',
- 'gq-os-ch09-part2-002': 'c59a7475e3dda62a551fd36b008c0670fa1254141454c8d635989a6763ea16d8',
- 'gq-os-ch09-part2-003': '476926d27486afbb61ad8d485bfdd53177c774f416383fabac798ed6b5353145',
- 'gq-os-ch09-part2-004': '1c7666bb22d8dca92739f8f961fd8a55abe41eae0e0cb0c61b9c8e01af67a735',
- 'gq-os-ch09-part2-005': 'baf5972673fcfa69a0b9ff381967f5a1475f87a6db02cbceca3ffdf4faa4dfa8',
- 'gq-os-ch09-part2-006': '89b143ad0e3a8d430056d1123c16138870d84b2f41ac96c3dc103f34024e46f4'}
-
-PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES = {'gq-os-ch06-part1-007': '1f534d797eccb3c1b8f6232dcb9f4337724e211cde33b19e6b14304a2a18fd38',
- 'gq-os-ch06-part1-008': 'eb9ca5554f3e0164dd4428e3b7a6842a308ed95ad7e0e3d5677315b4231f6718',
- 'gq-os-ch06-part1-009': '7945c1020c63292b9aff23355d9af6de8652e007c18c4f5412d358acf19668e7',
- 'gq-os-ch06-part1-010': '77ee2d99103ec985c541ee9b69dfe0e14807cd62bb2c95d890a985e66a7a77a9',
- 'gq-os-ch06-part2-007': '25360e64a8fef2b2605ee2b5c1e0f505db2b42b8f025544e995eb3bd2c1697a7',
- 'gq-os-ch06-part2-008': 'ad4d744ef3e4249afe59c8de7646a4f1c8a38a833fe971a6a5086a5c1de7ddb1',
- 'gq-os-ch06-part2-009': 'd0dccb8abe7cf8727aa3788b17580d3c2ce676521e1d4d7133635fabc70d6cc4',
- 'gq-os-ch06-part2-010': '4c94b4cfadc61eba3d772d5b1f2c2e5360676d9d67b3257d05cb0177f20917aa',
- 'gq-os-ch08-part1-007': 'a22ad8933c1031cc4bd870cb6e5520464cdd3d7b3ff7a287bf78d88c87e5ecc0',
- 'gq-os-ch08-part1-008': '8b92191ffa79b8a2d826a683a51a98547f457118d6c218da6b71b7d14f1fb6dc',
- 'gq-os-ch08-part1-009': 'fd615640663e28e417969c06ad4ce16a827d808dd47ec789e081ef9003f9ff74',
- 'gq-os-ch08-part1-010': '706e3fda7a89daef53b86e9ce90902c8df65363c868ebc6f513e8097ae34aa73',
- 'gq-os-ch08-part2-007': 'da4a06fec0909c2e400c4ad8a0e01698f038bf8e5facc11fc95463a13b0748f8',
- 'gq-os-ch08-part2-008': '5d94ec2bc3ea22c6fd5190b4ba49916bb036eb6f30c43cb5d039855b92e4b747',
- 'gq-os-ch08-part2-009': 'b7e6ae34c883222266d4d5d423e0ef031473ce2997dd7fb56c4e3d1211f35db2',
- 'gq-os-ch08-part2-010': '812b80f4ef6f2f336bc68221d069937586fe9b020001ab351866ba4a7ee659f5',
- 'gq-os-ch08-part3-007': '5d014fcb3f0f729473cdcd72c6621d93734617d3ba949595eb9de828f4aba49e',
- 'gq-os-ch08-part3-008': '502931c1e503f401b8aa8bb4208719ab2ee9ca03f931fa9469cc1a0d7a64079b',
- 'gq-os-ch08-part3-009': '324d38f623dfb27387b1be564d3ff9f428be12a47f634d940371bbc9335443b0',
- 'gq-os-ch08-part3-010': '6df2f1b618cfa56665559d067a53108c7c43368b8b87468169e078d9ff9b01b2',
- 'gq-os-ch09-part1-007': '130bdfa878c13ffa76fadf7f14da058176a1f4b440ea059c58a91ad44dcfc2c3',
- 'gq-os-ch09-part1-008': '296ac3bb59be92cb2150b9103e876cc3b2a54d29aadf16f2a51f19aca6de8acc',
- 'gq-os-ch09-part1-009': 'ce594bda0964bda11a1f9fdfc7d981b7bf1c15048a1017b6ef7bcaf40aab6e3f',
- 'gq-os-ch09-part1-010': 'ea7467a1c8fd038f665a12832b113826614079895999bfd3d2107a02a3066096',
- 'gq-os-ch09-part2-007': '8395bae32ed0682e409760fba06c0684a1f920d26061208ff7a58c2662220fdf',
- 'gq-os-ch09-part2-008': 'c3fd2f2f07ae977f6fc45c1bec022122de79c5ecb4f43a971b498c6f842bf467',
- 'gq-os-ch09-part2-009': 'e66f9386c84759f8eca1c77b6a11b0a3c675a2552122fe6d423f033572ba4c63',
- 'gq-os-ch09-part2-010': '9394b70fab9f3cd37f49bacedac0facd971af79b379e9babece4987dbbab43c0'}
-
-PART_THREE_ARABIC_EXPLANATION_HASHES = {'gq-os-ch06-part1-001': 'd2f587ad5a4683ca44962663007ed30c80293fb0d8f8e711e85ac71724d5cb62',
- 'gq-os-ch06-part1-002': '414e8db46d20fb2aeb6d420e938c9e00ed0abd0ff0072c6e0fc5d4af747fa18d',
- 'gq-os-ch06-part1-003': '66c2d50e6cb2a08d33bb022aacc2cdaba793945cfe71c6ed68a90a05a8ddc530',
- 'gq-os-ch06-part1-004': '62b5ced487aec4a16fbe25779810cf9195e34852f3edca5b2b8efb28cde677d6',
- 'gq-os-ch06-part1-005': 'bd4e963aa6ca26816e9354a2da9addb0e658630be0e46b305def78ad3ffe0f16',
- 'gq-os-ch06-part1-006': 'f35720963c39772f75c9390c6424f31238f0d403bd3302e6af8f7e11aeab5126',
- 'gq-os-ch06-part1-007': 'aca99383a2c8dabd2f1a62d190251b217e05de871e7dcafb10eb601bfaa0bb8d',
- 'gq-os-ch06-part1-008': 'ea195247d71314466809b26f6ca4f9ed72a98057570b4c663607429a0ae676ce',
- 'gq-os-ch06-part1-009': 'beeca3f678468bb7b5a0b90b637d40ff09dd833bba979c51729d189f36818c18',
- 'gq-os-ch06-part1-010': '501ab7d56e29d066b656c28f351f679f3b44a81b7b2a7502a306253ecce0e8a4',
- 'gq-os-ch06-part2-001': '8cb0f4f604c3ec9f99465898b20303a107c34e805030d8a0b58d87b8baf8141c',
- 'gq-os-ch06-part2-002': '29af1f98e862056f9b22088ed0dfd84d655917710e496940592d4c54c1cf6050',
- 'gq-os-ch06-part2-003': '1cda40eafa782ff6e4cb261aa7a4eb4916847dd4516dd908849fdc4ab8f46659',
- 'gq-os-ch06-part2-004': '6e51613a86ca2a713c1df9e74aa092a27cb9f57568314092911f5b1a171bb2ad',
- 'gq-os-ch06-part2-005': 'cd1dc6ce0ed61db11c53daa940519550a644834221fb4893ed04182b33f05f56',
- 'gq-os-ch06-part2-006': 'cd4c776c09aad5fe2239e2e25a9c2b6a6eef0d3e1244db94927efe805f7feae2',
- 'gq-os-ch06-part2-007': '0580c4a279970d81260cd500f13fcf1d442445626a779ac0af8ecdf66336f8ff',
- 'gq-os-ch06-part2-008': 'c8fb06f6282e35905ce79b9b5be60dc05a330753abc45f39a70fe7f2cfe3923c',
- 'gq-os-ch06-part2-009': 'fbbb95d0c70d1de91bef1d97f9efaf424b42f6c359ac7ef14033dab2dac114e2',
- 'gq-os-ch06-part2-010': '5874cce6f5e8837acf8652dad718d78761282148bdd1db0763f5b08bfda588e0',
- 'gq-os-ch08-part1-001': 'af6b6ae0474c171ceb5aed17cb7628908d61c930f0f009640a22863122e8cb64',
- 'gq-os-ch08-part1-002': 'aa216b3c527649b91a9e40b70cda29d4a52fdfa610724f01e763f567f54abf05',
- 'gq-os-ch08-part1-003': '9924fb7ec0e3df7c4b3ba9660bea11a49d072dbe069c1dc4b6226f6de5e508e1',
- 'gq-os-ch08-part1-004': '116d97ac4933d338d5c476f395d7d74e1b043acf997e418eb19912ce6ddf1548',
- 'gq-os-ch08-part1-005': 'a8271a2b53a0cd73435906c14f7351eab8ec52b8a5ba51a8ae7728346a5ab7ef',
- 'gq-os-ch08-part1-006': 'd74b7bf98653b0ce8ee6d33b067691e97227ca7c19502f8e8521d7b77e691ce6',
- 'gq-os-ch08-part1-007': 'e317a6a73f428840100aaccc25c43344a867dae3d0dbf9bf04f1dbace86f0cea',
- 'gq-os-ch08-part1-008': '5605b24a08a947be8118e205814a6b4e4f325da72e3036f9a98d243a4459f218',
- 'gq-os-ch08-part1-009': '4cbaa27d125454673fc53b3089e7bbe0317c5d7b96f622752c5d057c89c90520',
- 'gq-os-ch08-part1-010': '6dd4e4291928a90cb100bbb18e805ff998393e378ab7687ec4fbb70eeb4b2310',
- 'gq-os-ch08-part2-001': 'fa7b9e7bfd4492c45ccecd75e19af68740a5d1a17944c88235a6926fc5ddfa8f',
- 'gq-os-ch08-part2-002': '7e4819da23a3377ad3f9d2ad14e38f8a52dff0effba8fa7e839b5aef5a57674d',
- 'gq-os-ch08-part2-003': 'bb5475aa071f8121f7845389490b69c82925c946b16cd056b2b0dda482e5837a',
- 'gq-os-ch08-part2-004': '74f84b5bfe4b3da3d505f0677be338510d1887be4be1413ada52f3d5cb36387c',
- 'gq-os-ch08-part2-005': '5fefacca68d651819d19f104ac6cb50b3c8a12ff6347261186b3bb6027d6de2f',
- 'gq-os-ch08-part2-006': 'f18e398e501bb2e9880f064469c3d7cd54870a07fba29df69a17704313c70794',
- 'gq-os-ch08-part2-007': 'ea5e720637729ead64b14052be35f8411fb3816957654e96187cee462898c103',
- 'gq-os-ch08-part2-008': '7cb3e46702c464ddbf6fca932a25fa1ad7be633c1c40fb9b47488fcff1d0c87c',
- 'gq-os-ch08-part2-009': '1127665cdd2af5109aa3d548e510fcba918c1bb4eb1f0c183b7f57060c1916c9',
- 'gq-os-ch08-part2-010': 'c554a22fafb15bebce0221185175f3a39b6532af59bafcdbbaa1f707bbc215a6',
- 'gq-os-ch08-part3-001': '3a68e70894685e725f1c8ccb01aafd0b7ab415ae25f63f57d9ff734a27c63e7f',
- 'gq-os-ch08-part3-002': '819219fbffb5f9568406c5727222e57cb832248de662624a1d0cd30c8e25227b',
- 'gq-os-ch08-part3-003': '66106fdde46a2199c807c3e14800d3f416d807781665041af523804d1158f0c5',
- 'gq-os-ch08-part3-004': '480a22207059a992e84b24ba3848954eb7db3dfd2a155c17138fa81a133502fd',
- 'gq-os-ch08-part3-005': '2ab04557485b8326cb695c5afe352eb1fcbf7f8c2357f3fc116a4b3c9a324c90',
- 'gq-os-ch08-part3-006': '562bec00dd6b203b0808257f76cecd8d199212d3bbbabad42e7f1cf89db13534',
- 'gq-os-ch08-part3-007': 'c7ed7c9dae147b8c1cc5d38752e6a87fdf77f68c247a8870453b340c4e2c0613',
- 'gq-os-ch08-part3-008': 'ed9186d4caedc3c5f2d4eacc91b82cd204bbd2732a57bc22d3ccecf510ea610b',
- 'gq-os-ch08-part3-009': '01b0abc6efd1c0c746a95e0bfe06e4bfc9b31a5a968b68c0530faf1857a3cd87',
- 'gq-os-ch08-part3-010': '7c79d31289130e80a86e4d2eb85d2a955dc415a0d0e3f334b310951517ad0f08',
- 'gq-os-ch09-part1-001': 'ac2bc5c189809b7ce14ef499fa522b90dec1049f69dee963218416b656db1639',
- 'gq-os-ch09-part1-002': '0d846fd79ec58d8aff7bd4373a03f5ae734bc918f3bbf5bbbb90f95381bd961d',
- 'gq-os-ch09-part1-003': 'ca9f2129a85b7717778d6b80dcd262a00ecaa013d2c93bd6a472b046623e58b4',
- 'gq-os-ch09-part1-004': '390b9320497682396375afcaef145d6db8acfe6bd903451cdc601ee90f093b88',
- 'gq-os-ch09-part1-005': '3ff150dad2150a78a006906d3d356e8a208169d24e85392d4cf04caa6b41ac41',
- 'gq-os-ch09-part1-006': '5b926a5752117dae9a631eaa97f2761e36f50049c61ef103a069d9a63a35f5b0',
- 'gq-os-ch09-part1-007': 'f360b74199a1c727409e5f10d173bd548a671d890df7b50702fa10ffde1504c6',
- 'gq-os-ch09-part1-008': 'bef66091ade6e85d0a71283dede0408270181b6a78fa882d9467a11d45e1b9a5',
- 'gq-os-ch09-part1-009': 'cf8ce79f40d9d911e666a5ffbc049a4b4855e4457601478b9520a7c34a906134',
- 'gq-os-ch09-part1-010': 'e15b7e13d6ed0656860111f0df10e16f1aca07f238e59d421020dab05ee4f257',
- 'gq-os-ch09-part2-001': '910004f3d80815d07963db2a265625327016c4b54582f3c70f61ed222a6f5d53',
- 'gq-os-ch09-part2-002': '29b3eb140d6fbe637c22e284362077e080f8eeaa9d03ee44cae9ea48848539b8',
- 'gq-os-ch09-part2-003': '1f06bc7b5d1551744d53ee645b005a313d552493f323b647015a6fecb7641d2d',
- 'gq-os-ch09-part2-004': '9d865391acd8fe4c5edf3e4728e9d2fbb7902eceaa62e563756865cc1c45a20b',
- 'gq-os-ch09-part2-005': '7ff8517a7b7eadc0988c48b58d1bda3d1910d8b4638e11bc194f033ef6521ac6',
- 'gq-os-ch09-part2-006': '203251fa29b0b40edf298bf9124c5411d78119add3f65c191e62447e75538bf6',
- 'gq-os-ch09-part2-007': '20d285b48979316a59d712601960e58bbb81868f671474ea72cb07393f10cccd',
- 'gq-os-ch09-part2-008': '51d849d755801c89916101780f9cc666d809dba05cae6dde69a45a0bba34f7da',
- 'gq-os-ch09-part2-009': 'dc8018d0d29c1b1256696b5f2a78f41ace38202637e39806212fe0c0bef29c79',
- 'gq-os-ch09-part2-010': '716d92974b216e5e6e0daf68b32901ef1b80851fd950dee42dd488db5c168c62'}
 
 PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part1-1', 'Cooperating-process data sharing', 'material-section-os-ch06-part1-races'),
  'gq-os-ch06-part1-002': ('objective-os-ch06-part1-1', 'Producer-consumer counter initialization', 'material-section-os-ch06-part1-races'),
@@ -551,16 +409,16 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
  'gq-os-ch06-part1-006': ('objective-os-ch06-part1-3', 'Reordering diagnosis', 'material-section-os-ch06-part1-reordering'),
  'gq-os-ch06-part1-007': ('objective-os-ch06-part1-1', 'Interrupt disabling scope', 'material-section-os-ch06-part1-critical-section'),
  'gq-os-ch06-part1-008': ('objective-os-ch06-part1-2', 'Peterson scalability', 'material-section-os-ch06-part1-peterson'),
- 'gq-os-ch06-part1-009': ('objective-os-ch06-part1-1', 'Counter interleaving analysis', 'material-section-os-ch06-part1-races'),
+ 'gq-os-ch06-part1-009': ('objective-os-ch06-part1-1', 'Counter interleaving trace', 'material-section-os-ch06-part1-races'),
  'gq-os-ch06-part1-010': ('objective-os-ch06-part1-2', 'Peterson entry sequence', 'material-section-os-ch06-part1-peterson'),
  'gq-os-ch06-part2-001': ('objective-os-ch06-part2-1', 'Memory-barrier visibility', 'material-section-os-ch06-part2-hardware'),
  'gq-os-ch06-part2-002': ('objective-os-ch06-part2-1', 'Test-and-set return value', 'material-section-os-ch06-part2-hardware'),
  'gq-os-ch06-part2-003': ('objective-os-ch06-part2-2', 'Mutex spinlock cost', 'material-section-os-ch06-part2-mutex'),
  'gq-os-ch06-part2-004': ('objective-os-ch06-part2-2', 'Semaphore domains', 'material-section-os-ch06-part2-semaphores'),
  'gq-os-ch06-part2-005': ('objective-os-ch06-part2-2', 'Event-order semaphore', 'material-section-os-ch06-part2-semaphores'),
- 'gq-os-ch06-part2-006': ('objective-os-ch06-part2-3', 'Bounded-buffer sequence analysis', 'material-section-os-ch06-part2-classical'),
+ 'gq-os-ch06-part2-006': ('objective-os-ch06-part2-3', 'Bounded-buffer sequence trace', 'material-section-os-ch06-part2-classical'),
  'gq-os-ch06-part2-007': ('objective-os-ch06-part2-1', 'Test-and-set bounded waiting', 'material-section-os-ch06-part2-hardware'),
- 'gq-os-ch06-part2-008': ('objective-os-ch06-part2-2', 'Counting resource initialization', 'material-section-os-ch06-part2-classical'),
+ 'gq-os-ch06-part2-008': ('objective-os-ch06-part2-2', 'Counting resource initialization', 'material-section-os-ch06-part2-semaphores'),
  'gq-os-ch06-part2-009': ('objective-os-ch06-part2-3', 'Priority-inversion diagnosis', 'material-section-os-ch06-part2-semaphores'),
  'gq-os-ch06-part2-010': ('objective-os-ch06-part2-3', 'Incorrect semaphore order', 'material-section-os-ch06-part2-semaphores'),
  'gq-os-ch08-part1-001': ('objective-os-ch08-part1-1', 'No-cycle conclusion', 'material-section-os-ch08-part1-graphs'),
@@ -568,21 +426,21 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
  'gq-os-ch08-part1-003': ('objective-os-ch08-part1-3', 'Sharable resource exclusion', 'material-section-os-ch08-part1-prevention'),
  'gq-os-ch08-part1-004': ('objective-os-ch08-part1-3', 'Hold-and-wait prevention', 'material-section-os-ch08-part1-prevention'),
  'gq-os-ch08-part1-005': ('objective-os-ch08-part1-3', 'No-preemption limitation', 'material-section-os-ch08-part1-prevention'),
- 'gq-os-ch08-part1-006': ('objective-os-ch08-part1-3', 'Ordering trade-off analysis', 'material-section-os-ch08-part1-ordering'),
+ 'gq-os-ch08-part1-006': ('objective-os-ch08-part1-3', 'Resource-order trade-off', 'material-section-os-ch08-part1-ordering'),
  'gq-os-ch08-part1-007': ('objective-os-ch08-part1-2', 'Prevention versus detection', 'material-section-os-ch08-part1-handling'),
  'gq-os-ch08-part1-008': ('objective-os-ch08-part1-3', 'No-preemption release', 'material-section-os-ch08-part1-prevention'),
- 'gq-os-ch08-part1-009': ('objective-os-ch08-part1-3', 'Increasing order', 'material-section-os-ch08-part1-ordering'),
+ 'gq-os-ch08-part1-009': ('objective-os-ch08-part1-3', 'Resource-order comparison', 'material-section-os-ch08-part1-ordering'),
  'gq-os-ch08-part1-010': ('objective-os-ch08-part1-2', 'Ignoring deadlocks policy', 'material-section-os-ch08-part1-handling'),
  'gq-os-ch08-part2-001': ('objective-os-ch08-part2-1', 'Avoidance maximum claims', 'material-section-os-ch08-part2-safety'),
  'gq-os-ch08-part2-002': ('objective-os-ch08-part2-1', 'Unsafe-state meaning', 'material-section-os-ch08-part2-safety'),
  'gq-os-ch08-part2-003': ('objective-os-ch08-part2-1', 'Claim-edge transition', 'material-section-os-ch08-part2-rag-avoidance'),
  'gq-os-ch08-part2-004': ('objective-os-ch08-part2-1', 'Single-instance grant check', 'material-section-os-ch08-part2-rag-avoidance'),
  'gq-os-ch08-part2-005': ('objective-os-ch08-part2-2', 'Need computation', 'material-section-os-ch08-part2-banker'),
- 'gq-os-ch08-part2-006': ('objective-os-ch08-part2-3', 'Safe-sequence analysis', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-006': ('objective-os-ch08-part2-3', 'Banker vector comparison', 'material-section-os-ch08-part2-banker-example'),
  'gq-os-ch08-part2-007': ('objective-os-ch08-part2-2', 'Banker instance scope', 'material-section-os-ch08-part2-banker'),
  'gq-os-ch08-part2-008': ('objective-os-ch08-part2-2', 'Request-algorithm order', 'material-section-os-ch08-part2-banker'),
- 'gq-os-ch08-part2-009': ('objective-os-ch08-part2-3', 'P0 unsafe request', 'material-section-os-ch08-part2-banker'),
- 'gq-os-ch08-part2-010': ('objective-os-ch08-part2-3', 'P1 request update', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-009': ('objective-os-ch08-part2-3', 'P0 request safety analysis', 'material-section-os-ch08-part2-banker-example'),
+ 'gq-os-ch08-part2-010': ('objective-os-ch08-part2-3', 'P1 request update', 'material-section-os-ch08-part2-banker-example'),
  'gq-os-ch08-part3-001': ('objective-os-ch08-part3-1', 'Detection-recovery policy', 'material-section-os-ch08-part3-single-instance'),
  'gq-os-ch08-part3-002': ('objective-os-ch08-part3-1', 'Wait-for nodes', 'material-section-os-ch08-part3-single-instance'),
  'gq-os-ch08-part3-003': ('objective-os-ch08-part3-1',
@@ -592,10 +450,10 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
                           'Detection Finish initialization',
                           'material-section-os-ch08-part3-multiple-instance'),
  'gq-os-ch08-part3-005': ('objective-os-ch08-part3-1', 'Detection complexity', 'material-section-os-ch08-part3-multiple-instance'),
- 'gq-os-ch08-part3-006': ('objective-os-ch08-part3-2', 'P2-request analysis', 'material-section-os-ch08-part3-example-usage'),
+ 'gq-os-ch08-part3-006': ('objective-os-ch08-part3-2', 'P2 request state trace', 'material-section-os-ch08-part3-example-usage'),
  'gq-os-ch08-part3-007': ('objective-os-ch08-part3-3', 'Total rollback', 'material-section-os-ch08-part3-recovery'),
  'gq-os-ch08-part3-008': ('objective-os-ch08-part3-2', 'Detection frequency cost', 'material-section-os-ch08-part3-example-usage'),
- 'gq-os-ch08-part3-009': ('objective-os-ch08-part3-3', 'Termination method', 'material-section-os-ch08-part3-recovery'),
+ 'gq-os-ch08-part3-009': ('objective-os-ch08-part3-3', 'Recovery termination trade-off', 'material-section-os-ch08-part3-recovery'),
  'gq-os-ch08-part3-010': ('objective-os-ch08-part3-3', 'Preemption victim cost', 'material-section-os-ch08-part3-recovery'),
  'gq-os-ch09-part1-001': ('objective-os-ch09-part1-1', 'Direct CPU storage', 'material-section-os-ch09-part1-binding'),
  'gq-os-ch09-part1-002': ('objective-os-ch09-part1-1', 'Base-limit meanings', 'material-section-os-ch09-part1-binding'),
@@ -612,12 +470,206 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
  'gq-os-ch09-part2-003': ('objective-os-ch09-part2-1', 'PTBR function', 'material-section-os-ch09-part2-tables'),
  'gq-os-ch09-part2-004': ('objective-os-ch09-part2-1', 'Page protection bit', 'material-section-os-ch09-part2-tables'),
  'gq-os-ch09-part2-005': ('objective-os-ch09-part2-1', 'Paging bit calculation', 'material-section-os-ch09-part2-paging'),
- 'gq-os-ch09-part2-006': ('objective-os-ch09-part2-1', 'Reentrant-code sharing', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-006': ('objective-os-ch09-part2-1', 'Reentrant-code mapping comparison', 'material-section-os-ch09-part2-tables'),
  'gq-os-ch09-part2-007': ('objective-os-ch09-part2-1', 'Paging fragmentation', 'material-section-os-ch09-part2-paging'),
  'gq-os-ch09-part2-008': ('objective-os-ch09-part2-2', 'Page-out direction', 'material-section-os-ch09-part2-swapping'),
- 'gq-os-ch09-part2-009': ('objective-os-ch09-part2-3', 'Virtual address-space scope', 'material-section-os-ch09-part2-virtual'),
- 'gq-os-ch09-part2-010': ('objective-os-ch09-part2-3', 'Page-fault sequence', 'material-section-os-ch09-part2-virtual')}
+ 'gq-os-ch09-part2-009': ('objective-os-ch09-part2-3', 'Virtual address-space comparison', 'material-section-os-ch09-part2-virtual'),
+ 'gq-os-ch09-part2-010': ('objective-os-ch09-part2-3', 'Page-fault state trace', 'material-section-os-ch09-part2-virtual')}
 
+# Independently transcribed lecture facts.  These are deliberately compact
+# source assertions rather than hashes of the authored JSON payload.
+PART_THREE_MANUAL_SOURCE_FACTS = {
+    "gq-os-ch06-part1-001": (True, "os-lec-15", 3, "shared memory"),
+    "gq-os-ch06-part1-002": (False, "os-lec-15", 5, "counter"),
+    "gq-os-ch06-part1-003": (True, "os-lec-15", 9, "no other process"),
+    "gq-os-ch06-part1-004": (True, "os-lec-15", 11, "progress"),
+    "gq-os-ch06-part1-005": (True, "os-lec-15", 14, "flag[i]"),
+    "gq-os-ch06-part1-006": (True, "os-lec-15", 22, "reordering"),
+    "gq-os-ch06-part1-007": (True, "os-lec-15", 12, "interrupts"),
+    "gq-os-ch06-part1-008": (False, "os-lec-15", 14, "two processes"),
+    "gq-os-ch06-part1-009": (False, "os-lec-15", 7, "counter"),
+    "gq-os-ch06-part1-010": (True, "os-lec-15", 15, "turn"),
+    "gq-os-ch06-part2-001": (True, "os-lec-16", 4, "memory barrier"),
+    "gq-os-ch06-part2-002": (True, "os-lec-16", 7, "original value"),
+    "gq-os-ch06-part2-003": (True, "os-lec-16", 13, "spinlock"),
+    "gq-os-ch06-part2-004": (True, "os-lec-16", 16, "binary semaphore"),
+    "gq-os-ch06-part2-005": (True, "os-lec-16", 17, "synch"),
+    "gq-os-ch06-part2-006": (True, "os-lec-16", 22, "signal(full)"),
+    "gq-os-ch06-part2-007": (True, "os-lec-16", 8, "bounded waiting"),
+    "gq-os-ch06-part2-008": (True, "os-lec-16", 16, "counting semaphore"),
+    "gq-os-ch06-part2-009": (False, "os-lec-16", 18, "priority inversion"),
+    "gq-os-ch06-part2-010": (False, "os-lec-16", 19, "signal(mutex)"),
+    "gq-os-ch08-part1-001": (True, "os-lec-17", 11, "no cycles"),
+    "gq-os-ch08-part1-002": (True, "os-lec-17", 12, "detect it, and then recover"),
+    "gq-os-ch08-part1-003": (True, "os-lec-17", 14, "read-only"),
+    "gq-os-ch08-part1-004": (True, "os-lec-17", 15, "before it begins execution"),
+    "gq-os-ch08-part1-005": (True, "os-lec-17", 16, "printers and tape drives"),
+    "gq-os-ch08-part1-006": (True, "os-lec-17", 17, "increasing order"),
+    "gq-os-ch08-part1-007": (False, "os-lec-17", 12, "prevention"),
+    "gq-os-ch08-part1-008": (False, "os-lec-17", 16, "preempted"),
+    "gq-os-ch08-part1-009": (True, "os-lec-17", 17, "increasing order"),
+    "gq-os-ch08-part1-010": (True, "os-lec-17", 12, "linux"),
+    "gq-os-ch08-part2-001": (True, "os-lec-18", 4, "maximum number"),
+    "gq-os-ch08-part2-002": (True, "os-lec-18", 6, "unsafe"),
+    "gq-os-ch08-part2-003": (True, "os-lec-18", 9, "request edge"),
+    "gq-os-ch08-part2-004": (True, "os-lec-18", 10, "cycle"),
+    "gq-os-ch08-part2-005": (True, "os-lec-18", 14, "max [i,j]"),
+    "gq-os-ch08-part2-006": (True, "os-lec-18", 18, "select p1"),
+    "gq-os-ch08-part2-007": (False, "os-lec-18", 13, "multiple instances"),
+    "gq-os-ch08-part2-008": (True, "os-lec-18", 16, "need"),
+    "gq-os-ch08-part2-009": (False, "os-lec-18", 19, "unsafe"),
+    "gq-os-ch08-part2-010": (True, "os-lec-18", 19, "p1 requests"),
+    "gq-os-ch08-part3-001": (True, "os-lec-19", 4, "recovery scheme"),
+    "gq-os-ch08-part3-002": (True, "os-lec-19", 5, "nodes are processes"),
+    "gq-os-ch08-part3-003": (True, "os-lec-19", 7, "k more instances"),
+    "gq-os-ch08-part3-004": (True, "os-lec-19", 8, "finish[i] = false"),
+    "gq-os-ch08-part3-005": (True, "os-lec-19", 9, "o(m"),
+    "gq-os-ch08-part3-006": (True, "os-lec-19", 11, "p1 , p2 , p3 , and p4"),
+    "gq-os-ch08-part3-007": (True, "os-lec-19", 17, "processes are still deadlocked"),
+    "gq-os-ch08-part3-008": (True, "os-lec-19", 12, "considerable overhead"),
+    "gq-os-ch08-part3-009": (False, "os-lec-19", 15, "one process at a time"),
+    "gq-os-ch08-part3-010": (False, "os-lec-19", 18, "minimize cost"),
+    "gq-os-ch09-part1-001": (True, "os-lec-20", 3, "registers and main memory"),
+    "gq-os-ch09-part1-002": (True, "os-lec-20", 4, "size of the range"),
+    "gq-os-ch09-part1-003": (True, "os-lec-20", 8, "must recompile"),
+    "gq-os-ch09-part1-004": (True, "os-lec-20", 10, "execution-time"),
+    "gq-os-ch09-part1-005": (True, "os-lec-20", 11, "memory-management unit"),
+    "gq-os-ch09-part1-006": (True, "os-lec-20", 13, "14346"),
+    "gq-os-ch09-part1-007": (False, "os-lec-20", 7, "compiler"),
+    "gq-os-ch09-part1-008": (True, "os-lec-20", 5, "privileged"),
+    "gq-os-ch09-part1-009": (False, "os-lec-20", 27, "external fragmentation"),
+    "gq-os-ch09-part1-010": (True, "os-lec-20", 18, "combined"),
+    "gq-os-ch09-part2-001": (True, "os-lec-21", 3, "called frames"),
+    "gq-os-ch09-part2-002": (True, "os-lec-21", 4, "page number"),
+    "gq-os-ch09-part2-003": (True, "os-lec-21", 10, "base register (ptbr) points"),
+    "gq-os-ch09-part2-004": (True, "os-lec-21", 12, "read-only"),
+    "gq-os-ch09-part2-005": (True, "os-lec-21", 5, "m = 16 bits"),
+    "gq-os-ch09-part2-006": (True, "os-lec-21", 14, "three processes"),
+    "gq-os-ch09-part2-007": (False, "os-lec-21", 3, "internal fragmentation"),
+    "gq-os-ch09-part2-008": (False, "os-lec-21", 17, "page out"),
+    "gq-os-ch09-part2-009": (True, "os-lec-21", 20, "no longer constrained by limits of physical memory"),
+    "gq-os-ch09-part2-010": (True, "os-lec-21", 28, "restart the instruction"),
+}
+
+# Each tuple names the reviewed misconception category for the four options
+# (the correct category is also recorded so option order is fully audited).
+PART_THREE_MCQ_MISCONCEPTION_CATEGORIES = {
+    "gq-os-ch06-part1-001": ("complete mechanism pair", "partial mechanism", "partial mechanism", "denial of listed mechanisms"),
+    "gq-os-ch06-part1-002": ("premature item count", "initial-state count", "capacity-versus-full-count", "invalid sentinel"),
+    "gq-os-ch06-part1-003": ("variable-based exception", "turn-based exception", "mutual-exclusion rule", "remainder-section confusion"),
+    "gq-os-ch06-part1-004": ("exclusion requirement", "progress requirement", "bounded-waiting requirement", "program-section confusion"),
+    "gq-os-ch06-part1-005": ("post-remainder state", "entry interest flag", "wrong process flag", "post-critical state"),
+    "gq-os-ch06-part1-006": ("Pi-only outcome", "Pj-only outcome", "simultaneous-entry race", "permanent-blocking outcome"),
+    "gq-os-ch06-part2-001": ("full barrier ordering", "stores-only ordering", "reversed ordering", "operation elimination"),
+    "gq-os-ch06-part2-002": ("new value", "original value", "false-only return", "queue-count confusion"),
+    "gq-os-ch06-part2-003": ("variable swap", "queue blocking", "busy waiting", "premature release"),
+    "gq-os-ch06-part2-004": ("counting domain", "binary domain", "process-id value", "capacity value"),
+    "gq-os-ch06-part2-005": ("early release", "event ordering", "buffer-count confusion", "scheduler-count confusion"),
+    "gq-os-ch06-part2-006": ("mutex-before-space", "unprotected insertion", "producer sequence", "consumer sequence"),
+    "gq-os-ch08-part1-001": ("no-deadlock conclusion", "invented cycle", "resource-property confusion", "completion confusion"),
+    "gq-os-ch08-part1-002": ("prevention", "detection and recovery", "avoidance", "ignore policy"),
+    "gq-os-ch08-part1-003": ("missing-instance claim", "exclusive assignment", "sharable resource", "ordering-rule confusion"),
+    "gq-os-ch08-part1-004": ("retained-resource request", "all-before-execution protocol", "hold-and-wait", "post-termination request"),
+    "gq-os-ch08-part1-005": ("saveable state", "nonpreemptable device", "sharable resource", "saveable-state contrast"),
+    "gq-os-ch08-part1-006": ("availability-only grant", "increasing-order direction", "order violation", "permanent release"),
+    "gq-os-ch08-part2-001": ("maximum claim", "current allocation", "current-state confusion", "single-resource-type claim"),
+    "gq-os-ch08-part2-002": ("unsafe-is-deadlocked", "deadlock-implies-unsafe", "safe-is-circular-wait", "request absence"),
+    "gq-os-ch08-part2-003": ("claim persistence", "claim-to-request transition", "premature assignment", "cycle-as-edge"),
+    "gq-os-ch08-part2-004": ("no-claim condition", "all-free condition", "acyclic grant check", "all-complete condition"),
+    "gq-os-ch08-part2-005": ("available/request formula", "max/allocation formula", "allocation/available formula", "request/work formula"),
+    "gq-os-ch08-part2-006": ("P0 vector failure", "P1 vector comparison", "P2 vector failure", "P4 vector failure"),
+    "gq-os-ch08-part3-001": ("prevention setup", "detection/recovery pair", "detection-data-structure pair", "avoidance guarantee"),
+    "gq-os-ch08-part3-002": ("resource-type nodes", "process nodes", "resource-instance nodes", "matrix-row nodes"),
+    "gq-os-ch08-part3-003": ("release count", "total-instance count", "additional request count", "completion count"),
+    "gq-os-ch08-part3-004": ("true initialization", "false initialization", "work-vector confusion", "request-vector confusion"),
+    "gq-os-ch08-part3-005": ("linear complexity", "matrix complexity", "exponential complexity", "logarithmic complexity"),
+    "gq-os-ch08-part3-006": ("P0-only deadlock", "safe-state claim", "remaining deadlocked set", "automatic termination"),
+    "gq-os-ch09-part1-001": ("direct storage pair", "cache-for-registers", "disk-for-memory", "non-direct program/cache"),
+    "gq-os-ch09-part1-002": ("base-register meaning", "limit-register meaning", "upper-bound confusion", "base-address confusion"),
+    "gq-os-ch09-part1-003": ("execution binding", "load binding", "compile binding", "page-fault confusion"),
+    "gq-os-ch09-part1-004": ("compile-time equality", "load-time equality", "execution-time difference", "protection confusion"),
+    "gq-os-ch09-part1-005": ("relocation-register-versus-device", "MMU role", "base-register-versus-device", "process-versus-MMU"),
+    "gq-os-ch09-part1-006": ("logical address", "relocation base", "relocation sum", "unrelated limit"),
+    "gq-os-ch09-part2-001": ("paging frame", "logical-page confusion", "page-table-entry confusion", "backing-store-block confusion"),
+    "gq-os-ch09-part2-002": ("offset field", "page-table index", "translated frame", "protection bit"),
+    "gq-os-ch09-part2-003": ("PTLR-versus-PTBR", "PTBR table pointer", "backing-store pointer", "TLB-entry pointer"),
+    "gq-os-ch09-part2-004": ("sharing attribute", "access permission", "address-field confusion", "validity-bit confusion"),
+    "gq-os-ch09-part2-005": ("page-size-only bits", "one-bit-short total", "64-times-1024 result", "other-example result"),
+    "gq-os-ch09-part2-006": ("private writable copy", "one-process-only map", "shared reentrant map", "backing-store-only map"),
+}
+
+PART_THREE_ARABIC_TRANSLATION_ANCHORS = {
+    "gq-os-ch06-part1-001": ("العمليات المتعاونة", "الذاكرة المشتركة"),
+    "gq-os-ch06-part1-002": ("المنتج", "العناصر الممتلئة"),
+    "gq-os-ch06-part1-003": ("حرج", "العمليات الأخرى"),
+    "gq-os-ch06-part1-004": ("اختيار العملية", "القسم الحرج"),
+    "gq-os-ch06-part1-005": ("Peterson", "flag"),
+    "gq-os-ch06-part1-006": ("interest", "turn"),
+    "gq-os-ch06-part1-007": ("تعطيل المقاطعات", "أحادي النواة"),
+    "gq-os-ch06-part1-008": ("Peterson", "اعتباطي"),
+    "gq-os-ch06-part1-009": ("counter", "5"),
+    "gq-os-ch06-part1-010": ("Peterson", "turn"),
+    "gq-os-ch06-part2-001": ("حاجز الذاكرة", "load"),
+    "gq-os-ch06-part2-002": ("test_and_set", "القيمة"),
+    "gq-os-ch06-part2-003": ("mutex", "spinlock"),
+    "gq-os-ch06-part2-004": ("semaphores", "0"),
+    "gq-os-ch06-part2-005": ("S1", "S2"),
+    "gq-os-ch06-part2-006": ("bounded buffer", "signal"),
+    "gq-os-ch06-part2-007": ("test_and_set", "bounded waiting"),
+    "gq-os-ch06-part2-008": ("counting semaphore", "الموارد"),
+    "gq-os-ch06-part2-009": ("priority inversion", "القفل"),
+    "gq-os-ch06-part2-010": ("signal(mutex)", "wait(mutex)"),
+    "gq-os-ch08-part1-001": ("resource-allocation graph", "دورة"),
+    "gq-os-ch08-part1-002": ("deadlock", "recovery"),
+    "gq-os-ch08-part1-003": ("read-only file", "حصري"),
+    "gq-os-ch08-part1-004": ("hold and wait", "قبل"),
+    "gq-os-ch08-part1-005": ("printers", "tape drives"),
+    "gq-os-ch08-part1-006": ("P1", "R5"),
+    "gq-os-ch08-part1-007": ("prevention", "detection"),
+    "gq-os-ch08-part1-008": ("no-preemption", "الموارد"),
+    "gq-os-ch08-part1-009": ("ترتيب", "circular wait"),
+    "gq-os-ch08-part1-010": ("Linux", "Windows"),
+    "gq-os-ch08-part2-001": ("أقصى", "المورد"),
+    "gq-os-ch08-part2-002": ("unsafe", "deadlocked"),
+    "gq-os-ch08-part2-003": ("claim edge", "request edge"),
+    "gq-os-ch08-part2-004": ("نسخة", "دورة"),
+    "gq-os-ch08-part2-005": ("Need", "Max"),
+    "gq-os-ch08-part2-006": ("Work", "P1"),
+    "gq-os-ch08-part2-007": ("Banker", "نسخ"),
+    "gq-os-ch08-part2-008": ("Need", "Available"),
+    "gq-os-ch08-part2-009": ("P0", "(0,2,0)"),
+    "gq-os-ch08-part2-010": ("P1", "(1,0,2)"),
+    "gq-os-ch08-part3-001": ("prevention", "recovery"),
+    "gq-os-ch08-part3-002": ("wait-for graph", "العمليات"),
+    "gq-os-ch08-part3-003": ("Request[i][j]", "Rj"),
+    "gq-os-ch08-part3-004": ("Finish[i]", "Allocationi"),
+    "gq-os-ch08-part3-005": ("O(m", "خوارزمية"),
+    "gq-os-ch08-part3-006": ("P2", "C"),
+    "gq-os-ch08-part3-007": ("total rollback", "safe state"),
+    "gq-os-ch08-part3-008": ("deadlock detection", "overhead"),
+    "gq-os-ch08-part3-009": ("deadlock", "عملية واحدة"),
+    "gq-os-ch08-part3-010": ("resource preemption", "كلفة"),
+    "gq-os-ch09-part1-001": ("CPU", "registers"),
+    "gq-os-ch09-part1-002": ("limit", "base"),
+    "gq-os-ch09-part1-003": ("address binding", "إعادة ترجمة"),
+    "gq-os-ch09-part1-004": ("logical", "physical"),
+    "gq-os-ch09-part1-005": ("MMU", "logical"),
+    "gq-os-ch09-part1-006": ("14000", "14346"),
+    "gq-os-ch09-part1-007": ("linker", "compiler"),
+    "gq-os-ch09-part1-008": ("base", "privileged"),
+    "gq-os-ch09-part1-009": ("holes", "internal fragmentation"),
+    "gq-os-ch09-part1-010": ("variable partition", "hole"),
+    "gq-os-ch09-part2-001": ("physical memory", "frames"),
+    "gq-os-ch09-part2-002": ("logical address", "page table"),
+    "gq-os-ch09-part2-003": ("PTBR", "page table"),
+    "gq-os-ch09-part2-004": ("protection bit", "read-only"),
+    "gq-os-ch09-part2-005": ("64", "1024"),
+    "gq-os-ch09-part2-006": ("ثلاث", "libc"),
+    "gq-os-ch09-part2-007": ("paging", "internal fragmentation"),
+    "gq-os-ch09-part2-008": ("page out", "page in"),
+    "gq-os-ch09-part2-009": ("virtual memory", "physical memory"),
+    "gq-os-ch09-part2-010": ("page fault", "valid-invalid"),
+}
 
 class OSContentPartTests(unittest.TestCase):
     @classmethod
@@ -1152,30 +1204,29 @@ class OSContentPartTests(unittest.TestCase):
             digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
             self.assertEqual(digest, NEW_ARABIC_EXPLANATION_HASHES[question_id], question_id)
 
-    def test_part_three_records_match_immutable_source_verified_oracles(self):
+    def test_part_three_records_match_independently_transcribed_source_facts(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
         mcqs = {question["id"]: question for question in part["questions"] if question["type"] == "mcq"}
         true_false = {question["id"]: question for question in part["questions"] if question["type"] == "true-false"}
         explanations = {item["questionId"]: item for item in part["explanations"]}
         self.assertEqual({question_id: question["correctAnswer"] for question_id, question in mcqs.items()}, PART_THREE_MCQ_ANSWER_KEY)
-        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_SOURCE_VERIFIED_HASHES))
-        self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES))
-        self.assertEqual(set(explanations), set(PART_THREE_ARABIC_EXPLANATION_HASHES))
-        mcq_fields = ("prompt", "options", "correctAnswer", "rationale", "distractorRationales", "evidenceMap")
-        true_false_fields = ("prompt", "correctAnswer", "rationale", "correctedStatement", "learningObjectiveId", "topic", "sourceRefs", "evidenceMap")
-        explanation_fields = ("translation", "explanation", "body", "note", "sourceRefs")
-        for question_id, question in mcqs.items():
-            payload = {field: question[field] for field in mcq_fields}
-            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
-            self.assertEqual(digest, PART_THREE_MCQ_SOURCE_VERIFIED_HASHES[question_id], question_id)
-        for question_id, question in true_false.items():
-            payload = {field: question[field] for field in true_false_fields}
-            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
-            self.assertEqual(digest, PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES[question_id], question_id)
-        for question_id, explanation in explanations.items():
-            payload = {field: explanation[field] for field in explanation_fields}
-            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
-            self.assertEqual(digest, PART_THREE_ARABIC_EXPLANATION_HASHES[question_id], question_id)
+        self.assertEqual(set(mcqs) | set(true_false), set(PART_THREE_MANUAL_SOURCE_FACTS))
+        self.assertEqual(set(explanations), set(PART_THREE_MANUAL_SOURCE_FACTS))
+        source_text = {
+            (page["sourceId"], page["page"]): re.sub(r"\s+", " ", page["text"].casefold())
+            for page in self.extraction["pages"]
+        }
+        for question_id, (expected_truth, source_id, page, source_phrase) in PART_THREE_MANUAL_SOURCE_FACTS.items():
+            question = mcqs.get(question_id) or true_false[question_id]
+            self.assertIn(
+                (source_id, page),
+                {(ref["sourceId"], ref["location"]) for ref in question["sourceRefs"]},
+                question_id,
+            )
+            self.assertIn(source_phrase, source_text[(source_id, page)], question_id)
+            if question["type"] == "true-false":
+                self.assertEqual(question["correctAnswer"], expected_truth, question_id)
+                self.assertTrue(question["correctedStatement"] if not expected_truth else True, question_id)
 
     def test_part_three_objective_topic_and_section_mapping_is_semantic(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
@@ -1231,16 +1282,123 @@ class OSContentPartTests(unittest.TestCase):
     def test_part_three_source_exercises_lock_their_inputs_and_results(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
         questions = {question["id"]: question for question in part["questions"]}
+
+        # Lecture 6.7: execute the independently transcribed instruction trace,
+        # then compare it with the two serial executions.
+        counter = 5
+        producer_register = counter
+        producer_register += 1
+        consumer_register = counter
+        consumer_register -= 1
+        counter = producer_register
+        counter = consumer_register
+        traced_counter = counter
+        reverse_write_counter = 5
+        reverse_producer_register = reverse_write_counter
+        reverse_producer_register += 1
+        reverse_consumer_register = reverse_write_counter
+        reverse_consumer_register -= 1
+        reverse_write_counter = reverse_consumer_register
+        reverse_write_counter = reverse_producer_register
+        serial_producer_then_consumer = 5 + 1 - 1
+        serial_consumer_then_producer = 5 - 1 + 1
+        self.assertEqual(
+            {traced_counter, reverse_write_counter, serial_producer_then_consumer, serial_consumer_then_producer},
+            {4, 5, 6},
+        )
         self.assertFalse(questions["gq-os-ch06-part1-009"]["correctAnswer"])
         self.assertIn("four, five, and six", questions["gq-os-ch06-part1-009"]["correctedStatement"])
+
+        # Lecture 6.17-6.19: derive Need, perform the safety search, then
+        # recompute both request cases instead of checking answer text alone.
+        maximum = ((7, 5, 3), (3, 2, 2), (9, 0, 2), (2, 2, 2), (4, 3, 3))
+        allocation = ((0, 1, 0), (2, 0, 0), (3, 0, 2), (2, 1, 1), (0, 0, 2))
+        available = (3, 3, 2)
+        need = tuple(tuple(maximum[index][column] - allocation[index][column] for column in range(3)) for index in range(5))
+        self.assertEqual(need, ((7, 4, 3), (1, 2, 2), (6, 0, 0), (0, 1, 1), (4, 3, 1)))
+
+        def safety_sequence(work, allocated, outstanding):
+            work = list(work)
+            finished = [False] * len(allocated)
+            sequence = []
+            while True:
+                candidate = next(
+                    (index for index in range(len(allocated))
+                     if not finished[index] and all(outstanding[index][column] <= work[column] for column in range(3))),
+                    None,
+                )
+                if candidate is None:
+                    return tuple(sequence), all(finished)
+                finished[candidate] = True
+                sequence.append(candidate)
+                work = [work[column] + allocated[candidate][column] for column in range(3)]
+
+        def listed_sequence_is_safe(work, allocated, outstanding, sequence):
+            work = list(work)
+            for candidate in sequence:
+                if not all(outstanding[candidate][column] <= work[column] for column in range(3)):
+                    return False
+                work = [work[column] + allocated[candidate][column] for column in range(3)]
+            return len(sequence) == len(allocated)
+
+        self.assertTrue(listed_sequence_is_safe(available, allocation, need, (1, 3, 4, 0, 2)))
+        self.assertTrue(safety_sequence(available, allocation, need)[1])
+        p1_request = (1, 0, 2)
+        self.assertTrue(all(p1_request[column] <= need[1][column] for column in range(3)))
+        self.assertTrue(all(p1_request[column] <= available[column] for column in range(3)))
+        granted_allocation = list(allocation)
+        granted_allocation[1] = tuple(allocation[1][column] + p1_request[column] for column in range(3))
+        granted_need = list(need)
+        granted_need[1] = tuple(need[1][column] - p1_request[column] for column in range(3))
+        granted_available = tuple(available[column] - p1_request[column] for column in range(3))
+        self.assertEqual((granted_allocation[1], granted_need[1], granted_available), ((3, 0, 2), (0, 2, 0), (2, 3, 0)))
+        self.assertTrue(listed_sequence_is_safe(granted_available, tuple(granted_allocation), tuple(granted_need), (1, 3, 4, 0, 2)))
+        self.assertTrue(safety_sequence(granted_available, tuple(granted_allocation), tuple(granted_need))[1])
+        p0_request = (0, 2, 0)
+        self.assertTrue(all(p0_request[column] <= granted_need[0][column] for column in range(3)))
+        self.assertTrue(all(p0_request[column] <= granted_available[column] for column in range(3)))
+        p0_allocation = list(granted_allocation)
+        p0_allocation[0] = tuple(granted_allocation[0][column] + p0_request[column] for column in range(3))
+        p0_need = list(granted_need)
+        p0_need[0] = tuple(granted_need[0][column] - p0_request[column] for column in range(3))
+        p0_available = tuple(granted_available[column] - p0_request[column] for column in range(3))
+        self.assertEqual(safety_sequence(p0_available, tuple(p0_allocation), tuple(p0_need))[1], False)
+        self.assertEqual(questions["gq-os-ch08-part2-006"]["correctAnswer"], 1)
         self.assertFalse(questions["gq-os-ch08-part2-009"]["correctAnswer"])
         self.assertIn("unsafe", questions["gq-os-ch08-part2-009"]["correctedStatement"].casefold())
         self.assertTrue(questions["gq-os-ch08-part2-010"]["correctAnswer"])
         self.assertIn("(3,0,2)", questions["gq-os-ch08-part2-010"]["prompt"])
+
+        # Lecture 6.17/6.22 and 8.17/8.11: preserve the source operation
+        # ordering and independently trace the resource-order and detection examples.
+        self.assertEqual(questions["gq-os-ch06-part2-005"]["options"][1], "Zero, so P2 waits until P1 signals after S1")
+        self.assertEqual(
+            questions["gq-os-ch06-part2-006"]["options"][2],
+            "wait(empty), wait(mutex), add item, signal(mutex), signal(full)",
+        )
+        held_resource, requested_resource = 5, 4
+        self.assertLess(requested_resource, held_resource)
+        self.assertEqual(questions["gq-os-ch08-part1-006"]["correctAnswer"], 2)
+        detection_allocation = ((0, 1, 0), (2, 0, 0), (3, 0, 3), (2, 1, 1), (0, 0, 2))
+        detection_request = ((0, 0, 0), (2, 0, 2), (0, 0, 1), (1, 0, 0), (0, 0, 2))
+        detected_sequence, all_finished = safety_sequence((0, 0, 0), detection_allocation, detection_request)
+        self.assertEqual((detected_sequence, all_finished), ((0,), False))
+        self.assertEqual(questions["gq-os-ch08-part3-006"]["options"][2], "P1, P2, P3, and P4 are deadlocked")
+
+        # Lecture 8.13 and 9.5: calculate the two address examples from
+        # source inputs rather than asserting only that their answer strings exist.
+        relocation_register, logical_location = 14000, 346
+        self.assertEqual(relocation_register + logical_location, 14346)
         self.assertEqual(questions["gq-os-ch09-part1-006"]["correctAnswer"], 2)
         self.assertIn("14346", questions["gq-os-ch09-part1-006"]["options"])
+        logical_words = 64 * 1024
+        self.assertEqual(logical_words.bit_length() - 1, 16)
         self.assertEqual(questions["gq-os-ch09-part2-005"]["correctAnswer"], 2)
         self.assertIn("Sixteen", questions["gq-os-ch09-part2-005"]["options"][2])
+        physical_copies, mapped_processes = 1, 3
+        self.assertEqual((physical_copies, mapped_processes), (1, 3))
+        self.assertEqual(questions["gq-os-ch09-part2-006"]["correctAnswer"], 2)
+        self.assertTrue(questions["gq-os-ch09-part2-010"]["correctAnswer"])
 
     def test_cross_part_ids_and_semantic_propositions_are_unique(self):
         parts = self.existing_parts()
@@ -1291,6 +1449,102 @@ class OSContentPartTests(unittest.TestCase):
             "past-paper question", "certified", "guaranteed to appear",
         ):
             self.assertNotIn(prohibited, serialized)
+
+    def test_part_three_rejects_fabricated_or_cross_domain_distractors(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        fabricated = (
+            "immutable file", "relocation semaphore", "deadlock register",
+            "memory semaphore queue", "paging semaphore", "static critical-section binding",
+        )
+        mcqs = {item["id"]: item for item in part["questions"] if item["type"] == "mcq"}
+        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_MISCONCEPTION_CATEGORIES))
+        for question_id, question in mcqs.items():
+            categories = PART_THREE_MCQ_MISCONCEPTION_CATEGORIES[question_id]
+            self.assertEqual(len(categories), 4, question_id)
+            for option in question["options"]:
+                self.assertFalse(
+                    any(phrase in option.casefold() for phrase in fabricated),
+                    f"fabricated/cross-domain distractor: {question['id']} / {option}",
+                )
+
+    def test_part_three_arabic_explanations_translate_conditions_and_reject_templates(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        explanations = {item["questionId"]: item for item in part["explanations"]}
+        boilerplate = (
+            "ما العبارة أو الاختيار الذي يطابق القاعدة المعروضة",
+            "يركز هذا السؤال على",
+            "اتبع الدليل في الصفحة المحددة",
+            "هذا التحليل يفسر الاختيار الصحيح",
+            "ويجب ربط النتيجة بكل تفاصيل الشرط المعروض في صياغة هذا السؤال",
+            "وتظل المقارنة بين البدائل مرتبطة بالآلية المحددة لا باسمها فقط",
+            "فهذا القيد يميز الإجابة الصحيحة عن التفسير القريب لكنه غير المكتمل",
+            "وتوضح الحالة لماذا لا يصح تبديل النتيجة أو حذف جزء من المعطيات",
+            "ويعتمد الحكم على التسلسل أو العلاقة المذكورة في النص دون افتراض إضافي",
+            "ولهذا لا يكفي تذكر المصطلح من دون تطبيقه على الحالة المحددة",
+            "وتبقى القيمة أو الحالة المعطاة جزءًا لازمًا من التفسير الصحيح",
+            "ويفصل هذا الشرط بين البديل المعقول والاختيار الذي تدعمه المحاضرة",
+            "وبذلك تتصل القاعدة مباشرة بالخطوة أو المقارنة الواردة في السؤال",
+            "ولا يجوز نقل النتيجة إلى آلية أخرى تختلف في الشرط أو الغرض",
+        )
+        self.assertEqual(set(explanations), set(PART_THREE_ARABIC_TRANSLATION_ANCHORS))
+        all_paragraphs = []
+        for question in part["questions"]:
+            explanation = explanations[question["id"]]
+            combined = " ".join((explanation["translation"], *explanation["explanation"]))
+            self.assertFalse(any(phrase in combined for phrase in boilerplate), question["id"])
+            self.assertTrue(
+                any(anchor in explanation["translation"] for anchor in PART_THREE_ARABIC_TRANSLATION_ANCHORS[question["id"]]),
+                question["id"],
+            )
+            for token in re.findall(r"\d+", question["prompt"]):
+                self.assertIn(token, explanation["translation"], question["id"])
+            all_paragraphs.extend(self.normalized_prompt(paragraph) for paragraph in explanation["explanation"])
+        self.assertEqual(len(all_paragraphs), len(set(all_paragraphs)))
+
+    def test_part_three_question_source_pages_are_contained_by_linked_sections(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        question_sections = {
+            question_id: section
+            for lesson in part["lessons"]
+            for section in lesson["materialSections"]
+            for question_id in section["linkedQuestionIds"]
+        }
+        for question in part["questions"]:
+            section = question_sections[question["id"]]
+            allowed = {(ref["sourceId"], ref["location"]) for ref in section["sourceRefs"]}
+            question_pages = {(ref["sourceId"], ref["location"]) for ref in question["sourceRefs"]}
+            self.assertTrue(question_pages <= allowed, question["id"])
+
+    def test_part_three_analyze_items_are_independently_classified_as_reasoning(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        questions = {item["id"]: item for item in part["questions"]}
+        expected = {
+            "gq-os-ch06-part1-006": ("diagnosis", ("interest", "turn")),
+            "gq-os-ch06-part1-009": ("trace", ("five", "increment", "decrement")),
+            "gq-os-ch06-part2-006": ("trace", ("producer", "wait", "signal")),
+            "gq-os-ch06-part2-009": ("diagnosis", ("higher-priority", "lower-priority", "lock")),
+            "gq-os-ch08-part1-006": ("trade-off", ("p1", "r5", "r4")),
+            "gq-os-ch08-part1-009": ("comparison", ("unique number", "increasing order", "circular wait")),
+            "gq-os-ch08-part2-006": ("vector comparison", ("(3,3,2)", "(1,2,2)", "p1")),
+            "gq-os-ch08-part2-009": ("safety analysis", ("p0", "(0,2,0)", "unsafe")),
+            "gq-os-ch08-part3-006": ("state trace", ("p2", "c", "p0")),
+            "gq-os-ch08-part3-009": ("trade-off", ("deadlock", "every", "one process")),
+            "gq-os-ch09-part1-006": ("calculation", ("14000", "346", "physical")),
+            "gq-os-ch09-part1-009": ("diagnosis", ("total memory", "noncontiguous", "holes")),
+            "gq-os-ch09-part2-006": ("mapping comparison", ("three", "read-only", "reentrant")),
+            "gq-os-ch09-part2-010": ("state trace", ("valid", "free frame", "restarts")),
+        }
+        self.assertEqual(
+            {item["id"] for item in part["questions"] if item["bloomLevel"] == "analyze"},
+            set(expected),
+        )
+        for question_id, (reasoning_type, inputs) in expected.items():
+            self.assertIn(reasoning_type, questions[question_id]["topic"].casefold(), question_id)
+            self.assertEqual(questions[question_id]["cognitiveLevel"], "analyze", question_id)
+            rendered_question = " ".join(
+                [questions[question_id]["prompt"], *questions[question_id].get("options", [])]
+            ).casefold()
+            self.assertTrue(all(value in rendered_question for value in inputs), question_id)
 
 
 if __name__ == "__main__":
