@@ -1,4 +1,4 @@
-import { isScoreable, isValidResponse } from "./questions.js";
+import { isExamEligible, isScoreable, isValidResponse } from "./questions.js";
 
 export const STORAGE_KEY = "os-study-progress-v1";
 export const BACKUP_STORAGE_KEY = "os-study-progress-v1-backup";
@@ -65,20 +65,20 @@ function recordValues(records, label) {
 }
 
 function canonicalContext(canonical) {
-  if (canonical === undefined || canonical === null) return { lessonIds: null, questionById: null };
+  if (canonical === undefined || canonical === null) return { lessonIds: null, questionById: null, course: null };
   const source = Array.isArray(canonical) || canonical instanceof Set ? { lessons: canonical } : canonical;
   if (!isPlainObject(source)) throw new Error("Canonical records are invalid.");
   const lessonRecords = source.lessons ?? source.lessonById ?? source.lessonIds;
   const questionRecords = source.questions ?? source.questionById;
   const lessonIds = lessonRecords === undefined ? null : new Set(recordValues(lessonRecords, "lesson").map((lesson) => typeof lesson === "string" ? lesson : lesson?.id));
   if (lessonIds && [...lessonIds].some((id) => typeof id !== "string" || !id.startsWith("lesson-"))) throw new Error("Canonical lesson records are invalid.");
-  if (questionRecords === undefined) return { lessonIds, questionById: null };
+  if (questionRecords === undefined) return { lessonIds, questionById: null, course: source.course ?? null };
   const questionById = new Map();
   for (const question of recordValues(questionRecords, "question")) {
     if (!isPlainObject(question) || !isQuestionId(question.id) || questionById.has(question.id)) throw new Error("Canonical question records are invalid.");
     questionById.set(question.id, question);
   }
-  return { lessonIds, questionById };
+  return { lessonIds, questionById, course: source.course ?? null };
 }
 
 function assertCanonicalLesson(id, canonical) {
@@ -161,6 +161,9 @@ function assertActiveExam(exam, canonical) {
   assertIds(exam.questionIds, "Active exam questions", "gq-");
   if (!exam.questionIds.length) throw new Error("Active exam cannot be empty.");
   const questionsById = new Map(exam.questionIds.map((id) => [id, assertCanonicalQuestion(id, canonical)]));
+  if ([...questionsById.values()].some((question) => question && !isExamEligible(question, canonical.course ?? {}))) {
+    throw new Error("Active exam contains a question that is no longer Mock Exam-eligible.");
+  }
   if (!isPlainObject(exam.answers)) throw new Error("Active exam answers are invalid.");
   for (const [id, answer] of Object.entries(exam.answers)) {
     if (!exam.questionIds.includes(id) || !isPlainObject(answer) || Object.keys(answer).length !== 2 || !Object.hasOwn(answer, "response") || !Object.hasOwn(answer, "answeredAt")) throw new Error("Active exam answers are unsafe.");

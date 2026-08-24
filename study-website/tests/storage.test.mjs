@@ -25,6 +25,32 @@ function canonicalQuestion(id, correctAnswer = 1) {
   };
 }
 
+function humanReviewedQuestion(id, correctAnswer = 1, reviewedContentVersion = "1.0.0") {
+  const question = canonicalQuestion(id, correctAnswer);
+  return {
+    ...question,
+    qualityState: "approved",
+    reviewState: "approved",
+    review: {
+      status: "human-reviewed",
+      approval: {
+        reviewedRecordId: id,
+        reviewedContentVersion,
+        status: "completed",
+        decision: "approved",
+        reviewer: "OS reviewer",
+        reviewedAt: stamp,
+        reason: "Source evidence checked.",
+        notes: "Ready for the exam pool.",
+      },
+    },
+  };
+}
+
+function activeExamFor(questionId) {
+  return { id: "exam-policy", projectId: PROJECT_ID, mode: "exam", status: "active", questionIds: [questionId], answers: {}, index: 0, flagged: [], bookmarked: [], startedAt: 0, endsAt: 60_000 };
+}
+
 const canonical = {
   lessons: [{ id: "lesson-one" }],
   questions: [canonicalQuestion("gq-one", 1), canonicalQuestion("gq-true-false", false)],
@@ -122,4 +148,34 @@ test("canonical records reject stale progress, invalid answer values, and empty 
   assert.throws(() => setActiveExam(defaults, emptyExam, stamp, canonical), /empty|question/i);
   const invalidExamAnswer = { ...emptyExam, id: "exam-answer", questionIds: ["gq-one"], answers: { "gq-one": { response: 4, answeredAt: 1 } } };
   assert.throws(() => setActiveExam(defaults, invalidExamAnswer, stamp, canonical), /answer/i);
+});
+
+test("active-exam restore validates current Mock Exam eligibility and course review policy", () => {
+  const defaults = createDefaultState(stamp);
+  const validatedQuestion = canonicalQuestion("gq-policy");
+  const examState = { ...defaults, activeExam: activeExamFor("gq-policy") };
+  const permissive = { lessons: canonical.lessons, questions: [validatedQuestion], course: { contentPolicy: { generatedQuestionsRequireHumanReviewForExam: false } } };
+  assert.deepEqual(importState(JSON.stringify(examState), permissive), examState);
+  assert.doesNotThrow(() => setActiveExam(defaults, activeExamFor("gq-policy"), stamp, permissive));
+
+  const needsReview = { ...validatedQuestion, needsReview: true };
+  const rejected = { ...validatedQuestion, qualityState: "rejected", reviewState: "rejected", review: { status: "rejected" } };
+  const staleApproval = humanReviewedQuestion("gq-policy", 1, "0.9.0");
+  const requiresHumanReview = { lessons: canonical.lessons, questions: [validatedQuestion], course: { contentPolicy: { generatedQuestionsRequireHumanReviewForExam: true } } };
+  for (const invalidCanonical of [
+    { lessons: canonical.lessons, questions: [needsReview], course: permissive.course },
+    { lessons: canonical.lessons, questions: [rejected], course: permissive.course },
+    { lessons: canonical.lessons, questions: [staleApproval], course: requiresHumanReview.course },
+    requiresHumanReview,
+  ]) {
+    assert.throws(() => importState(JSON.stringify(examState), invalidCanonical), /eligible|active exam/i);
+    assert.throws(() => setActiveExam(defaults, activeExamFor("gq-policy"), stamp, invalidCanonical), /eligible|active exam/i);
+  }
+
+  const humanReviewed = humanReviewedQuestion("gq-policy");
+  const strict = { lessons: canonical.lessons, questions: [humanReviewed], course: requiresHumanReview.course };
+  assert.deepEqual(importState(JSON.stringify(examState), strict), examState);
+  const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify(examState) });
+  assert.deepEqual(loadState(storage, stamp, requiresHumanReview), defaults);
+  assert.match(storage.getItem(BACKUP_STORAGE_KEY), /exam-policy/);
 });

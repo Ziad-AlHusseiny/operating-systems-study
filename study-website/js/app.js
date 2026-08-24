@@ -57,6 +57,13 @@ export function navigationRenderDecision(currentHash, targetHash) {
   return { setHash: current !== target, renderNow: current === target };
 }
 
+export function shortcutAnswerDecision(mode, session, questionId, response) {
+  if (response === undefined) return "none";
+  if (mode === "exam") return "exam";
+  if (mode === "practice") return session?.answers?.[questionId] ? "ignore" : "practice";
+  return "none";
+}
+
 export function getDashboardCoverage(data) {
   return { modules: Array.isArray(data?.modules) ? data.modules.length : 0, lessons: Array.isArray(data?.lessons) ? data.lessons.length : 0 };
 }
@@ -132,7 +139,7 @@ function icon(name) { return '<svg aria-hidden="true" viewBox="0 0 24 24">' + (I
 function emptyFilters() { return { search: "", moduleId: "all", sourceId: "all", completion: "all", lessonId: "all", topic: "all", type: "all", difficulty: "all", bloomLevel: "all", status: "all" }; }
 const app = { data: null, state: null, practice: null, exam: null, practiceResult: null, examResult: null, timer: null, revealed: new Set(), pages: { questions: 1, explanations: 1 }, filters: { material: emptyFilters(), questions: emptyFilters(), explanations: emptyFilters() }, setups: {}, focusReturn: null };
 
-function canonical() { return app.data ? { lessons: app.data.lessons, questions: app.data.questions } : undefined; }
+function canonical() { return app.data ? { lessons: app.data.lessons, questions: app.data.questions, course: app.data.course } : undefined; }
 function moduleFor(id) { return app.data.moduleById[id]; }
 function sourceFor(id) { return app.data.course.sources.find(function (source) { return source.id === id; }); }
 function citation(refs) {
@@ -529,10 +536,9 @@ function handleShortcut(event) {
   const session = mode === "practice" ? app.practice : app.exam;
   const question = app.data.questionById[session.questionIds[session.index]];
   const response = /^[1-4]$/.test(event.key) ? Number(event.key) - 1 : /^t$/i.test(event.key) ? true : /^f$/i.test(event.key) ? false : undefined;
-  if (response !== undefined) {
-    if (mode === "practice" && !app.practice.answers[question.id]) { const before = app.practice; app.practice = answerPracticeQuestion(before, response); persistPractice(before, app.practice); }
-    else app.exam = answerExamQuestion(app.exam, response);
-  }
+  const answerAction = shortcutAnswerDecision(mode, session, question.id, response);
+  if (answerAction === "practice") { const before = app.practice; app.practice = answerPracticeQuestion(before, response); persistPractice(before, app.practice); }
+  else if (answerAction === "exam") app.exam = answerExamQuestion(app.exam, response);
   if (event.key === "ArrowLeft") mode === "practice" ? app.practice = movePracticeQuestion(app.practice, -1) : app.exam = moveExamQuestion(app.exam, -1);
   if (event.key === "ArrowRight" || /^s$/i.test(event.key)) mode === "practice" ? app.practice = movePracticeQuestion(app.practice, 1) : app.exam = moveExamQuestion(app.exam, 1);
   if (/^b$/i.test(event.key)) bookmark("question", question.id);

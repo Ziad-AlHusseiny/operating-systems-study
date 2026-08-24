@@ -20,6 +20,7 @@ const {
   lessonSectionLanguage,
   getDashboardCoverage,
   trapDialogFocus,
+  shortcutAnswerDecision,
 } = loaded;
 
 async function payload(name) {
@@ -91,6 +92,17 @@ test("same-route navigation requests an immediate render for a newly active Prac
   assert.deepEqual(navigationRenderDecision("#/practice", "#/practice"), { setHash: false, renderNow: true });
   assert.deepEqual(navigationRenderDecision("#/exam", "#/exam"), { setHash: false, renderNow: true });
   assert.deepEqual(navigationRenderDecision("#/dashboard", "#/practice"), { setHash: true, renderNow: false });
+});
+
+test("Practice answer shortcuts explicitly ignore already answered questions while preserving Mock Exam dispatch", () => {
+  if (!assertHelper(shortcutAnswerDecision, "shortcutAnswerDecision")) return;
+  const practice = Object.freeze({ answers: Object.freeze({ "question-1": Object.freeze({ response: 1, correct: false }) }) });
+  const before = structuredClone(practice);
+  assert.equal(shortcutAnswerDecision("practice", practice, "question-1", 2), "ignore");
+  assert.equal(shortcutAnswerDecision("practice", { answers: {} }, "question-1", 2), "practice");
+  assert.equal(shortcutAnswerDecision("exam", { answers: { "question-1": { response: 1 } } }, "question-1", 2), "exam");
+  assert.equal(shortcutAnswerDecision("practice", practice, "question-1", undefined), "none");
+  assert.deepEqual(practice, before);
 });
 
 test("setup eligibility summary uses Task 6 filters, states selected scope, and blocks empty or oversized starts", async () => {
