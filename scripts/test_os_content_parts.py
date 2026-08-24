@@ -845,6 +845,125 @@ PART_THREE_TRUE_FALSE_ORACLES = {
     "gq-os-ch09-part2-010": (True, "valid page", None),
 }
 
+# Independently transcribed source propositions for all true/false records:
+# (full statement clauses, rationale clauses, correction clauses or None).
+# Each ordered clause set captures the actor, condition, relation, and result,
+# so a new unrelated sentence cannot retain a short anchor and pass.
+PART_THREE_TRUE_FALSE_PROPOSITION_ORACLES = {
+    "gq-os-ch06-part1-007": (
+        ("disabling interrupts", "shared-variable update", "prevent preemption", "single-core system"),
+        ("preventing interrupts", "shared-variable instruction sequence", "without preemption", "one core"), None,
+    ),
+    "gq-os-ch06-part1-008": (
+        ("Peterson", "scalable protocol", "arbitrary number of processes"),
+        ("Peterson", "restricted to two processes"), ("Peterson", "restricted to two processes"),
+    ),
+    "gq-os-ch06-part1-009": (
+        ("counter starts at five", "producer increment and consumer decrement", "instructions interleave", "guaranteed to remain five", "regardless of the order"),
+        ("possible final values four five and six", "only separate execution guarantees five"), ("possible final values four five and six", "only separate execution guarantees five"),
+    ),
+    "gq-os-ch06-part1-010": (
+        ("Pi sets its interest true", "gives turn to the other process", "performs the busy-wait test"),
+        ("records Pi", "gives the other process turn", "evaluates the busy-wait condition"), None,
+    ),
+    "gq-os-ch06-part2-007": (
+        ("test_and_set lock", "guarantees mutual exclusion and progress", "does not guarantee bounded waiting"),
+        ("no queue is maintained", "wait indefinitely", "exclusion and progress hold"), None,
+    ),
+    "gq-os-ch06-part2-008": (
+        ("counting semaphore", "finite set of resources", "number of available resource instances"),
+        ("number of available instances", "decreases on wait", "increases on signal"), None,
+    ),
+    "gq-os-ch06-part2-009": (
+        ("higher-priority process is blocked", "it holds a lock needed by a lower-priority process", "priority inversion"),
+        ("lower-priority process holds a lock needed by a higher-priority process",), ("lower-priority process holds a lock needed by a higher-priority process",),
+    ),
+    "gq-os-ch06-part2-010": (
+        ("signal mutex", "before wait mutex", "safe replacement", "critical-section semaphore order"),
+        ("incorrect order", "multiple processes into the critical section"), ("incorrect order", "multiple processes into the critical section"),
+    ),
+    "gq-os-ch08-part1-007": (
+        ("deadlock prevention", "deliberately lets the system enter", "deadlock state", "without intervening"),
+        ("prevention", "never enters a deadlock state", "permitting one contradicts"), ("deadlock prevention", "never enters a deadlock state"),
+    ),
+    "gq-os-ch08-part1-008": (
+        ("no-preemption prevention protocol", "holding resources", "unavailable resource", "keeps all held resources while waiting"),
+        ("preempts the currently held resources", "process waiting list"), ("preempts the currently held resources", "process waiting list"),
+    ),
+    "gq-os-ch08-part1-009": (
+        ("resource has a unique number", "acquire resources in increasing order", "prevents circular wait", "no request can reverse the ordering"),
+        ("total increasing ordering", "prevent circular wait"), None,
+    ),
+    "gq-os-ch08-part1-010": (
+        ("Linux and Windows", "ignore deadlocks", "kernel and application developers"),
+        ("ignoring deadlocks", "Linux and Windows", "handling left to developers"), None,
+    ),
+    "gq-os-ch08-part2-007": (
+        ("Banker", "deadlock-avoidance algorithm", "every resource type has one instance"),
+        ("multiple resource instances", "graph scheme", "single instance per type"), ("multiple resource instances", "graph scheme", "single instance per type"),
+    ),
+    "gq-os-ch08-part2-008": (
+        ("Banker resource request", "checked against Need", "before", "checked against Available"),
+        ("Request less than or equal to Need", "then", "Request less than or equal to Available"), None,
+    ),
+    "gq-os-ch08-part2-009": (
+        ("P0", "request 0 2 0", "granted merely because resources are available", "tentative allocation state is unsafe"),
+        ("P0", "not granted", "resources are available", "resulting state is unsafe"), ("P0", "not granted", "resources are available", "resulting state is unsafe"),
+    ),
+    "gq-os-ch08-part2-010": (
+        ("P1 receives request 1 0 2", "Allocation becomes 3 0 2", "Need becomes 0 2 0", "Available becomes 2 3 0"),
+        ("Allocation Need and Available values", "granting P1", "request"), None,
+    ),
+    "gq-os-ch08-part3-007": (
+        ("determining a safe state is difficult", "resource-preemption recovery", "total rollback", "aborts and restarts the process"),
+        ("total rollback", "aborting the process", "restarting it", "safe state is difficult"), None,
+    ),
+    "gq-os-ch08-part3-008": (
+        ("deadlock detection", "every resource request", "cannot be granted immediately", "considerable computation overhead"),
+        ("overhead", "extreme detection frequency"), None,
+    ),
+    "gq-os-ch08-part3-009": (
+        ("detection confirms a deadlock", "abort every deadlocked process at once", "rather than aborting one process at a time"),
+        ("abort-all", "abort-one-at-a-time", "process termination"), ("abort-all", "abort-one-at-a-time", "process termination"),
+    ),
+    "gq-os-ch08-part3-010": (
+        ("resource-preemption victim", "maximize the cost", "selected process", "ensure fairness"),
+        ("minimize cost", "rollback count", "avoid starvation"), ("minimize cost", "rollback count", "avoid starvation"),
+    ),
+    "gq-os-ch09-part1-007": (
+        ("linker rather than the compiler", "symbolic source-code addresses", "relocatable addresses"),
+        ("symbolic-to-relocatable binding", "compiler", "linker or loader", "relocatable addresses to absolute addresses"), ("symbolic-to-relocatable binding", "compiler", "linker or loader", "relocatable addresses to absolute addresses"),
+    ),
+    "gq-os-ch09-part1-008": (
+        ("only the operating system", "load base and limit registers", "load instructions are privileged"),
+        ("loading these protection registers", "kernel-mode privileged operation"), None,
+    ),
+    "gq-os-ch09-part1-009": (
+        ("enough total memory space", "split into noncontiguous holes", "internal fragmentation"),
+        ("not contiguous", "external fragmentation", "unused space", "allocated partition"), ("not contiguous", "external fragmentation", "unused space", "allocated partition"),
+    ),
+    "gq-os-ch09-part1-010": (
+        ("process exits a variable partition", "adjacent free partitions", "combined", "one larger hole"),
+        ("multiple-partition allocation", "merges adjacent free partitions", "process exits"), None,
+    ),
+    "gq-os-ch09-part2-007": (
+        ("Paging eliminates both external fragmentation and internal fragmentation", "every frame has a fixed size"),
+        ("avoids external fragmentation", "still has internal fragmentation"), ("avoids external fragmentation", "still has internal fragmentation"),
+    ),
+    "gq-os-ch09-part2-008": (
+        ("page out", "backing store into main memory", "page in", "back to disk"),
+        ("Page out moves memory to backing store", "page in is the reverse operation"), ("Page out moves memory to backing store", "page in is the reverse operation"),
+    ),
+    "gq-os-ch09-part2-009": (
+        ("logical address space larger than", "installed physical memory", "virtual memory", "larger logical space"),
+        ("logical address space larger than physical memory", "key benefit of virtual memory"), None,
+    ),
+    "gq-os-ch09-part2-010": (
+        ("valid reference faults", "page is not in memory", "free frame is found", "brings the page in", "valid-invalid bit v", "restarts the faulting instruction"),
+        ("page-fault handling steps", "valid page", "merely not resident"), None,
+    ),
+}
+
 PART_THREE_ARABIC_TRANSLATION_ANCHORS = {
     "gq-os-ch06-part1-001": ("العمليات المتعاونة", "الذاكرة المشتركة"),
     "gq-os-ch06-part1-002": ("المنتج", "العناصر الممتلئة"),
@@ -995,6 +1114,58 @@ class OSContentPartTests(unittest.TestCase):
         elif question["correctedStatement"]:
             value += " " + question["correctedStatement"]
         return self.content_tokens(value, SEMANTIC_STOP_WORDS)
+
+    def part_three_true_false_matches_oracle(self, question):
+        """Match all independently transcribed T/F semantics and evidence relations."""
+        expected_truth, rationale_anchor, correction_anchor = PART_THREE_TRUE_FALSE_ORACLES[question["id"]]
+        statement_clauses, rationale_clauses, correction_clauses = PART_THREE_TRUE_FALSE_PROPOSITION_ORACLES[question["id"]]
+        manual_truth, source_id, source_page, _ = PART_THREE_MANUAL_SOURCE_FACTS[question["id"]]
+
+        def has_ordered_clauses(value, clauses):
+            value = self.normalized_prompt(value)
+            start = 0
+            for clause in clauses:
+                position = value.find(self.normalized_prompt(clause), start)
+                if position < 0:
+                    return False
+                start = position + 1
+            return True
+
+        expected_ref = (source_id, source_page)
+        if question["correctAnswer"] != expected_truth or manual_truth != expected_truth:
+            return False
+        if not has_ordered_clauses(question["prompt"], statement_clauses):
+            return False
+        if not has_ordered_clauses(question["rationale"], rationale_clauses):
+            return False
+        if rationale_anchor.casefold() not in question["rationale"].casefold():
+            return False
+
+        expected_supports = {
+            "prompt": "direct",
+            "correctAnswer": "derived",
+            "rationale": "derived",
+        }
+        if expected_truth:
+            if question["correctedStatement"] is not None or correction_anchor is not None or correction_clauses is not None:
+                return False
+        else:
+            expected_supports["correctedStatement"] = "derived"
+            if question["correctedStatement"] is None or correction_anchor is None or correction_clauses is None:
+                return False
+            if not has_ordered_clauses(question["correctedStatement"], correction_clauses):
+                return False
+            if correction_anchor.casefold() not in question["correctedStatement"].casefold():
+                return False
+
+        for target, expected_support in expected_supports.items():
+            claims = [claim for claim in question["evidenceMap"] if claim["target"] == target]
+            if len(claims) != 1 or claims[0]["support"] != expected_support:
+                return False
+            claim_refs = {(ref["sourceId"], ref["location"]) for ref in claims[0]["sourceRefs"]}
+            if claim_refs != {expected_ref}:
+                return False
+        return True
 
     def test_chapters_one_and_two_have_seven_traceable_lessons(self):
         part = self.load_part("content/os/ch01-ch02.json")
@@ -1537,6 +1708,33 @@ class OSContentPartTests(unittest.TestCase):
                 self.assertIsNotNone(correction_anchor, question_id)
                 self.assertIn(correction_anchor.casefold(), question["correctedStatement"].casefold(), question_id)
                 self.assertIn((source_id, source_page), evidence_refs(question, "correctedStatement"), question_id)
+
+    def test_part_three_true_false_oracle_rejects_unrelated_statement_and_rationale_mutations(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        question = next(item for item in part["questions"] if item["id"] == "gq-os-ch06-part1-007")
+        mutated = {
+            **question,
+            "prompt": "Interrupts can label an unrelated scheduler record on a single-core system.",
+            "rationale": "The unrelated record remains on one core after an interrupt is observed.",
+        }
+        mutated_support = {
+            **question,
+            "evidenceMap": [
+                {**claim, "support": "derived"} if claim["target"] == "prompt" else claim
+                for claim in question["evidenceMap"]
+            ],
+        }
+        self.assertTrue(self.part_three_true_false_matches_oracle(question))
+        self.assertFalse(self.part_three_true_false_matches_oracle(mutated))
+        self.assertFalse(self.part_three_true_false_matches_oracle(mutated_support))
+
+    def test_part_three_true_false_propositions_and_evidence_supports_are_independent(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        true_false = {question["id"]: question for question in part["questions"] if question["type"] == "true-false"}
+        self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_PROPOSITION_ORACLES))
+        self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_ORACLES))
+        for question_id, question in true_false.items():
+            self.assertTrue(self.part_three_true_false_matches_oracle(question), question_id)
 
     def test_part_three_objective_topic_and_section_mapping_is_semantic(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
