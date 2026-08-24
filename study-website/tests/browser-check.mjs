@@ -14,6 +14,12 @@ import { dirname, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 
+import {
+  assertBrowserHealth,
+  terminateStartedChild,
+  waitForReadinessWithCleanup,
+} from "./browser-check-helpers.mjs";
+
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
@@ -104,7 +110,7 @@ async function ensureServer() {
   server.stderr.on("data", (chunk) => { serverError += chunk.toString(); });
   server.on("error", (error) => { serverError += error.message; });
   try {
-    await waitForStudySite(baseUrl, server);
+    await waitForReadinessWithCleanup(server, () => waitForStudySite(baseUrl, server));
   } catch (error) {
     throw new Error(`${error.message}${serverError ? ` Server output: ${serverError.trim()}` : ""}`);
   }
@@ -113,9 +119,7 @@ async function ensureServer() {
 }
 
 async function stopServer(server) {
-  if (!server || server.exitCode !== null) return;
-  server.kill();
-  await new Promise((resolveStop) => server.once("exit", resolveStop));
+  await terminateStartedChild(server);
 }
 
 async function pngSize(file) {
@@ -155,6 +159,15 @@ async function go(page, route, heading) {
 }
 
 async function capture(page, directory, name, options = {}) {
+  await page.locator("#toast-region .toast").waitFor({ state: "hidden", timeout: 5_000 });
+  await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+  await page.waitForFunction(() => window.scrollY === 0 && window.scrollX === 0);
+  await page.evaluate(() => document.activeElement?.blur());
+  const skipLinkIsHidden = await page.locator(".skip-link").evaluate((link) => {
+    const bounds = link.getBoundingClientRect();
+    return document.activeElement !== link && !link.matches(":focus") && bounds.bottom <= 0;
+  });
+  assert.ok(skipLinkIsHidden, "clean screenshot capture must hide the skip link before capture");
   const file = join(directory, name);
   await page.screenshot({ path: file, fullPage: Boolean(options.fullPage) });
   const size = await pngSize(file);
@@ -165,6 +178,30 @@ async function capture(page, directory, name, options = {}) {
 async function metricText(page, label) {
   const entries = await page.locator(".metric-strip > div").allTextContents();
   return entries.find((entry) => entry.includes(label)) || "";
+}
+
+async function revisionMetric(page, label) {
+  const entries = await page.locator(".revision-grid > div").allTextContents();
+  return entries.find((entry) => entry.startsWith(label)) || "";
+}
+
+function exportedProgressSummary(exported) {
+  const questions = Object.values(exported.questionProgress);
+  return {
+    projectId: exported.projectId,
+    completedLessons: Object.values(exported.lessonProgress)
+      .filter((lesson) => lesson.status === "completed").length,
+    answered: questions.reduce((total, question) => total + question.attempts, 0),
+    correct: questions.reduce((total, question) => total + question.correctAttempts, 0),
+    incorrect: questions.reduce((total, question) => total + question.incorrectAttempts, 0),
+  };
+}
+
+async function assertRevisionProgress(page, summary) {
+  assert.match(await revisionMetric(page, "Completed lessons"), new RegExp(`Completed lessons\\s*${summary.completedLessons}/21`));
+  assert.match(await revisionMetric(page, "Answered"), new RegExp(`Answered\\s*${summary.answered}`));
+  assert.match(await revisionMetric(page, "Correct"), new RegExp(`Correct\\s*${summary.correct}`));
+  assert.match(await revisionMetric(page, "Mistakes"), new RegExp(`Mistakes\\s*${summary.incorrect}`));
 }
 
 async function setSetupValue(page, mode, name, value) {
@@ -327,20 +364,32 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   pass("practice", "MCQ no-leak/feedback/Arabic guidance/lock/finish plus typed True/False feedback");
 
   await go(page, "questions", "Question Bank");
-  await page.locator('form[data-filter-form="questions"] select[name="type"]').selectOption("mcq");
-  assert.match(await page.locator(".filter-result").innerText(), /result.*page 1/i);
+  assert.match(await page.locator(".filter-result").innerText(), /210 results\s*·\s*page 1 of 21/i);
+  const questionSearch = page.locator('form[data-filter-form="questions"] input[name="search"]');
+  const questionPrompt = (await page.locator(".question-card h2").first().textContent()).trim();
+  await questionSearch.fill(questionPrompt);
+  await questionSearch.press("Tab");
+  assert.match(await page.locator(".filter-result").innerText(), /1 result\s*·\s*page 1 of 1/i);
   const firstQuestion = page.locator(".question-card").first();
-  assert.ok(await firstQuestion.count(), `Question Bank type filter produced no cards: ${await page.locator("main").innerText()}`);
+  assert.ok(await firstQuestion.count(), `Question Bank search produced no cards: ${await page.locator("main").innerText()}`);
   await firstQuestion.locator('[data-action="reveal-answer"]').click();
   await firstQuestion.getByText("Answer:", { exact: false }).waitFor({ state: "visible" });
-  assert.ok(await firstQuestion.getByRole("link", { name: "Read Arabic guidance" }).count(), "revealed Question Bank answer lacks the Arabic guidance link");
+  const guidanceLink = firstQuestion.getByRole("link", { name: "Read Arabic guidance" });
+  assert.ok(await guidanceLink.count(), "revealed Question Bank answer lacks the Arabic guidance link");
   const bookmarkButton = firstQuestion.getByRole("button", { name: "Bookmark" });
   if (await bookmarkButton.count()) await bookmarkButton.click();
-  await go(page, "explanations", "Question Explanations");
-  assert.ok(await page.locator('article.explanation-card [lang="en"][dir="ltr"]').count() >= 1, "explanation page lacks English source prompt");
-  assert.ok(await page.locator('article.explanation-card [lang="ar"][dir="rtl"] p').count() >= 4, "explanation page lacks full Arabic translation, paragraphs, and note");
-  assert.ok(await page.locator("article.explanation-card .citation").count() >= 1, "explanation page lacks citations");
-  pass("question bank and explanations", "filter/result count, explicit answer reveal, bookmark, complete Arabic guidance, and citations");
+  await guidanceLink.click();
+  await waitForView(page, "Question Explanations");
+  assert.match(page.url(), /#\/explanations$/);
+  const explanationSearch = page.locator('form[data-filter-form="explanations"] input[name="search"]');
+  await explanationSearch.fill(questionPrompt);
+  await explanationSearch.press("Tab");
+  assert.match(await page.locator(".filter-result").innerText(), /1 bilingual explanation record/i);
+  const explanationCard = page.locator("article.explanation-card").first();
+  assert.ok(await explanationCard.locator('[lang="en"][dir="ltr"]').count(), "Arabic guidance destination lacks the linked English source prompt");
+  assert.ok(await explanationCard.locator('[lang="ar"][dir="rtl"] p').count() >= 4, "Arabic guidance destination lacks the translation, paragraphs, or note");
+  assert.ok(await explanationCard.locator(".citation").count(), "Arabic guidance destination lacks citations");
+  pass("question bank and explanations", "searched and paginated Question Bank, revealed and followed Arabic guidance, then verified filtered full guidance and citations");
 
   await go(page, "exam", "Mock Exam");
   await setSetupValue(page, "exam", "count", 2);
@@ -399,11 +448,14 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   await download.saveAs(exportFile);
   const exported = JSON.parse(await readFile(exportFile, "utf8"));
   assert.equal(exported.projectId, "operating-systems-study", "exported progress uses the wrong project key");
+  const exportedSummary = exportedProgressSummary(exported);
+  assert.ok(exportedSummary.answered > 0, "exported progress must include scored activity before persistence checks");
   await page.reload({ waitUntil: "networkidle" });
   await waitForView(page, "Settings");
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark", "theme did not persist after reload");
-  await page.locator("#progress-import").setInputFiles(exportFile);
-  await page.getByText("Progress imported successfully.").waitFor({ state: "visible" });
+  await go(page, "revision", "Revision");
+  await assertRevisionProgress(page, exportedSummary);
+  await go(page, "settings", "Settings");
   await page.getByRole("button", { name: "Reset progress" }).click();
   const resetDialog = page.getByRole("dialog");
   await resetDialog.waitFor({ state: "visible" });
@@ -414,8 +466,32 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), "Reset progress");
   await resetDialog.getByRole("button", { name: "Cancel" }).click();
   await go(page, "revision", "Revision");
-  assert.match(await page.locator("main").innerText(), /Answered/);
-  pass("settings", `export/import JSON at ${exportFile}, persisted dark theme, reset focus trap and Cancel preserved progress`);
+  await assertRevisionProgress(page, exportedSummary);
+  await go(page, "settings", "Settings");
+  await page.getByRole("button", { name: "Reset progress" }).click();
+  await resetDialog.getByRole("button", { name: "Reset progress" }).click();
+  await page.getByText("OS Study progress was reset.").waitFor({ state: "visible" });
+  await go(page, "revision", "Revision");
+  await assertRevisionProgress(page, {
+    projectId: "operating-systems-study",
+    completedLessons: 0,
+    answered: 0,
+    correct: 0,
+    incorrect: 0,
+  });
+  await go(page, "settings", "Settings");
+  await page.locator("#progress-import").setInputFiles(exportFile);
+  await page.getByText("Progress imported successfully.").waitFor({ state: "visible" });
+  await go(page, "revision", "Revision");
+  await assertRevisionProgress(page, exportedSummary);
+  await go(page, "settings", "Settings");
+  const restoredDownloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export progress JSON" }).click();
+  const restoredDownload = await restoredDownloadPromise;
+  const restoredExportFile = join(downloadDirectory, "os-study-progress-restored.json");
+  await restoredDownload.saveAs(restoredExportFile);
+  assert.deepEqual(JSON.parse(await readFile(restoredExportFile, "utf8")), exported);
+  pass("settings", `exported, reloaded, reset, and restored exact progress at ${exportFile}; dark theme and Cancel focus trap also persisted`);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await go(page, "settings", "Settings");
@@ -450,14 +526,9 @@ async function main() {
     await page.reload({ waitUntil: "networkidle" });
     pass("site state", "cleared LocalStorage and sessionStorage in the fresh temporary browser context");
     await runFlows(page, screenshotDirectory, downloadDirectory);
-    const relevantConsole = browserEvents.console.filter((event) => event.type === "error");
-    assert.deepEqual(browserEvents.pageErrors, [], `page errors: ${browserEvents.pageErrors.join(" | ")}`);
-    assert.deepEqual(relevantConsole, [], `console errors: ${relevantConsole.map((event) => event.text).join(" | ")}`);
-    assert.deepEqual(browserEvents.failedRequests, [], `failed requests: ${browserEvents.failedRequests.join(" | ")}`);
-    assert.deepEqual(browserEvents.essentialDataFailures, [], `non-2xx data requests: ${browserEvents.essentialDataFailures.join(" | ")}`);
+    assertBrowserHealth(browserEvents);
     const warnings = browserEvents.console.filter((event) => event.type === "warning");
     pass("browser health", `page errors 0; console errors 0; console warnings ${warnings.length}; failed requests 0; essential data failures 0`);
-    for (const warning of warnings) console.log(`CONSOLE WARNING ${warning.text}`);
     console.log(`PASS screenshots: ${screenshotDirectory}`);
     for (const screenshot of screenshots) console.log(`SCREENSHOT ${screenshot.name} ${screenshot.width}x${screenshot.height} ${screenshot.file}`);
   } finally {

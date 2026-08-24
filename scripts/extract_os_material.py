@@ -250,7 +250,7 @@ def _audit_report(payload: dict) -> str:
         "## Run policy",
         "",
         "- Completion time: omitted by deterministic artifact policy.",
-        f"- Extraction tool: pypdf {pypdf.__version__}.",
+        "- Extraction tool: pypdf; runtime version omitted by deterministic artifact policy.",
         "- Source format/status: 21 PDF files, all accepted.",
         f"- Inventoried pages: {len(payload['pages'])}.",
         "- Answer keys: absent; none were supplied with the lecture PDFs.",

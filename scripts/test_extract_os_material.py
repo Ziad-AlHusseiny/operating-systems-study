@@ -3,14 +3,17 @@ import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
+from unittest.mock import patch
 
 from pypdf import PdfWriter
 
 from scripts.extract_os_material import (
+    _audit_report,
     _classify_page,
     _source_verified_classification,
     build_payload,
     check_artifacts,
+    expected_artifacts,
     write_artifacts,
 )
 
@@ -112,6 +115,19 @@ class ExtractOperatingSystemsMaterialTests(unittest.TestCase):
                 ["generated artifact drift: content/source-manifest.json"],
             )
             self.assertEqual(manifest_path.read_text(encoding="utf-8"), "stale manifest\n")
+
+    def test_rendered_artifacts_do_not_change_with_the_runtime_pypdf_version(self):
+        """The committed audit must remain identical across supported parser versions."""
+        payload = build_payload(self.fixture_root)
+        with patch("scripts.extract_os_material.pypdf.__version__", "6.9.2"):
+            baseline = expected_artifacts(payload)
+            baseline_audit = _audit_report(payload)
+        with patch("scripts.extract_os_material.pypdf.__version__", "99.0.0"):
+            changed_runtime = expected_artifacts(payload)
+            changed_audit = _audit_report(payload)
+
+        self.assertEqual(changed_runtime, baseline)
+        self.assertEqual(changed_audit, baseline_audit)
 
     def test_committed_corpus_inventory_and_classification_evidence(self):
         payload = json.loads(

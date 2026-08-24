@@ -27,6 +27,9 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Install pinned PDF parser
+        run: python -m pip install --disable-pip-version-check "pypdf==6.9.2"
+
       - name: Set up current stable Node
         uses: actions/setup-node@v4
         with:

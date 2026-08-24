@@ -125,6 +125,63 @@ class ValidateEntryTests(unittest.TestCase):
                     validate_entry("q-103", entry),
                 )
 
+    def test_q103_rejects_inline_answer_selection_phrases(self) -> None:
+        base = {
+            **VALID_ENTRY,
+            "translation": "يوجد تعارض بين المصدرين.",
+            "explanation": [
+                "يذكر المصدر الأول Differential.",
+                "ويذكر المصدر الثاني Incremental.",
+            ],
+        }
+        selections = [
+            "الإجابة الصحيحة: Differential",
+            "الإجابة: Incremental",
+            "الخيار الصحيح هو Differential",
+            "الإجابة الصحيحة هي: Differential",
+            "الإجابة الصحيحة = Differential",
+            "Answer: Differential",
+            "the answer is Incremental",
+            "correct answer Differential",
+            "the correct answer is: Incremental",
+            "Answer = Incremental",
+            "Differential is the correct answer.",
+            "Differential هو الإجابة الصحيحة.",
+            "The correct answer is \"Differential\".",
+            "الإجابة الصحيحة هي الـ Differential.",
+            "Incremental هو الاختيار الصحيح.",
+            "الاختيار الصحيح هو ال Incremental.",
+            "الإجابة الصحيحة هي «الـ Differential».",
+            "\"Incremental\" is the answer.",
+        ]
+
+        for selection in selections:
+            with self.subTest(selection=selection):
+                entry = {**base, "note": f"ملاحظة للمراجعة: {selection}."}
+                self.assertIn(
+                    "q-103 must not select an answer",
+                    validate_entry("q-103", entry),
+                )
+
+    def test_q103_allows_inline_neutral_conflict_phrases(self) -> None:
+        base = {
+            **VALID_ENTRY,
+            "translation": "يوجد تعارض بين المصدرين.",
+            "explanation": [
+                "يذكر المصدر الأول Differential دون ترجيح.",
+                "ويذكر المصدر الثاني Incremental دون ترجيح.",
+            ],
+        }
+        neutral_texts = [
+            "Differential ورد في المصدر الأول. الإجابة الصحيحة غير محددة.",
+            "الإجابة الصحيحة لم يحسمها المصدر. Incremental ورد في موضع آخر.",
+        ]
+
+        for neutral_text in neutral_texts:
+            with self.subTest(neutral_text=neutral_text):
+                entry = {**base, "note": f"ملاحظة عربية: {neutral_text}"}
+                self.assertEqual(validate_entry("q-103", entry), [])
+
     def test_q103_accepts_neutral_conflict_text(self) -> None:
         entry = {
             **VALID_ENTRY,

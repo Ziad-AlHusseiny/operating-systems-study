@@ -3,7 +3,7 @@
 ## Run policy
 
 - Completion time: omitted by deterministic artifact policy.
-- Extraction tool: pypdf 6.9.2.
+- Extraction tool: pypdf; runtime version omitted by deterministic artifact policy.
 - Source format/status: 21 PDF files, all accepted.
 - Inventoried pages: 517.
 - Answer keys: absent; none were supplied with the lecture PDFs.
