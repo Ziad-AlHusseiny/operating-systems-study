@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
 from scripts.build_os_site_data import (
@@ -357,6 +358,146 @@ class BuildOperatingSystemsSiteDataTests(unittest.TestCase):
         malformed_extraction["pages"][0] = []
         errors, _, _ = _independent_checks(self.payloads, config, manifest, malformed_extraction)
         self.assertTrue(any("malformed page" in error.lower() for error in errors))
+
+    def test_reports_require_exact_arabic_generated_explanation_body_and_note(self):
+        mutations = (
+            ("generated explanation ID", lambda payloads: payloads["questions"]["questions"][0].__setitem__("generatedExplanationId", "explanation-wrong-ar")),
+            ("body", lambda payloads: payloads["explanations-ar"]["explanations"][0].__setitem__("body", "")),
+            ("note", lambda payloads: payloads["explanations-ar"]["explanations"][0].__setitem__("note", "")),
+        )
+        for label, mutate in mutations:
+            with self.subTest(label=label):
+                mutated = copy.deepcopy(self.payloads)
+                mutate(mutated)
+                quality = build_reports(mutated)["quality"]
+                self.assertIn("Arabic records: failed", quality)
+                self.assertNotIn("Arabic records: complete", quality)
+
+    def test_reports_count_non_object_questions_as_invalid_and_fail_retention_status(self):
+        mutated = copy.deepcopy(self.payloads)
+        mutated["questions"]["questions"][0] = []
+
+        quality = build_reports(mutated)["quality"]
+
+        self.assertIn("Questions: 210 (invalid 1, mcq 125, true-false 84).", quality)
+        self.assertIn("Invalid question records: 1; retained and validated: failed.", quality)
+        self.assertNotIn("all retained and validated", quality)
+        self.assertIn("Evidence/source references: failed", quality)
+
+    def test_standalone_config_accepts_exact_contract_with_one_generated_type_enabled(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+        cases = (
+            ("source-plus-generated", 6, 0),
+            ("source-plus-generated", 0, 4),
+            ("generated-only", 6, 0),
+            ("generated-only", 0, 4),
+            ("source-only", 0, 0),
+        )
+        for mode, mcq_count, true_false_count in cases:
+            with self.subTest(mode=mode, mcq=mcq_count, true_false=true_false_count):
+                compatible_config = copy.deepcopy(config)
+                compatible_config["contentPolicy"]["mode"] = mode
+                compatible_config["questionGeneration"]["mcqPerLesson"] = mcq_count
+                compatible_config["questionGeneration"]["trueFalsePerLesson"] = true_false_count
+                compatible_payloads = copy.deepcopy(self.payloads)
+                compatible_payloads["course"]["contentPolicy"] = copy.deepcopy(compatible_config["contentPolicy"])
+                compatible_payloads["course"]["questionGeneration"] = copy.deepcopy(compatible_config["questionGeneration"])
+
+                errors, _, _ = _independent_checks(compatible_payloads, compatible_config, manifest, extraction)
+
+                self.assertFalse(any("policy" in error.lower() or "question generation" in error.lower() for error in errors), errors)
+
+    def test_standalone_config_rejects_mode_incompatible_counts_and_wrong_types(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+        mutations = (
+            ("generated types disabled", lambda value: value["questionGeneration"].update({"mcqPerLesson": 0, "trueFalsePerLesson": 0})),
+            ("source-only generation enabled", lambda value: (value["contentPolicy"].__setitem__("mode", "source-only"), value["questionGeneration"].__setitem__("mcqPerLesson", 1))),
+            ("Boolean count", lambda value: value["questionGeneration"].__setitem__("mcqPerLesson", False)),
+            ("unexpected key", lambda value: value["questionGeneration"].__setitem__("extra", 1)),
+        )
+        for label, mutate in mutations:
+            with self.subTest(label=label):
+                malformed = copy.deepcopy(config)
+                mutate(malformed)
+                errors, _, _ = _independent_checks(self.payloads, malformed, manifest, extraction)
+                self.assertTrue(any("question generation" in error.lower() for error in errors), errors)
+
+    def test_standalone_config_rejects_non_object_nested_records_without_crashing(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+        expected_errors = {
+            "project": "project metadata",
+            "contentPolicy": "policy",
+            "questionGeneration": "question generation",
+            "exam": "exam",
+            "deployment": "deployment",
+        }
+        for key, expected_error in expected_errors.items():
+            with self.subTest(key=key):
+                malformed = copy.deepcopy(config)
+                malformed[key] = []
+
+                errors, _, _ = _independent_checks(self.payloads, malformed, manifest, extraction)
+
+                self.assertTrue(any(expected_error in error.lower() for error in errors), errors)
+
+    def test_standalone_checks_reject_unhashable_manifest_and_extraction_ids_without_crashing(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+        cases = (
+            ("manifest", "malformed source", lambda man, ext: man["sources"][0].__setitem__("id", [])),
+            ("extraction source", "malformed source", lambda man, ext: ext["sources"][0].__setitem__("id", {})),
+            ("extraction page", "malformed page", lambda man, ext: ext["pages"][0].__setitem__("sourceId", [])),
+        )
+        for label, expected_error, mutate in cases:
+            with self.subTest(label=label):
+                malformed_manifest = copy.deepcopy(manifest)
+                malformed_extraction = copy.deepcopy(extraction)
+                mutate(malformed_manifest, malformed_extraction)
+
+                errors, _, _ = _independent_checks(self.payloads, config, malformed_manifest, malformed_extraction)
+
+                self.assertTrue(any(expected_error in error.lower() for error in errors), errors)
+
+    def test_standalone_checks_enforce_all_source_page_and_classification_totals(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "content" / "source-manifest.json").read_text(encoding="utf-8"))
+        extraction = json.loads((ROOT / "extraction" / "os-pages.json").read_text(encoding="utf-8"))
+
+        short_manifest = copy.deepcopy(manifest)
+        short_manifest["sources"].pop()
+        errors, _, _ = _independent_checks(self.payloads, config, short_manifest, extraction)
+        self.assertTrue(any("acceptance totals" in error.lower() for error in errors), errors)
+
+        short_extraction = copy.deepcopy(extraction)
+        short_extraction["pages"].pop()
+        errors, _, total_pages = _independent_checks(self.payloads, config, manifest, short_extraction)
+        self.assertEqual(516, total_pages)
+        self.assertTrue(any("acceptance totals" in error.lower() for error in errors), errors)
+
+        classification_mutations = (
+            ("teaching", "cover"),
+            ("cover", "teaching"),
+            ("divider", "teaching"),
+            ("closing", "teaching"),
+            ("cover", "reference"),
+        )
+        for original, replacement in classification_mutations:
+            with self.subTest(original=original, replacement=replacement):
+                malformed_extraction = copy.deepcopy(extraction)
+                page = next(item for item in malformed_extraction["pages"] if item["classification"] == original)
+                page["classification"] = replacement
+
+                errors, page_counts, _ = _independent_checks(self.payloads, config, manifest, malformed_extraction)
+
+                self.assertNotEqual(Counter({"teaching": 454, "cover": 21, "divider": 21, "closing": 21}), page_counts)
+                self.assertTrue(any("acceptance totals" in error.lower() for error in errors), errors)
 
 
 if __name__ == "__main__":

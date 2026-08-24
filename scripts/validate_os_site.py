@@ -40,9 +40,10 @@ def _independent_checks(
     generation = config.get("questionGeneration", {})
     exam = config.get("exam", {})
     deployment = config.get("deployment", {})
+    policy_mode = policy.get("mode") if isinstance(policy, dict) else None
     if not isinstance(project, dict) or set(project) != {"title", "shortTitle", "slug", "description", "brandInitials", "sourceLanguage", "studyLanguage"} or not all(isinstance(value, str) and value.strip() for value in project.values()) or project.get("sourceLanguage") != "en" or project.get("studyLanguage") != "ar":
         errors.append("project config project metadata is invalid")
-    if not isinstance(policy, dict) or set(policy) != {"mode", "allowOutsideSources", "generatedQuestionsRequireHumanReviewForExam"} or policy.get("mode") != "source-plus-generated" or policy.get("allowOutsideSources") is not False or not isinstance(policy.get("generatedQuestionsRequireHumanReviewForExam"), bool):
+    if not isinstance(policy, dict) or set(policy) != {"mode", "allowOutsideSources", "generatedQuestionsRequireHumanReviewForExam"} or policy.get("mode") not in {"source-only", "source-plus-generated", "generated-only"} or not isinstance(policy.get("allowOutsideSources"), bool) or not isinstance(policy.get("generatedQuestionsRequireHumanReviewForExam"), bool):
         errors.append("project config policy is invalid")
     distributions_ok = (
         isinstance(generation, dict)
@@ -54,13 +55,21 @@ def _independent_checks(
         and sum(generation["difficultyPercent"].values()) == 100
         and sum(generation["bloomPercent"].values()) == 100
     )
-    if not isinstance(generation, dict) or set(generation) != {"mcqPerLesson", "trueFalsePerLesson", "difficultyPercent", "bloomPercent"} or not all(isinstance(generation.get(key), int) and not isinstance(generation.get(key), bool) and generation[key] > 0 for key in ("mcqPerLesson", "trueFalsePerLesson")) or not distributions_ok:
+    generation_counts_ok = (
+        isinstance(generation, dict)
+        and all(isinstance(generation.get(key), int) and not isinstance(generation.get(key), bool) and generation[key] >= 0 for key in ("mcqPerLesson", "trueFalsePerLesson"))
+        and (
+            (policy_mode == "source-only" and generation.get("mcqPerLesson") == generation.get("trueFalsePerLesson") == 0)
+            or (policy_mode in {"source-plus-generated", "generated-only"} and generation.get("mcqPerLesson", 0) + generation.get("trueFalsePerLesson", 0) > 0)
+        )
+    )
+    if not isinstance(generation, dict) or set(generation) != {"mcqPerLesson", "trueFalsePerLesson", "difficultyPercent", "bloomPercent"} or not generation_counts_ok or not distributions_ok:
         errors.append("project config question generation is invalid")
     if not isinstance(exam, dict) or set(exam) != {"defaultCount", "defaultMinutes"} or not all(isinstance(value, int) and not isinstance(value, bool) and value > 0 for value in exam.values()):
         errors.append("project config exam is invalid")
     if not isinstance(deployment, dict) or set(deployment) != {"provider", "repository", "branch", "publicUrl"} or deployment.get("provider") != "github-pages" or not isinstance(deployment.get("repository"), str) or deployment["repository"].count("/") != 1 or not all(part.strip() for part in deployment["repository"].split("/")) or not isinstance(deployment.get("branch"), str) or not deployment["branch"].strip() or not isinstance(deployment.get("publicUrl"), str) or not deployment["publicUrl"].startswith(("http://", "https://")):
         errors.append("project config deployment is invalid")
-    if course.get("projectId") != project.get("slug"):
+    if course.get("projectId") != (project.get("slug") if isinstance(project, dict) else None):
         errors.append("public course project ID differs from project config")
     if course.get("project") != project or course.get("contentPolicy") != policy or course.get("questionGeneration") != generation or course.get("exam") != exam:
         errors.append("public course policy/configuration differs from project config")
@@ -74,7 +83,7 @@ def _independent_checks(
         if not isinstance(source, dict) or set(source) != source_keys or not isinstance(source.get("id"), str) or not source["id"].strip() or not isinstance(source.get("fileName"), str) or not source["fileName"].strip() or not isinstance(source.get("pages"), int) or isinstance(source.get("pages"), bool) or source["pages"] < 1 or not isinstance(source.get("locations"), list):
             errors.append("source manifest has a malformed source record")
             break
-    manifest_ids = [source.get("id") for source in manifest_sources_list if isinstance(source, dict)]
+    manifest_ids = [source.get("id") for source in manifest_sources_list if isinstance(source, dict) and isinstance(source.get("id"), str)]
     if len(manifest_ids) != len(set(manifest_ids)):
         errors.append("source manifest has duplicate source IDs")
     if course.get("sources") != manifest_sources_list:
@@ -89,7 +98,7 @@ def _independent_checks(
         if not isinstance(source, dict) or set(source) != extraction_source_keys or not isinstance(source.get("id"), str) or not isinstance(source.get("file"), str) or not isinstance(source.get("pages"), int) or isinstance(source.get("pages"), bool) or source["pages"] < 1:
             errors.append("extraction has a malformed source record")
             break
-    extraction_ids = [source.get("id") for source in extraction_sources_list if isinstance(source, dict)]
+    extraction_ids = [source.get("id") for source in extraction_sources_list if isinstance(source, dict) and isinstance(source.get("id"), str)]
     if len(extraction_ids) != len(set(extraction_ids)):
         errors.append("extraction has duplicate source IDs")
     page_keys = {"sourceId", "page", "text", "characterCount", "classification", "classificationEvidence"}

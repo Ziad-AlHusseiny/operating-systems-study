@@ -5,7 +5,8 @@ Generated from canonical payload data; no timestamp is used.
 - Questions: 210 (mcq 126, true-false 84).
 - Difficulty: easy 63, hard 42, medium 105.
 - Bloom: analyze 42, apply 105, remember 63.
-- Review/quality state: validated 210; all retained and validated.
+- Review/quality state: validated 210.
+- Invalid question records: 0; retained and validated: complete.
 - True/false answer balance: true 42, false 42.
 - Eligible scored Practice: 210; eligible low-stakes Mock Exam: 210.
 - Evidence/source references: complete; Arabic records: complete; duplicate normalized prompts: none.

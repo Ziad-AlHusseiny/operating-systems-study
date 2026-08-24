@@ -632,12 +632,19 @@ def _counts(payloads: dict[str, dict]) -> dict[str, Any]:
     course, lessons, questions, explanations = (payloads["course"], payloads["lessons"]["lessons"], payloads["questions"]["questions"], payloads["explanations-ar"]["explanations"])
     lesson_records = [item for item in lessons if isinstance(item, dict)]
     question_records = [item for item in questions if isinstance(item, dict)]
-    explanation_records = [item for item in explanations if isinstance(item, dict)]
+    invalid_questions = len(questions) - len(question_records)
+    types = Counter(item.get("type", "invalid") for item in question_records)
+    difficulty = Counter(item.get("difficulty", "invalid") for item in question_records)
+    bloom = Counter(item.get("bloomLevel", "invalid") for item in question_records)
+    review = Counter(item.get("review", {}).get("status", "invalid") if isinstance(item.get("review"), dict) else "invalid" for item in question_records)
+    if invalid_questions:
+        for counter in (types, difficulty, bloom, review):
+            counter["invalid"] += invalid_questions
     return {
         "sources": len(course["sources"]), "modules": len(course["modules"]), "lessons": len(lessons), "questions": len(questions), "explanations": len(explanations),
-        "types": Counter(item.get("type", "invalid") for item in question_records), "difficulty": Counter(item.get("difficulty", "invalid") for item in question_records), "bloom": Counter(item.get("bloomLevel", "invalid") for item in question_records),
+        "types": types, "difficulty": difficulty, "bloom": bloom, "invalidQuestions": invalid_questions,
         "module": Counter(item.get("moduleId", "invalid") for item in lesson_records), "lesson": Counter("lesson-" + re.sub(r"-\d{3}$", "", item.get("id", "invalid"))[3:] for item in question_records),
-        "review": Counter(item.get("review", {}).get("status", "invalid") if isinstance(item.get("review"), dict) else "invalid" for item in question_records), "answers": Counter(item.get("correctAnswer") for item in question_records if item.get("type") == "true-false"),
+        "review": review, "answers": Counter(item.get("correctAnswer") for item in question_records if item.get("type") == "true-false"),
         "practice": len(eligible_question_ids(payloads, "practice")), "mock": len(eligible_question_ids(payloads, "mock-exam")),
     }
 
@@ -681,6 +688,8 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
         and isinstance(explanation.get("explanation"), list)
         and 2 <= len(explanation["explanation"]) <= 3
         and all(_non_empty(paragraph) for paragraph in explanation["explanation"])
+        and _non_empty(explanation.get("body"))
+        and _non_empty(explanation.get("note"))
         and _review_valid(explanation)
         and _refs_resolve_for_eligibility(explanation.get("sourceRefs"), sources, indexed_classifications)
         for explanation in explanation_records
@@ -693,7 +702,8 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
         and set(explanation_by_question) == set(question_ids)
         and len(explanation_by_question) == len(explanations)
         and all(
-            explanation_by_question[question.get("id")].get("id") == f"explanation-{question.get('id')}-ar"
+            question.get("generatedExplanationId") == explanation_by_question[question.get("id")].get("id")
+            and explanation_by_question[question.get("id")].get("id") == f"explanation-{question.get('id')}-ar"
             and explanation_by_question[question.get("id")].get("contentVersion") == question.get("contentVersion")
             and explanation_by_question[question.get("id")].get("sourceRefs") == question.get("sourceRefs")
             for question in question_records
@@ -715,6 +725,7 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
         "evidenceOk": len(questions) == 210 and len(question_records) == len(questions) and all(_answer_and_evidence_valid(question, sources, indexed_classifications) for question in question_records),
         "arabicOk": len(explanations) == len(questions) and arabic_records_ok and arabic_links_ok,
         "duplicatesOk": len(question_records) == len(questions) and len(normalized) == len(set(normalized)),
+        "questionsOk": len(question_records) == len(questions) and all(question.get("duplicateDisposition") == "retain" and _review_valid(question) for question in question_records),
         "errors": validation_errors,
     }
 
@@ -742,7 +753,7 @@ def build_reports(payloads: dict[str, dict]) -> dict[str, str]:
         return ", ".join(f"{key} {counter[key]}" for key in sorted(counter))
     quality_report = "\n".join([
         "# Question Quality Report", "", "Generated from canonical payload data; no timestamp is used.", "",
-        f"- Questions: {counts['questions']} ({rendered(counts['types'])}).", f"- Difficulty: {rendered(counts['difficulty'])}.", f"- Bloom: {rendered(counts['bloom'])}.", f"- Review/quality state: {rendered(counts['review'])}; all retained and validated.", f"- True/false answer balance: true {counts['answers'][True]}, false {counts['answers'][False]}.",
+        f"- Questions: {counts['questions']} ({rendered(counts['types'])}).", f"- Difficulty: {rendered(counts['difficulty'])}.", f"- Bloom: {rendered(counts['bloom'])}.", f"- Review/quality state: {rendered(counts['review'])}.", f"- Invalid question records: {counts['invalidQuestions']}; retained and validated: {'complete' if measured['questionsOk'] else 'failed'}.", f"- True/false answer balance: true {counts['answers'][True]}, false {counts['answers'][False]}.",
         f"- Eligible scored Practice: {counts['practice']}; eligible low-stakes Mock Exam: {counts['mock']}.",
         f"- Evidence/source references: {'complete' if measured['evidenceOk'] else 'failed'}; Arabic records: {'complete' if measured['arabicOk'] else 'failed'}; duplicate normalized prompts: {'none' if measured['duplicatesOk'] else 'failed'}.", "", "## Counts by module", "", *[f"- `{module['id']}`: {question_modules[module['id']]} questions" for module in course['modules']], "", "## Counts by lesson", "", *[f"- `{lesson_id}`: {counts['lesson'][lesson_id]} questions" for lesson_id in sorted(counts['lesson'])], "", "## Assessment boundary", "", "- Generated questions are source-backed, validated practice material. The human-review gate is disabled only for this low-stakes Mock Exam pool.", "- This does not authorize high-stakes, credentialing, admissions, employment, compliance, or externally reported assessment use; those uses require complete current human approval.",
     ]) + "\n"
