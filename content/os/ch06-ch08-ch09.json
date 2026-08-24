@@ -11481,7 +11481,7 @@
       "type": "mcq",
       "prompt": "If a system uses neither prevention nor avoidance, which pair can it provide after a deadlock occurs?",
       "topic": "Detection-recovery policy",
-      "correctAnswer": 0,
+      "correctAnswer": 1,
       "rationale": "When neither prevention nor avoidance is used, the lecture describes a detection algorithm paired with a recovery scheme.",
       "difficulty": "easy",
       "bloomLevel": "remember",

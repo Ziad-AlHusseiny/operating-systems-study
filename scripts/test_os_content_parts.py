@@ -381,7 +381,7 @@ PART_THREE_MCQ_ANSWER_KEY = {'gq-os-ch06-part1-001': 0,
  'gq-os-ch08-part2-004': 2,
  'gq-os-ch08-part2-005': 1,
  'gq-os-ch08-part2-006': 1,
- 'gq-os-ch08-part3-001': 0,
+ 'gq-os-ch08-part3-001': 1,
  'gq-os-ch08-part3-002': 1,
  'gq-os-ch08-part3-003': 2,
  'gq-os-ch08-part3-004': 1,
@@ -476,126 +476,373 @@ PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part
  'gq-os-ch09-part2-009': ('objective-os-ch09-part2-3', 'Virtual address-space comparison', 'material-section-os-ch09-part2-virtual'),
  'gq-os-ch09-part2-010': ('objective-os-ch09-part2-3', 'Page-fault state trace', 'material-section-os-ch09-part2-virtual')}
 
-# Independently transcribed lecture facts.  These are deliberately compact
-# source assertions rather than hashes of the authored JSON payload.
+# Independently transcribed lecture facts. The first field is the reviewed
+# correct MCQ index or the reviewed true/false Boolean; it is intentionally
+# independent of the authored JSON payload and its hashes.
 PART_THREE_MANUAL_SOURCE_FACTS = {
-    "gq-os-ch06-part1-001": (True, "os-lec-15", 3, "shared memory"),
-    "gq-os-ch06-part1-002": (False, "os-lec-15", 5, "counter"),
-    "gq-os-ch06-part1-003": (True, "os-lec-15", 9, "no other process"),
-    "gq-os-ch06-part1-004": (True, "os-lec-15", 11, "progress"),
-    "gq-os-ch06-part1-005": (True, "os-lec-15", 14, "flag[i]"),
-    "gq-os-ch06-part1-006": (True, "os-lec-15", 22, "reordering"),
+    "gq-os-ch06-part1-001": (0, "os-lec-15", 3, "shared memory"),
+    "gq-os-ch06-part1-002": (1, "os-lec-15", 5, "counter"),
+    "gq-os-ch06-part1-003": (2, "os-lec-15", 9, "no other process"),
+    "gq-os-ch06-part1-004": (1, "os-lec-15", 11, "progress"),
+    "gq-os-ch06-part1-005": (1, "os-lec-15", 14, "flag[i]"),
+    "gq-os-ch06-part1-006": (2, "os-lec-15", 22, "reordering"),
     "gq-os-ch06-part1-007": (True, "os-lec-15", 12, "interrupts"),
     "gq-os-ch06-part1-008": (False, "os-lec-15", 14, "two processes"),
     "gq-os-ch06-part1-009": (False, "os-lec-15", 7, "counter"),
     "gq-os-ch06-part1-010": (True, "os-lec-15", 15, "turn"),
-    "gq-os-ch06-part2-001": (True, "os-lec-16", 4, "memory barrier"),
-    "gq-os-ch06-part2-002": (True, "os-lec-16", 7, "original value"),
-    "gq-os-ch06-part2-003": (True, "os-lec-16", 13, "spinlock"),
-    "gq-os-ch06-part2-004": (True, "os-lec-16", 16, "binary semaphore"),
-    "gq-os-ch06-part2-005": (True, "os-lec-16", 17, "synch"),
-    "gq-os-ch06-part2-006": (True, "os-lec-16", 22, "signal(full)"),
+    "gq-os-ch06-part2-001": (0, "os-lec-16", 4, "memory barrier"),
+    "gq-os-ch06-part2-002": (1, "os-lec-16", 7, "original value"),
+    "gq-os-ch06-part2-003": (2, "os-lec-16", 13, "spinlock"),
+    "gq-os-ch06-part2-004": (1, "os-lec-16", 16, "binary semaphore"),
+    "gq-os-ch06-part2-005": (1, "os-lec-16", 17, "synch"),
+    "gq-os-ch06-part2-006": (2, "os-lec-16", 22, "signal(full)"),
     "gq-os-ch06-part2-007": (True, "os-lec-16", 8, "bounded waiting"),
     "gq-os-ch06-part2-008": (True, "os-lec-16", 16, "counting semaphore"),
     "gq-os-ch06-part2-009": (False, "os-lec-16", 18, "priority inversion"),
     "gq-os-ch06-part2-010": (False, "os-lec-16", 19, "signal(mutex)"),
-    "gq-os-ch08-part1-001": (True, "os-lec-17", 11, "no cycles"),
-    "gq-os-ch08-part1-002": (True, "os-lec-17", 12, "detect it, and then recover"),
-    "gq-os-ch08-part1-003": (True, "os-lec-17", 14, "read-only"),
-    "gq-os-ch08-part1-004": (True, "os-lec-17", 15, "before it begins execution"),
-    "gq-os-ch08-part1-005": (True, "os-lec-17", 16, "printers and tape drives"),
-    "gq-os-ch08-part1-006": (True, "os-lec-17", 17, "increasing order"),
+    "gq-os-ch08-part1-001": (0, "os-lec-17", 11, "no cycles"),
+    "gq-os-ch08-part1-002": (1, "os-lec-17", 12, "detect it, and then recover"),
+    "gq-os-ch08-part1-003": (2, "os-lec-17", 14, "read-only"),
+    "gq-os-ch08-part1-004": (1, "os-lec-17", 15, "before it begins execution"),
+    "gq-os-ch08-part1-005": (1, "os-lec-17", 16, "printers and tape drives"),
+    "gq-os-ch08-part1-006": (2, "os-lec-17", 17, "increasing order"),
     "gq-os-ch08-part1-007": (False, "os-lec-17", 12, "prevention"),
     "gq-os-ch08-part1-008": (False, "os-lec-17", 16, "preempted"),
     "gq-os-ch08-part1-009": (True, "os-lec-17", 17, "increasing order"),
     "gq-os-ch08-part1-010": (True, "os-lec-17", 12, "linux"),
-    "gq-os-ch08-part2-001": (True, "os-lec-18", 4, "maximum number"),
-    "gq-os-ch08-part2-002": (True, "os-lec-18", 6, "unsafe"),
-    "gq-os-ch08-part2-003": (True, "os-lec-18", 9, "request edge"),
-    "gq-os-ch08-part2-004": (True, "os-lec-18", 10, "cycle"),
-    "gq-os-ch08-part2-005": (True, "os-lec-18", 14, "max [i,j]"),
-    "gq-os-ch08-part2-006": (True, "os-lec-18", 18, "select p1"),
+    "gq-os-ch08-part2-001": (0, "os-lec-18", 4, "maximum number"),
+    "gq-os-ch08-part2-002": (1, "os-lec-18", 6, "unsafe"),
+    "gq-os-ch08-part2-003": (1, "os-lec-18", 9, "request edge"),
+    "gq-os-ch08-part2-004": (2, "os-lec-18", 10, "cycle"),
+    "gq-os-ch08-part2-005": (1, "os-lec-18", 14, "max [i,j]"),
+    "gq-os-ch08-part2-006": (1, "os-lec-18", 18, "select p1"),
     "gq-os-ch08-part2-007": (False, "os-lec-18", 13, "multiple instances"),
     "gq-os-ch08-part2-008": (True, "os-lec-18", 16, "need"),
     "gq-os-ch08-part2-009": (False, "os-lec-18", 19, "unsafe"),
     "gq-os-ch08-part2-010": (True, "os-lec-18", 19, "p1 requests"),
-    "gq-os-ch08-part3-001": (True, "os-lec-19", 4, "recovery scheme"),
-    "gq-os-ch08-part3-002": (True, "os-lec-19", 5, "nodes are processes"),
-    "gq-os-ch08-part3-003": (True, "os-lec-19", 7, "k more instances"),
-    "gq-os-ch08-part3-004": (True, "os-lec-19", 8, "finish[i] = false"),
-    "gq-os-ch08-part3-005": (True, "os-lec-19", 9, "o(m"),
-    "gq-os-ch08-part3-006": (True, "os-lec-19", 11, "p1 , p2 , p3 , and p4"),
+    "gq-os-ch08-part3-001": (1, "os-lec-19", 4, "recovery scheme"),
+    "gq-os-ch08-part3-002": (1, "os-lec-19", 5, "nodes are processes"),
+    "gq-os-ch08-part3-003": (2, "os-lec-19", 7, "k more instances"),
+    "gq-os-ch08-part3-004": (1, "os-lec-19", 8, "finish[i] = false"),
+    "gq-os-ch08-part3-005": (1, "os-lec-19", 9, "o(m"),
+    "gq-os-ch08-part3-006": (2, "os-lec-19", 11, "p1 , p2 , p3 , and p4"),
     "gq-os-ch08-part3-007": (True, "os-lec-19", 17, "processes are still deadlocked"),
     "gq-os-ch08-part3-008": (True, "os-lec-19", 12, "considerable overhead"),
     "gq-os-ch08-part3-009": (False, "os-lec-19", 15, "one process at a time"),
     "gq-os-ch08-part3-010": (False, "os-lec-19", 18, "minimize cost"),
-    "gq-os-ch09-part1-001": (True, "os-lec-20", 3, "registers and main memory"),
-    "gq-os-ch09-part1-002": (True, "os-lec-20", 4, "size of the range"),
-    "gq-os-ch09-part1-003": (True, "os-lec-20", 8, "must recompile"),
-    "gq-os-ch09-part1-004": (True, "os-lec-20", 10, "execution-time"),
-    "gq-os-ch09-part1-005": (True, "os-lec-20", 11, "memory-management unit"),
-    "gq-os-ch09-part1-006": (True, "os-lec-20", 13, "14346"),
+    "gq-os-ch09-part1-001": (0, "os-lec-20", 3, "registers and main memory"),
+    "gq-os-ch09-part1-002": (1, "os-lec-20", 4, "size of the range"),
+    "gq-os-ch09-part1-003": (2, "os-lec-20", 8, "must recompile"),
+    "gq-os-ch09-part1-004": (2, "os-lec-20", 10, "execution-time"),
+    "gq-os-ch09-part1-005": (1, "os-lec-20", 11, "memory-management unit"),
+    "gq-os-ch09-part1-006": (2, "os-lec-20", 13, "14346"),
     "gq-os-ch09-part1-007": (False, "os-lec-20", 7, "compiler"),
     "gq-os-ch09-part1-008": (True, "os-lec-20", 5, "privileged"),
     "gq-os-ch09-part1-009": (False, "os-lec-20", 27, "external fragmentation"),
     "gq-os-ch09-part1-010": (True, "os-lec-20", 18, "combined"),
-    "gq-os-ch09-part2-001": (True, "os-lec-21", 3, "called frames"),
-    "gq-os-ch09-part2-002": (True, "os-lec-21", 4, "page number"),
-    "gq-os-ch09-part2-003": (True, "os-lec-21", 10, "base register (ptbr) points"),
-    "gq-os-ch09-part2-004": (True, "os-lec-21", 12, "read-only"),
-    "gq-os-ch09-part2-005": (True, "os-lec-21", 5, "m = 16 bits"),
-    "gq-os-ch09-part2-006": (True, "os-lec-21", 14, "three processes"),
+    "gq-os-ch09-part2-001": (0, "os-lec-21", 3, "called frames"),
+    "gq-os-ch09-part2-002": (1, "os-lec-21", 4, "page number"),
+    "gq-os-ch09-part2-003": (1, "os-lec-21", 10, "base register (ptbr) points"),
+    "gq-os-ch09-part2-004": (1, "os-lec-21", 12, "read-only"),
+    "gq-os-ch09-part2-005": (2, "os-lec-21", 5, "m = 16 bits"),
+    "gq-os-ch09-part2-006": (2, "os-lec-21", 14, "three processes"),
     "gq-os-ch09-part2-007": (False, "os-lec-21", 3, "internal fragmentation"),
     "gq-os-ch09-part2-008": (False, "os-lec-21", 17, "page out"),
     "gq-os-ch09-part2-009": (True, "os-lec-21", 20, "no longer constrained by limits of physical memory"),
     "gq-os-ch09-part2-010": (True, "os-lec-21", 28, "restart the instruction"),
 }
 
-# Each tuple names the reviewed misconception category for the four options
-# (the correct category is also recorded so option order is fully audited).
-PART_THREE_MCQ_MISCONCEPTION_CATEGORIES = {
-    "gq-os-ch06-part1-001": ("complete mechanism pair", "partial mechanism", "partial mechanism", "denial of listed mechanisms"),
-    "gq-os-ch06-part1-002": ("premature item count", "initial-state count", "capacity-versus-full-count", "invalid sentinel"),
-    "gq-os-ch06-part1-003": ("variable-based exception", "turn-based exception", "mutual-exclusion rule", "remainder-section confusion"),
-    "gq-os-ch06-part1-004": ("exclusion requirement", "progress requirement", "bounded-waiting requirement", "program-section confusion"),
-    "gq-os-ch06-part1-005": ("post-remainder state", "entry interest flag", "wrong process flag", "post-critical state"),
-    "gq-os-ch06-part1-006": ("Pi-only outcome", "Pj-only outcome", "simultaneous-entry race", "permanent-blocking outcome"),
-    "gq-os-ch06-part2-001": ("full barrier ordering", "stores-only ordering", "reversed ordering", "operation elimination"),
-    "gq-os-ch06-part2-002": ("new value", "original value", "false-only return", "queue-count confusion"),
-    "gq-os-ch06-part2-003": ("variable swap", "queue blocking", "busy waiting", "premature release"),
-    "gq-os-ch06-part2-004": ("counting domain", "binary domain", "process-id value", "capacity value"),
-    "gq-os-ch06-part2-005": ("early release", "event ordering", "buffer-count confusion", "scheduler-count confusion"),
-    "gq-os-ch06-part2-006": ("mutex-before-space", "unprotected insertion", "producer sequence", "consumer sequence"),
-    "gq-os-ch08-part1-001": ("no-deadlock conclusion", "invented cycle", "resource-property confusion", "completion confusion"),
-    "gq-os-ch08-part1-002": ("prevention", "detection and recovery", "avoidance", "ignore policy"),
-    "gq-os-ch08-part1-003": ("missing-instance claim", "exclusive assignment", "sharable resource", "ordering-rule confusion"),
-    "gq-os-ch08-part1-004": ("retained-resource request", "all-before-execution protocol", "hold-and-wait", "post-termination request"),
-    "gq-os-ch08-part1-005": ("saveable state", "nonpreemptable device", "sharable resource", "saveable-state contrast"),
-    "gq-os-ch08-part1-006": ("availability-only grant", "increasing-order direction", "order violation", "permanent release"),
-    "gq-os-ch08-part2-001": ("maximum claim", "current allocation", "current-state confusion", "single-resource-type claim"),
-    "gq-os-ch08-part2-002": ("unsafe-is-deadlocked", "deadlock-implies-unsafe", "safe-is-circular-wait", "request absence"),
-    "gq-os-ch08-part2-003": ("claim persistence", "claim-to-request transition", "premature assignment", "cycle-as-edge"),
-    "gq-os-ch08-part2-004": ("no-claim condition", "all-free condition", "acyclic grant check", "all-complete condition"),
-    "gq-os-ch08-part2-005": ("available/request formula", "max/allocation formula", "allocation/available formula", "request/work formula"),
-    "gq-os-ch08-part2-006": ("P0 vector failure", "P1 vector comparison", "P2 vector failure", "P4 vector failure"),
-    "gq-os-ch08-part3-001": ("prevention setup", "detection/recovery pair", "detection-data-structure pair", "avoidance guarantee"),
-    "gq-os-ch08-part3-002": ("resource-type nodes", "process nodes", "resource-instance nodes", "matrix-row nodes"),
-    "gq-os-ch08-part3-003": ("release count", "total-instance count", "additional request count", "completion count"),
-    "gq-os-ch08-part3-004": ("true initialization", "false initialization", "work-vector confusion", "request-vector confusion"),
-    "gq-os-ch08-part3-005": ("linear complexity", "matrix complexity", "exponential complexity", "logarithmic complexity"),
-    "gq-os-ch08-part3-006": ("P0-only deadlock", "safe-state claim", "remaining deadlocked set", "automatic termination"),
-    "gq-os-ch09-part1-001": ("direct storage pair", "cache-for-registers", "disk-for-memory", "non-direct program/cache"),
-    "gq-os-ch09-part1-002": ("base-register meaning", "limit-register meaning", "upper-bound confusion", "base-address confusion"),
-    "gq-os-ch09-part1-003": ("execution binding", "load binding", "compile binding", "page-fault confusion"),
-    "gq-os-ch09-part1-004": ("compile-time equality", "load-time equality", "execution-time difference", "protection confusion"),
-    "gq-os-ch09-part1-005": ("relocation-register-versus-device", "MMU role", "base-register-versus-device", "process-versus-MMU"),
-    "gq-os-ch09-part1-006": ("logical address", "relocation base", "relocation sum", "unrelated limit"),
-    "gq-os-ch09-part2-001": ("paging frame", "logical-page confusion", "page-table-entry confusion", "backing-store-block confusion"),
-    "gq-os-ch09-part2-002": ("offset field", "page-table index", "translated frame", "protection bit"),
-    "gq-os-ch09-part2-003": ("PTLR-versus-PTBR", "PTBR table pointer", "backing-store pointer", "TLB-entry pointer"),
-    "gq-os-ch09-part2-004": ("sharing attribute", "access permission", "address-field confusion", "validity-bit confusion"),
-    "gq-os-ch09-part2-005": ("page-size-only bits", "one-bit-short total", "64-times-1024 result", "other-example result"),
-    "gq-os-ch09-part2-006": ("private writable copy", "one-process-only map", "shared reentrant map", "backing-store-only map"),
+# Independently reviewed option bindings: (correct index, main-rationale
+# anchor, ((exact option, unique category, evidence page, evidence phrase,
+# option-rationale anchor), ...)).  The source id comes from the separate
+# per-question fact oracle above, so these records cannot be refreshed from
+# the authored JSON answer key.
+PART_THREE_MCQ_OPTION_ORACLES = {
+    "gq-os-ch06-part1-001": (0, "both", (
+        ("Both shared memory and message passing", "complete mechanism pair", 3, "shared memory", "complete"),
+        ("Shared memory alone", "shared-memory-only", 3, "shared memory", "omits"),
+        ("Message passing alone", "message-passing-only", 3, "message passing", "omits"),
+        ("Neither shared memory nor message passing", "denial of listed mechanisms", 3, "message passing", "explicitly"),
+    )),
+    "gq-os-ch06-part1-002": (1, "full-buffer counter", (
+        ("One, because a producer is about to run", "premature producer count", 5, "counter", "future producer"),
+        ("Zero, because no buffer item is initially full", "initial full-item count", 5, "counter", "correct"),
+        ("The buffer capacity, because it counts empty slots", "capacity-for-full-count", 5, "counter", "Capacity"),
+        ("Negative one, to reserve the first buffer position", "negative-sentinel invention", 5, "counter", "negative"),
+    )),
+    "gq-os-ch06-part1-003": (2, "mutual exclusion", (
+        ("They may enter when they access different variables", "variable exception", 9, "critical section", "variables"),
+        ("They may enter after updating the turn variable", "turn-variable exception", 9, "critical section", "turn"),
+        ("None of them may execute a critical section", "mutual-exclusion rule", 9, "no other process", "correct"),
+        ("They must first execute their remainder sections", "remainder-section confusion", 9, "critical section", "Remainder"),
+    )),
+    "gq-os-ch06-part1-004": (1, "indefinite", (
+        ("Mutual exclusion", "simultaneous-entry requirement", 11, "progress", "simultaneous"),
+        ("Progress", "progress requirement", 11, "progress", "correct"),
+        ("Bounded waiting", "requester-wait bound", 11, "progress", "requester"),
+        ("The remainder section", "program-section confusion", 11, "progress", "program work"),
+    )),
+    "gq-os-ch06-part1-005": (1, "ready to enter", (
+        ("Pi has completed its remainder section", "post-remainder state", 14, "flag[i]", "remainder"),
+        ("Pi is ready to enter its critical section", "entry-interest flag", 14, "flag[i]", "correct"),
+        ("Pj is ready to enter its critical section", "wrong-process flag", 14, "flag[i]", "flag[j]"),
+        ("Pi has already left its critical section", "post-critical state", 14, "flag[i]", "Leaving"),
+    )),
+    "gq-os-ch06-part1-006": (2, "both", (
+        ("Only Pi can observe its entry condition as true", "Pi-only outcome", 22, "reordering", "not exclusive to Pi"),
+        ("Only Pj can observe its entry condition as true", "Pj-only outcome", 22, "reordering", "not exclusive to Pj"),
+        ("Both processes can observe conditions that let them enter their critical sections", "simultaneous-entry race", 22, "reordering", "correct"),
+        ("Both processes must permanently remain in their remainder sections", "permanent-blocking outcome", 22, "reordering", "permanent"),
+    )),
+    "gq-os-ch06-part2-001": (0, "loads and stores", (
+        ("Earlier loads and stores complete and become visible", "full barrier ordering", 4, "memory barrier", "correct"),
+        ("Only earlier stores become visible while earlier loads remain unordered", "stores-only ordering", 4, "memory barrier", "omitting loads"),
+        ("Later loads and stores run before earlier memory operations", "reversed ordering", 4, "memory barrier", "prevents"),
+        ("All memory operations are removed from the program", "operation-elimination claim", 4, "memory barrier", "does not eliminate"),
+    )),
+    "gq-os-ch06-part2-002": (1, "original value", (
+        ("The value written to the target after the operation", "new-value return", 7, "test_and_set", "newly written"),
+        ("The original value of its target", "original-value return", 7, "test_and_set", "correct"),
+        ("The target's value only when it was false", "false-only return", 7, "test_and_set", "whether it was false or true"),
+        ("The number of processes waiting for the target", "queue-count confusion", 7, "test_and_set", "waiting count"),
+    )),
+    "gq-os-ch06-part2-003": (2, "loops", (
+        ("It swaps the two lock variables on every attempt", "swap-operation confusion", 13, "spinlock", "swapping"),
+        ("It places the waiting process into a semaphore queue", "blocking-queue confusion", 13, "spinlock", "busy waiting"),
+        ("It continuously loops while the lock is unavailable", "busy-wait loop", 13, "spinlock", "correct"),
+        ("It releases the lock before testing it", "pre-test release", 13, "spinlock", "Releasing"),
+    )),
+    "gq-os-ch06-part2-004": (1, "two values", (
+        ("A counting semaphore with any nonnegative integer value", "counting-domain confusion", 16, "binary semaphore", "more than two"),
+        ("A binary semaphore with value zero or one", "binary-domain definition", 16, "binary semaphore", "correct"),
+        ("A counting semaphore whose value equals the current process identifier", "process-identifier confusion", 16, "binary semaphore", "identifier"),
+        ("A binary semaphore whose value equals the buffer capacity", "capacity-as-binary-value", 16, "binary semaphore", "exceed one"),
+    )),
+    "gq-os-ch06-part2-005": (1, "initializes synch", (
+        ("One, so P2 may execute S2 before P1 executes S1", "premature-event permit", 17, "synch", "initial one"),
+        ("Zero, so P2 waits until P1 signals after S1", "event-order initialization", 17, "synch", "correct"),
+        ("The bounded-buffer capacity, so synch counts empty slots", "buffer-capacity confusion", 17, "synch", "event-order"),
+        ("The number of processes, so synch schedules both programs", "scheduler-count confusion", 17, "synch", "scheduler"),
+    )),
+    "gq-os-ch06-part2-006": (2, "reserves an empty", (
+        ("wait(mutex), add item, signal(full), signal(mutex)", "mutex-before-empty", 22, "bounded buffer", "while waiting for space"),
+        ("wait(empty), add item, wait(mutex), signal(full)", "unprotected-insertion", 22, "bounded buffer", "before acquiring"),
+        ("wait(empty), wait(mutex), add item, signal(mutex), signal(full)", "producer sequence", 22, "bounded buffer", "correct"),
+        ("wait(full), wait(mutex), add item, signal(empty), signal(mutex)", "consumer-role reversal", 22, "bounded buffer", "consumer-side"),
+    )),
+    "gq-os-ch08-part1-001": (0, "no deadlock", (
+        ("The system has no deadlock", "no-cycle conclusion", 11, "no cycles", "correct"),
+        ("The system is deadlocked but has an unshown cycle", "invented-cycle claim", 11, "no cycles", "cannot be assumed"),
+        ("Every resource type is sharable", "resource-property confusion", 11, "no cycles", "Sharability"),
+        ("Every process has finished", "completion conclusion", 11, "no cycles", "still execute"),
+    )),
+    "gq-os-ch08-part1-002": (1, "detection and recovery", (
+        ("Prevent deadlock by constraining a necessary condition", "prevention policy", 12, "deadlock prevention", "before deadlock"),
+        ("Allow deadlock, then detect it and recover", "detection-recovery policy", 12, "detect it, and then recover", "correct"),
+        ("Avoid deadlock by keeping the state safe", "avoidance policy", 12, "deadlock avoidance", "safe"),
+        ("Ignore deadlocks and leave handling to developers", "ignore policy", 12, "linux and windows", "separate policy"),
+    )),
+    "gq-os-ch08-part1-003": (2, "sharable", (
+        ("It has no resource instances", "missing-instance claim", 14, "read-only", "not absence"),
+        ("It is assigned permanently to one process", "exclusive-assignment claim", 14, "read-only", "opposite"),
+        ("It can be shared without exclusive access", "sharable-resource rule", 14, "read-only", "correct"),
+        ("It must be requested in increasing numerical order", "ordering-rule confusion", 14, "read-only", "Numerical ordering"),
+    )),
+    "gq-os-ch08-part1-004": (1, "request and receive", (
+        ("Request one resource while retaining previously allocated resources", "retained-resource request", 15, "hold and wait", "exactly"),
+        ("Request all needed resources before execution begins", "all-before-execution protocol", 15, "before it begins execution", "correct"),
+        ("Request an unavailable resource and keep the resources already held", "hold-and-wait preservation", 15, "hold and wait", "preserves"),
+        ("Acquire resources only after the process terminates", "post-termination request", 15, "hold and wait", "no longer needs"),
+    )),
+    "gq-os-ch08-part1-005": (1, "printers and tape drives", (
+        ("CPU registers and memory state", "saveable-state category", 16, "printers and tape drives", "saved and restored"),
+        ("Printers and tape drives", "nonpreemptable-device category", 16, "printers and tape drives", "correct"),
+        ("Read-only files", "sharable-file category", 16, "printers and tape drives", "sharable"),
+        ("Resources whose states can be saved and restored", "restorable-resource contrast", 16, "printers and tape drives", "contrast"),
+    )),
+    "gq-os-ch08-part1-006": (2, "lower-numbered R4", (
+        ("P1 may request R4 because availability alone decides the grant", "availability-only grant", 17, "increasing order", "does not override"),
+        ("P1 must request another resource numbered above R5", "rule-direction statement", 17, "increasing order", "direction"),
+        ("The request would violate the increasing resource-order requirement", "order-violation diagnosis", 17, "increasing order", "correct"),
+        ("P1 must release every resource permanently before any request", "permanent-release claim", 17, "increasing order", "permanently"),
+    )),
+    "gq-os-ch08-part2-001": (0, "maximum possible demand", (
+        ("Its maximum need for each resource type", "maximum-claim declaration", 4, "maximum number", "correct"),
+        ("Its current allocation only", "current-allocation-only", 4, "resource-allocation state", "current allocation"),
+        ("Its number of available and allocated resources", "current-state confusion", 4, "available and allocated resources", "current state"),
+        ("Its maximum demand for only one resource type", "single-resource-type claim", 4, "each type", "incomplete"),
+    )),
+    "gq-os-ch08-part2-002": (1, "deadlock implies unsafe", (
+        ("Every unsafe state is already deadlocked", "unsafe-is-deadlocked", 6, "unsafe", "does not mean deadlock"),
+        ("A deadlocked state is unsafe, but an unsafe state may not yet be deadlocked", "deadlock-implies-unsafe", 6, "unsafe", "correct"),
+        ("A safe state necessarily contains a circular wait", "safe-circular-wait claim", 6, "safe state", "not its defining"),
+        ("An unsafe state has no pending requests", "request-absence claim", 6, "unsafe", "absence of requests"),
+    )),
+    "gq-os-ch08-part2-003": (1, "request edge", (
+        ("A claim edge to a different future claim", "claim-persistence", 9, "claim edge", "does not remain"),
+        ("A request edge", "claim-to-request transition", 9, "request edge", "correct"),
+        ("An assignment edge before allocation", "premature-assignment edge", 9, "assignment edge", "follows allocation"),
+        ("A cycle edge", "cycle-as-edge claim", 9, "claim edge", "graph property"),
+    )),
+    "gq-os-ch08-part2-004": (2, "would not create a cycle", (
+        ("The process has no maximum claim", "no-claim condition", 10, "cycle", "requires claims"),
+        ("Every resource type is currently free", "all-free condition", 10, "cycle", "unrelated resources"),
+        ("The resulting assignment creates no cycle", "acyclic-grant check", 10, "cycle", "correct"),
+        ("All processes have completed", "all-complete condition", 10, "cycle", "individual request"),
+    )),
+    "gq-os-ch08-part2-005": (1, "Max", (
+        ("Available − Request", "available-request formula", 14, "Need", "do not define"),
+        ("Max − Allocation", "max-allocation formula", 14, "Max", "correct"),
+        ("Allocation + Available", "allocation-available formula", 14, "Need", "does not yield"),
+        ("Request − Work", "request-work formula", 14, "Need", "not a term"),
+    )),
+    "gq-os-ch08-part2-006": (1, "P1", (
+        ("P0, because its Need is (7,4,3)", "P0 vector failure", 18, "Work = 3 3 2", "exceeding Work"),
+        ("P1, because Need1 = (1,2,2) is no greater than Work = (3,3,2)", "P1 vector comparison", 18, "select p1", "correct"),
+        ("P2, because its Need is (6,0,0)", "P2 vector failure", 18, "Work = 3 3 2", "exceeds"),
+        ("P4, because its Need is (4,3,1)", "P4 vector failure", 18, "Work = 3 3 2", "exceeds"),
+    )),
+    "gq-os-ch08-part3-001": (1, "detection", (
+        ("A prevention protocol and a maximum-claim declaration", "prevention setup", 4, "detection-and-recovery", "before allowing"),
+        ("A detection algorithm and a recovery scheme", "detection-recovery pair", 4, "recovery scheme", "correct"),
+        ("An Available vector and a Request matrix", "detection-data-structure pair", 4, "detection algorithm", "data structures"),
+        ("A guaranteed safe sequence before every request", "avoidance guarantee", 4, "deadlock avoidance", "avoidance"),
+    )),
+    "gq-os-ch08-part3-002": (1, "Processes", (
+        ("Resource types", "resource-type nodes", 5, "Nodes are processes", "removed"),
+        ("Processes", "process nodes", 5, "Nodes are processes", "correct"),
+        ("Resource instances", "resource-instance nodes", 5, "Nodes are processes", "rather than"),
+        ("Allocation matrix rows", "matrix-row nodes", 5, "wait-for graph", "multiple-instance"),
+    )),
+    "gq-os-ch08-part3-003": (2, "additional instances", (
+        ("Pi has released k instances of Rj", "released-instance meaning", 7, "Request[i][j]", "Release"),
+        ("Rj has k total instances", "total-instance meaning", 7, "Request[i][j]", "resource-type property"),
+        ("Pi requests k more instances of Rj", "additional-request meaning", 7, "requesting k more", "correct"),
+        ("Pi has completed k requests", "completed-request count", 7, "Request[i][j]", "Finish"),
+    )),
+    "gq-os-ch08-part3-004": (1, "Finish", (
+        ("True, because the process already holds resources", "true-for-held-resources", 8, "Finish[i] = false", "not true"),
+        ("False, because a nonzero Allocation starts unfinished", "false-for-nonzero-allocation", 8, "Finish[i] = false", "correct"),
+        ("Equal to Work, because Work contains available resources", "work-as-boolean", 8, "Work = Available", "not a Boolean"),
+        ("Equal to Request, because Request is the remaining demand", "request-as-boolean", 8, "Finish[i]", "not assigned"),
+    )),
+    "gq-os-ch08-part3-005": (1, "O(m × n²)", (
+        ("O(n) operations", "linear-complexity claim", 9, "O(m x n2)", "not linear"),
+        ("O(m × n²) operations", "detection-complexity bound", 9, "O(m x n2)", "correct"),
+        ("O(2^m) operations", "exponential-complexity claim", 9, "O(m x n2)", "not exponential"),
+        ("O(log n) operations", "logarithmic-complexity claim", 9, "O(m x n2)", "logarithmic"),
+    )),
+    "gq-os-ch08-part3-006": (2, "leaving P1 through P4", (
+        ("Only P0 is deadlocked", "P0-only deadlock", 11, "deadlock exists", "not one"),
+        ("The system remains safe because one C is requested", "safe-state claim", 11, "now deadlocked", "not safe"),
+        ("P1, P2, P3, and P4 are deadlocked", "remaining deadlocked set", 11, "p1 , p2 , p3 , and p4", "correct"),
+        ("Every process terminates automatically", "automatic-termination claim", 11, "deadlock exists", "does not automatically"),
+    )),
+    "gq-os-ch09-part1-001": (0, "registers and main memory", (
+        ("Registers and main memory", "direct-storage pair", 3, "main memory and registers", "correct"),
+        ("Cache and main memory", "cache-for-registers", 3, "cache", "direct general-purpose"),
+        ("Disk storage and registers", "disk-for-memory", 3, "from disk", "moved into main memory"),
+        ("Program files and cache", "non-direct program-cache pair", 3, "program", "not the two"),
+    )),
+    "gq-os-ch09-part1-002": (1, "limit", (
+        ("The smallest legal physical address", "base-register meaning", 4, "base register holds", "base register"),
+        ("The size of the legal address range", "limit-register meaning", 4, "limit register specifies", "correct"),
+        ("The maximum legal physical address", "upper-bound confusion", 4, "size of the range", "not the maximum"),
+        ("The base address of the user process", "base-address confusion", 4, "base register", "base register"),
+    )),
+    "gq-os-ch09-part1-003": (2, "recompilation", (
+        ("Execution time", "execution-binding stage", 8, "execution time", "hardware address mapping"),
+        ("Load time", "load-binding stage", 8, "load time", "reload"),
+        ("Compile time", "compile-binding stage", 8, "recompile code", "correct"),
+        ("Run time after a page fault", "page-fault-stage confusion", 8, "address binding", "not one"),
+    )),
+    "gq-os-ch09-part1-004": (2, "execution-time", (
+        ("During compile-time binding", "compile-time equality", 10, "execution-time", "same"),
+        ("During load-time binding", "load-time equality", 10, "execution-time", "same"),
+        ("During execution-time binding", "execution-time difference", 10, "execution-time", "correct"),
+        ("Only when a page is read-only", "protection-condition confusion", 10, "logical addresses", "unrelated"),
+    )),
+    "gq-os-ch09-part1-005": (1, "memory-management unit", (
+        ("The relocation register", "relocation-register-versus-device", 11, "memory-management unit", "supplies a value"),
+        ("The memory-management unit", "MMU role", 11, "memory-management unit", "correct"),
+        ("The base register", "base-register-versus-device", 11, "memory-management unit", "input"),
+        ("The user process", "process-versus-MMU", 11, "logical addresses", "generates"),
+    )),
+    "gq-os-ch09-part1-006": (2, "14346", (
+        ("346", "logical-address value", 13, "location 346", "logical"),
+        ("14000", "relocation-base value", 13, "base is at 14000", "base value"),
+        ("14346", "relocation-sum result", 13, "mapped to location 14346", "correct"),
+        ("420939", "unrelated-limit result", 13, "14000", "separate"),
+    )),
+    "gq-os-ch09-part2-001": (0, "frames", (
+        ("Frames", "paging-frame name", 3, "called frames", "correct"),
+        ("Pages", "logical-page confusion", 3, "logical memory", "logical-memory"),
+        ("Page-table entries", "page-table-entry confusion", 3, "page table", "record translations"),
+        ("Fixed-sized blocks of backing store", "backing-store-block confusion", 3, "Backing store", "not the physical"),
+    )),
+    "gq-os-ch09-part2-002": (1, "page number", (
+        ("Page offset", "offset-field confusion", 4, "page number", "within a page"),
+        ("Page number", "page-table index", 4, "page number", "correct"),
+        ("Frame number", "translated-frame confusion", 4, "page number", "obtained"),
+        ("Protection bit", "protection-bit confusion", 4, "page number", "not the"),
+    )),
+    "gq-os-ch09-part2-003": (1, "page table", (
+        ("The page-table length register (PTLR)", "PTLR-versus-PTBR", 10, "ptlr", "different register"),
+        ("The page table", "PTBR table pointer", 10, "ptbr) points to the page table", "correct"),
+        ("The backing-store location of the current page", "backing-store pointer", 10, "page table", "not the table"),
+        ("The translation look-aside buffer entry", "TLB-entry pointer", 10, "translation look-aside", "single cache entry"),
+    )),
+    "gq-os-ch09-part2-004": (1, "read-only", (
+        ("Whether the frame is shared by several processes", "sharing attribute", 12, "protection bit", "separate"),
+        ("Whether access is read-only or read-write", "access permission", 12, "read-only", "correct"),
+        ("Whether the page number is zero", "address-field confusion", 12, "protection bit", "address field"),
+        ("Whether the page is in backing store", "validity-bit confusion", 12, "valid-invalid bit", "valid-invalid"),
+    )),
+    "gq-os-ch09-part2-005": (2, "Sixteen", (
+        ("Ten logical-address bits", "page-size-only count", 5, "1024", "only 1024"),
+        ("Fifteen logical-address bits", "one-factor-short count", 5, "64 pages", "one factor"),
+        ("Sixteen logical-address bits", "logical-address calculation", 5, "m = 16 bits", "correct"),
+        ("Twenty logical-address bits", "different-example count", 5, "16 bits", "different"),
+    )),
+    "gq-os-ch09-part2-006": (2, "one physical copy", (
+        ("Give each process a separate writable libc copy", "private-writable copies", 14, "same physical copy", "discard"),
+        ("Map the libc code once into one process only", "one-process-only mapping", 14, "three processes", "three processes"),
+        ("Map the same read-only reentrant libc copy into all three processes", "shared-reentrant mapping", 14, "same physical copy", "correct"),
+        ("Store the libc code only in backing store", "backing-store-only mapping", 14, "physical copy", "not the executing"),
+    )),
+}
+
+# Independently reviewed true/false answer and correction bindings:
+# (Boolean answer, rationale anchor, correction anchor or None).
+PART_THREE_TRUE_FALSE_ORACLES = {
+    "gq-os-ch06-part1-007": (True, "one core", None),
+    "gq-os-ch06-part1-008": (False, "two processes", "restricted to two processes"),
+    "gq-os-ch06-part1-009": (False, "four, five, and six", "four, five, and six"),
+    "gq-os-ch06-part1-010": (True, "Pi's interest", None),
+    "gq-os-ch06-part2-007": (True, "wait indefinitely", None),
+    "gq-os-ch06-part2-008": (True, "available instances", None),
+    "gq-os-ch06-part2-009": (False, "lower-priority", "lower-priority"),
+    "gq-os-ch06-part2-010": (False, "multiple processes", "multiple processes"),
+    "gq-os-ch08-part1-007": (False, "never enters", "never enters"),
+    "gq-os-ch08-part1-008": (False, "preempts", "preempts"),
+    "gq-os-ch08-part1-009": (True, "increasing ordering", None),
+    "gq-os-ch08-part1-010": (True, "Linux and Windows", None),
+    "gq-os-ch08-part2-007": (False, "multiple resource instances", "multiple resource instances"),
+    "gq-os-ch08-part2-008": (True, "Request less than or equal to Need", None),
+    "gq-os-ch08-part2-009": (False, "unsafe", "unsafe"),
+    "gq-os-ch08-part2-010": (True, "Allocation, Need, and Available", None),
+    "gq-os-ch08-part3-007": (True, "aborting the process", None),
+    "gq-os-ch08-part3-008": (True, "overhead", None),
+    "gq-os-ch08-part3-009": (False, "abort-one-at-a-time", "abort-one-at-a-time"),
+    "gq-os-ch08-part3-010": (False, "minimize cost", "minimize cost"),
+    "gq-os-ch09-part1-007": (False, "compiler", "compiler"),
+    "gq-os-ch09-part1-008": (True, "kernel-mode privileged", None),
+    "gq-os-ch09-part1-009": (False, "external fragmentation", "external fragmentation"),
+    "gq-os-ch09-part1-010": (True, "merges adjacent", None),
+    "gq-os-ch09-part2-007": (False, "internal fragmentation", "internal fragmentation"),
+    "gq-os-ch09-part2-008": (False, "memory to backing store", "memory to backing store"),
+    "gq-os-ch09-part2-009": (True, "larger than physical memory", None),
+    "gq-os-ch09-part2-010": (True, "valid page", None),
 }
 
 PART_THREE_ARABIC_TRANSLATION_ANCHORS = {
@@ -1224,9 +1471,72 @@ class OSContentPartTests(unittest.TestCase):
                 question_id,
             )
             self.assertIn(source_phrase, source_text[(source_id, page)], question_id)
-            if question["type"] == "true-false":
+            if question["type"] == "mcq":
+                self.assertIsInstance(expected_truth, int, question_id)
+                self.assertNotIsInstance(expected_truth, bool, question_id)
+                self.assertEqual(question["correctAnswer"], expected_truth, question_id)
+            else:
+                self.assertIsInstance(expected_truth, bool, question_id)
                 self.assertEqual(question["correctAnswer"], expected_truth, question_id)
                 self.assertTrue(question["correctedStatement"] if not expected_truth else True, question_id)
+
+    def test_part_three_manual_oracles_bind_answers_rationales_and_option_evidence(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        mcqs = {question["id"]: question for question in part["questions"] if question["type"] == "mcq"}
+        true_false = {question["id"]: question for question in part["questions"] if question["type"] == "true-false"}
+        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_OPTION_ORACLES))
+        self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_ORACLES))
+        source_text = {
+            (page["sourceId"], page["page"]): re.sub(r"\s+", " ", page["text"].casefold())
+            for page in self.extraction["pages"]
+        }
+
+        def evidence_refs(question, target):
+            return {
+                (ref["sourceId"], ref["location"])
+                for claim in question["evidenceMap"] if claim["target"] == target
+                for ref in claim["sourceRefs"]
+            }
+
+        for question_id, (correct_index, main_anchor, option_records) in PART_THREE_MCQ_OPTION_ORACLES.items():
+            question = mcqs[question_id]
+            manual_answer, source_id, source_page, source_phrase = PART_THREE_MANUAL_SOURCE_FACTS[question_id]
+            self.assertEqual(manual_answer, correct_index, question_id)
+            self.assertEqual(question["correctAnswer"], correct_index, question_id)
+            self.assertEqual(len(option_records), 4, question_id)
+            self.assertEqual(question["options"][correct_index], option_records[correct_index][0], question_id)
+            self.assertIn(main_anchor.casefold(), question["rationale"].casefold(), question_id)
+            self.assertIn(source_phrase, source_text[(source_id, source_page)], question_id)
+            for target in ("prompt", "correctAnswer", "rationale", f"options[{correct_index}]"):
+                self.assertIn((source_id, source_page), evidence_refs(question, target), f"{question_id} / {target}")
+
+            categories = []
+            for index, (option, category, evidence_page, evidence_phrase, rationale_anchor) in enumerate(option_records):
+                self.assertEqual(question["options"][index], option, f"{question_id} option {index}")
+                self.assertIn(evidence_phrase.casefold(), source_text[(source_id, evidence_page)], f"{question_id} option {index}")
+                self.assertIn((source_id, evidence_page), evidence_refs(question, f"options[{index}]"), f"{question_id} option {index}")
+                self.assertIn((source_id, evidence_page), evidence_refs(question, f"distractorRationales[{index}]"), f"{question_id} rationale {index}")
+                self.assertIn(rationale_anchor.casefold(), question["distractorRationales"][index].casefold(), f"{question_id} rationale {index}")
+                categories.append(category)
+            self.assertEqual(len(categories), len(set(categories)), question_id)
+
+        for question_id, (expected_truth, rationale_anchor, correction_anchor) in PART_THREE_TRUE_FALSE_ORACLES.items():
+            question = true_false[question_id]
+            manual_truth, source_id, source_page, source_phrase = PART_THREE_MANUAL_SOURCE_FACTS[question_id]
+            self.assertIsInstance(manual_truth, bool, question_id)
+            self.assertEqual(manual_truth, expected_truth, question_id)
+            self.assertEqual(question["correctAnswer"], expected_truth, question_id)
+            self.assertIn(rationale_anchor.casefold(), question["rationale"].casefold(), question_id)
+            self.assertIn(source_phrase, source_text[(source_id, source_page)], question_id)
+            for target in ("prompt", "correctAnswer", "rationale"):
+                self.assertIn((source_id, source_page), evidence_refs(question, target), f"{question_id} / {target}")
+            if expected_truth:
+                self.assertIsNone(correction_anchor, question_id)
+                self.assertIsNone(question["correctedStatement"], question_id)
+            else:
+                self.assertIsNotNone(correction_anchor, question_id)
+                self.assertIn(correction_anchor.casefold(), question["correctedStatement"].casefold(), question_id)
+                self.assertIn((source_id, source_page), evidence_refs(question, "correctedStatement"), question_id)
 
     def test_part_three_objective_topic_and_section_mapping_is_semantic(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
@@ -1306,8 +1616,16 @@ class OSContentPartTests(unittest.TestCase):
             {traced_counter, reverse_write_counter, serial_producer_then_consumer, serial_consumer_then_producer},
             {4, 5, 6},
         )
-        self.assertFalse(questions["gq-os-ch06-part1-009"]["correctAnswer"])
-        self.assertIn("four, five, and six", questions["gq-os-ch06-part1-009"]["correctedStatement"])
+        counter_question = questions["gq-os-ch06-part1-009"]
+        counter_outcomes = {traced_counter, reverse_write_counter, serial_producer_then_consumer, serial_consumer_then_producer}
+        source_number_words = {"four": 4, "five": 5, "six": 6}
+        claimed_counter_outcomes = {
+            source_number_words[word]
+            for word in re.findall(r"\b(?:four|five|six)\b", counter_question["correctedStatement"].casefold())
+        }
+        statement_is_true = counter_outcomes == {5}
+        self.assertEqual(counter_question["correctAnswer"], statement_is_true)
+        self.assertEqual(claimed_counter_outcomes, counter_outcomes)
 
         # Lecture 6.17-6.19: derive Need, perform the safety search, then
         # recompute both request cases instead of checking answer text alone.
@@ -1342,7 +1660,9 @@ class OSContentPartTests(unittest.TestCase):
             return len(sequence) == len(allocated)
 
         self.assertTrue(listed_sequence_is_safe(available, allocation, need, (1, 3, 4, 0, 2)))
-        self.assertTrue(safety_sequence(available, allocation, need)[1])
+        initial_sequence, initial_safe = safety_sequence(available, allocation, need)
+        self.assertEqual(initial_sequence[0], 1)
+        self.assertTrue(initial_safe)
         p1_request = (1, 0, 2)
         self.assertTrue(all(p1_request[column] <= need[1][column] for column in range(3)))
         self.assertTrue(all(p1_request[column] <= available[column] for column in range(3)))
@@ -1362,43 +1682,135 @@ class OSContentPartTests(unittest.TestCase):
         p0_need = list(granted_need)
         p0_need[0] = tuple(granted_need[0][column] - p0_request[column] for column in range(3))
         p0_available = tuple(granted_available[column] - p0_request[column] for column in range(3))
-        self.assertEqual(safety_sequence(p0_available, tuple(p0_allocation), tuple(p0_need))[1], False)
-        self.assertEqual(questions["gq-os-ch08-part2-006"]["correctAnswer"], 1)
-        self.assertFalse(questions["gq-os-ch08-part2-009"]["correctAnswer"])
-        self.assertIn("unsafe", questions["gq-os-ch08-part2-009"]["correctedStatement"].casefold())
-        self.assertTrue(questions["gq-os-ch08-part2-010"]["correctAnswer"])
-        self.assertIn("(3,0,2)", questions["gq-os-ch08-part2-010"]["prompt"])
+        p0_safe = safety_sequence(p0_available, tuple(p0_allocation), tuple(p0_need))[1]
+        self.assertFalse(p0_safe)
+        self.assertEqual(questions["gq-os-ch08-part2-006"]["correctAnswer"], initial_sequence[0])
+        unsafe_question = questions["gq-os-ch08-part2-009"]
+        self.assertEqual(unsafe_question["correctAnswer"], p0_safe)
+        self.assertIn("unsafe", unsafe_question["correctedStatement"].casefold())
+        p1_request_question = questions["gq-os-ch08-part2-010"]
+        self.assertEqual(p1_request_question["correctAnswer"], safety_sequence(granted_available, tuple(granted_allocation), tuple(granted_need))[1])
+        self.assertIn("(3,0,2)", p1_request_question["prompt"])
 
-        # Lecture 6.17/6.22 and 8.17/8.11: preserve the source operation
-        # ordering and independently trace the resource-order and detection examples.
-        self.assertEqual(questions["gq-os-ch06-part2-005"]["options"][1], "Zero, so P2 waits until P1 signals after S1")
-        self.assertEqual(
-            questions["gq-os-ch06-part2-006"]["options"][2],
-            "wait(empty), wait(mutex), add item, signal(mutex), signal(full)",
-        )
+        # Lecture 6.17/6.22 and 8.17/8.11: execute the source semaphore
+        # transitions and detection state rather than compare canned options.
+        synch = 0
+        p2_before_p1_can_continue = synch > 0
+        synch += 1  # P1 completes S1, then signal(synch).
+        p2_after_p1_can_continue = synch > 0
+        if p2_after_p1_can_continue:
+            synch -= 1
+        self.assertEqual((p2_before_p1_can_continue, p2_after_p1_can_continue, synch), (False, True, 0))
+        synch_answer = questions["gq-os-ch06-part2-005"]["options"][questions["gq-os-ch06-part2-005"]["correctAnswer"]].casefold()
+        self.assertTrue(synch_answer.startswith("zero" if not p2_before_p1_can_continue else "one"))
+        self.assertIn("waits", synch_answer)
+        self.assertIn("signals", synch_answer)
+
+        producer_trace = ("wait(empty)", "wait(mutex)", "add item", "signal(mutex)", "signal(full)")
+        producer_state = {"empty": 2, "mutex": 1, "full": 0, "items": 0}
+        for operation in producer_trace:
+            if operation.startswith("wait("):
+                semaphore = operation[5:-1]
+                self.assertGreater(producer_state[semaphore], 0, operation)
+                producer_state[semaphore] -= 1
+            elif operation.startswith("signal("):
+                producer_state[operation[7:-1]] += 1
+            else:
+                producer_state["items"] += 1
+        self.assertEqual(producer_state, {"empty": 1, "mutex": 1, "full": 1, "items": 1})
+        producer_answer = questions["gq-os-ch06-part2-006"]["options"][questions["gq-os-ch06-part2-006"]["correctAnswer"]]
+        selected_trace = tuple(re.findall(r"wait\([a-z]+\)|signal\([a-z]+\)|add item", producer_answer))
+        self.assertEqual(selected_trace, producer_trace)
+
         held_resource, requested_resource = 5, 4
-        self.assertLess(requested_resource, held_resource)
-        self.assertEqual(questions["gq-os-ch08-part1-006"]["correctAnswer"], 2)
+        request_obeys_order = requested_resource > held_resource
+        self.assertFalse(request_obeys_order)
+        ordering_answer = questions["gq-os-ch08-part1-006"]["options"][questions["gq-os-ch08-part1-006"]["correctAnswer"]].casefold()
+        self.assertEqual("violate" in ordering_answer, not request_obeys_order)
+        self.assertIn("increasing", ordering_answer)
         detection_allocation = ((0, 1, 0), (2, 0, 0), (3, 0, 3), (2, 1, 1), (0, 0, 2))
         detection_request = ((0, 0, 0), (2, 0, 2), (0, 0, 1), (1, 0, 0), (0, 0, 2))
         detected_sequence, all_finished = safety_sequence((0, 0, 0), detection_allocation, detection_request)
         self.assertEqual((detected_sequence, all_finished), ((0,), False))
-        self.assertEqual(questions["gq-os-ch08-part3-006"]["options"][2], "P1, P2, P3, and P4 are deadlocked")
+        deadlocked_processes = tuple(f"P{index}" for index in range(len(detection_allocation)) if index not in detected_sequence)
+        diagnosis_answer = questions["gq-os-ch08-part3-006"]["options"][questions["gq-os-ch08-part3-006"]["correctAnswer"]]
+        self.assertEqual(tuple(re.findall(r"\bP[0-9]\b", diagnosis_answer)), deadlocked_processes)
+        self.assertIn("deadlocked", diagnosis_answer.casefold())
 
         # Lecture 8.13 and 9.5: calculate the two address examples from
-        # source inputs rather than asserting only that their answer strings exist.
+        # source inputs and parse the selected result.
         relocation_register, logical_location = 14000, 346
-        self.assertEqual(relocation_register + logical_location, 14346)
-        self.assertEqual(questions["gq-os-ch09-part1-006"]["correctAnswer"], 2)
-        self.assertIn("14346", questions["gq-os-ch09-part1-006"]["options"])
+        physical_location = relocation_register + logical_location
+        self.assertEqual(physical_location, 14346)
+        relocation_answer = questions["gq-os-ch09-part1-006"]["options"][questions["gq-os-ch09-part1-006"]["correctAnswer"]]
+        self.assertEqual(int(relocation_answer), physical_location)
         logical_words = 64 * 1024
-        self.assertEqual(logical_words.bit_length() - 1, 16)
-        self.assertEqual(questions["gq-os-ch09-part2-005"]["correctAnswer"], 2)
-        self.assertIn("Sixteen", questions["gq-os-ch09-part2-005"]["options"][2])
-        physical_copies, mapped_processes = 1, 3
-        self.assertEqual((physical_copies, mapped_processes), (1, 3))
-        self.assertEqual(questions["gq-os-ch09-part2-006"]["correctAnswer"], 2)
-        self.assertTrue(questions["gq-os-ch09-part2-010"]["correctAnswer"])
+        address_bits = logical_words.bit_length() - 1
+        self.assertEqual(address_bits, 16)
+        written_numbers = {"ten": 10, "fifteen": 15, "sixteen": 16, "twenty": 20}
+        bit_answer = questions["gq-os-ch09-part2-005"]["options"][questions["gq-os-ch09-part2-005"]["correctAnswer"]].split()[0].casefold()
+        self.assertEqual(written_numbers[bit_answer], address_bits)
+
+        # Lecture 9.3-9.14: execute the paging names, translation fields,
+        # reentrant mapping, and page-out transition from source statements.
+        physical_block_name, logical_block_name = "frames", "pages"
+        self.assertNotEqual(physical_block_name, logical_block_name)
+        frames_answer = questions["gq-os-ch09-part2-001"]["options"][questions["gq-os-ch09-part2-001"]["correctAnswer"]].casefold()
+        self.assertEqual(frames_answer, physical_block_name)
+
+        logical_address = {"page number": 5, "page offset": 346}
+        page_table = {5: 9}
+        frame_number = page_table[logical_address["page number"]]
+        self.assertEqual(frame_number, 9)
+        index_answer = questions["gq-os-ch09-part2-002"]["options"][questions["gq-os-ch09-part2-002"]["correctAnswer"]].casefold()
+        self.assertEqual(index_answer, next(field for field in logical_address if field == "page number"))
+
+        registers = {"PTBR": page_table, "PTLR": len(page_table)}
+        self.assertIs(registers["PTBR"], page_table)
+        ptbr_answer = questions["gq-os-ch09-part2-003"]["options"][questions["gq-os-ch09-part2-003"]["correctAnswer"]].casefold()
+        self.assertEqual(ptbr_answer, "the page table")
+        protection_bit_values = {0: "read-only", 1: "read-write"}
+        self.assertEqual({*protection_bit_values.values()}, {"read-only", "read-write"})
+        protection_answer = questions["gq-os-ch09-part2-004"]["options"][questions["gq-os-ch09-part2-004"]["correctAnswer"]].casefold()
+        self.assertTrue(all(value in protection_answer for value in protection_bit_values.values()))
+
+        library_frame = "frame-17"
+        process_mappings = {"P1": library_frame, "P2": library_frame, "P3": library_frame}
+        physical_copies = len(set(process_mappings.values()))
+        self.assertEqual((physical_copies, len(process_mappings)), (1, 3))
+        shared_mapping_answer = questions["gq-os-ch09-part2-006"]["options"][questions["gq-os-ch09-part2-006"]["correctAnswer"]].casefold()
+        self.assertTrue(all(term in shared_mapping_answer for term in ("same", "read-only", "all three")))
+
+        memory, backing_store = {"page-7"}, set()
+        page_out = memory.pop()
+        backing_store.add(page_out)
+        page_out_origin, page_out_destination = "memory", "backing store"
+        self.assertEqual((memory, backing_store), (set(), {"page-7"}))
+        incorrect_page_out_origin, incorrect_page_out_destination = "backing store", "main memory"
+        page_out_claim_is_true = (incorrect_page_out_origin, incorrect_page_out_destination) == (page_out_origin, page_out_destination)
+        page_out_question = questions["gq-os-ch09-part2-008"]
+        self.assertEqual(page_out_question["correctAnswer"], page_out_claim_is_true)
+        self.assertIn(f"{page_out_origin} to {page_out_destination}", page_out_question["correctedStatement"].casefold())
+
+        def handle_valid_page_fault(valid_reference, resident, free_frames):
+            if not valid_reference:
+                return {"terminated": True, "restarted": False, "valid_invalid_bit": "i"}
+            if resident:
+                return {"terminated": False, "restarted": False, "valid_invalid_bit": "v"}
+            frame = free_frames.pop(0)
+            return {
+                "terminated": False,
+                "restarted": True,
+                "valid_invalid_bit": "v",
+                "frame": frame,
+                "events": ("trap", "validate", "find-free-frame", "page-in", "set-v", "restart"),
+            }
+
+        fault_result = handle_valid_page_fault(True, False, ["frame-2"])
+        self.assertEqual(fault_result["events"], ("trap", "validate", "find-free-frame", "page-in", "set-v", "restart"))
+        page_fault_question = questions["gq-os-ch09-part2-010"]
+        self.assertEqual(page_fault_question["correctAnswer"], fault_result["restarted"] and not fault_result["terminated"])
+        self.assertIn(fault_result["valid_invalid_bit"], page_fault_question["prompt"])
 
     def test_cross_part_ids_and_semantic_propositions_are_unique(self):
         parts = self.existing_parts()
@@ -1450,22 +1862,17 @@ class OSContentPartTests(unittest.TestCase):
         ):
             self.assertNotIn(prohibited, serialized)
 
-    def test_part_three_rejects_fabricated_or_cross_domain_distractors(self):
+    def test_part_three_binds_each_distractor_to_a_reviewed_misconception(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
-        fabricated = (
-            "immutable file", "relocation semaphore", "deadlock register",
-            "memory semaphore queue", "paging semaphore", "static critical-section binding",
-        )
         mcqs = {item["id"]: item for item in part["questions"] if item["type"] == "mcq"}
-        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_MISCONCEPTION_CATEGORIES))
+        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_OPTION_ORACLES))
         for question_id, question in mcqs.items():
-            categories = PART_THREE_MCQ_MISCONCEPTION_CATEGORIES[question_id]
-            self.assertEqual(len(categories), 4, question_id)
-            for option in question["options"]:
-                self.assertFalse(
-                    any(phrase in option.casefold() for phrase in fabricated),
-                    f"fabricated/cross-domain distractor: {question['id']} / {option}",
-                )
+            _, _, option_records = PART_THREE_MCQ_OPTION_ORACLES[question_id]
+            self.assertEqual(len(option_records), 4, question_id)
+            self.assertEqual(question["options"], [record[0] for record in option_records], question_id)
+            categories = [record[1] for record in option_records]
+            self.assertEqual(len(categories), len(set(categories)), question_id)
+            self.assertTrue(all(category.strip() for category in categories), question_id)
 
     def test_part_three_arabic_explanations_translate_conditions_and_reject_templates(self):
         part = self.load_part("content/os/ch06-ch08-ch09.json")
