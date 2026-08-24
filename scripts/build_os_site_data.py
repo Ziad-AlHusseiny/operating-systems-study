@@ -9,6 +9,7 @@ import re
 import sys
 import unicodedata
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -223,15 +224,40 @@ def _question_lesson_id(question_id: str) -> str | None:
     return f"lesson-{match.group(1)}" if match else None
 
 
-def _review_valid(question: dict) -> bool:
-    review = question.get("review")
+def _is_utc_timestamp(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).tzinfo is not None and datetime.fromisoformat(value.replace("Z", "+00:00")).utcoffset() == timezone.utc.utcoffset(None)
+    except ValueError:
+        return False
+
+
+def _review_valid(record: dict) -> bool:
+    review = record.get("review")
     status = review.get("status") if isinstance(review, dict) else None
     if status == "validated":
-        return set(review) == VALIDATED_REVIEW_KEYS and question.get("qualityState") == "validated" and question.get("reviewState") == "unreviewed" and question.get("needsReview") is False
-    if status != "human-reviewed" or set(review) != HUMAN_REVIEW_KEYS or question.get("qualityState") != "approved" or question.get("reviewState") != "approved" or question.get("needsReview") is not False:
+        return set(review) == VALIDATED_REVIEW_KEYS and record.get("needsReview") is False and ("qualityState" not in record or (record.get("qualityState") == "validated" and record.get("reviewState") == "unreviewed"))
+    if status != "human-reviewed" or set(review) != HUMAN_REVIEW_KEYS or record.get("needsReview") is not False or ("qualityState" in record and (record.get("qualityState") != "approved" or record.get("reviewState") != "approved")):
         return False
     approval = review.get("approval")
-    return isinstance(approval, dict) and set(approval) == APPROVAL_KEYS and approval.get("reviewedRecordId") == question.get("id") and approval.get("reviewedContentVersion") == question.get("contentVersion") and approval.get("status") == "completed" and approval.get("decision") == "approved" and _non_empty(approval.get("reviewer")) and isinstance(approval.get("reviewedAt"), str) and approval["reviewedAt"].endswith("Z") and _non_empty(approval.get("reason")) and _non_empty(approval.get("notes"))
+    return isinstance(approval, dict) and set(approval) == APPROVAL_KEYS and approval.get("reviewedRecordId") == record.get("id") and approval.get("reviewedContentVersion") == record.get("contentVersion") and approval.get("status") == "completed" and approval.get("decision") == "approved" and _non_empty(approval.get("reviewer")) and _is_utc_timestamp(approval.get("reviewedAt")) and _non_empty(approval.get("reason")) and _non_empty(approval.get("notes"))
+
+
+def _answer_and_evidence_valid(question: dict) -> bool:
+    if not _non_empty(question.get("rationale")) or not isinstance(question.get("sourceRefs"), list) or not question["sourceRefs"]:
+        return False
+    if question.get("type") == "mcq":
+        options, answer, rationales = question.get("options"), question.get("correctAnswer"), question.get("distractorRationales")
+        if not isinstance(options, list) or len(options) != 4 or len(set(options)) != 4 or not all(_non_empty(item) for item in options) or isinstance(answer, bool) or not isinstance(answer, int) or not 0 <= answer < 4 or not isinstance(rationales, list) or len(rationales) != 4 or not all(_non_empty(item) for item in rationales):
+            return False
+    elif question.get("type") == "true-false":
+        if not isinstance(question.get("correctAnswer"), bool) or (question["correctAnswer"] is False and not _non_empty(question.get("correctedStatement"))) or (question["correctAnswer"] is True and question.get("correctedStatement") is not None):
+            return False
+    else:
+        return False
+    evidence = question.get("evidenceMap")
+    return isinstance(evidence, list) and bool(evidence) and all(isinstance(entry, dict) and set(entry) == EVIDENCE_KEYS and _non_empty(entry.get("claimId")) and entry.get("support") in {"direct", "derived"} and isinstance(entry.get("sourceRefs"), list) and bool(entry["sourceRefs"]) for entry in evidence)
 
 
 def _source_index(course: dict, extraction: dict) -> tuple[dict[str, dict], dict[tuple[str, int], str]]:
@@ -284,7 +310,7 @@ def _reference_pages(lessons: Iterable[dict]) -> set[str]:
 def eligible_question_ids(payloads: dict[str, dict], mode: str) -> list[str]:
     questions = payloads["questions"]["questions"]
     policy = payloads["course"]["contentPolicy"]
-    eligible = [question for question in questions if _review_valid(question) and question.get("duplicateDisposition") == "retain"]
+    eligible = [question for question in questions if isinstance(question, dict) and _review_valid(question) and _answer_and_evidence_valid(question) and question.get("duplicateDisposition") == "retain"]
     if mode == "practice":
         return [question["id"] for question in eligible]
     if mode == "mock-exam":
@@ -389,11 +415,20 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
             errors.append(f"lesson {lesson.get('id')} has unresolved module or empty title")
         if not _valid_content_version(lesson.get("contentVersion")):
             errors.append(f"lesson {lesson.get('id')} has invalid content version")
+        lesson_review = lesson.get("review")
+        _exact_keys(lesson_review, VALIDATED_REVIEW_KEYS if isinstance(lesson_review, dict) and lesson_review.get("status") == "validated" else HUMAN_REVIEW_KEYS if isinstance(lesson_review, dict) and lesson_review.get("status") == "human-reviewed" else set(), f"lesson {lesson.get('id')} review", errors)
+        if isinstance(lesson_review, dict) and lesson_review.get("status") == "human-reviewed":
+            _exact_keys(lesson_review.get("approval"), APPROVAL_KEYS, f"lesson {lesson.get('id')} approval", errors)
+        if not _review_valid(lesson):
+            errors.append(f"lesson review binding is invalid for {lesson.get('id')}")
         if not all(identifier in objective_ids for identifier in lesson.get("objectiveIds", [])):
             errors.append(f"lesson {lesson.get('id')} has unresolved objective")
         sections = _list(lesson.get("materialSections"), f"lesson {lesson.get('id')} material sections", errors)
         if lesson.get("materialSectionIds") != [section.get("id") for section in sections]:
             errors.append(f"lesson {lesson.get('id')} material section IDs do not match")
+        section_orders = [section.get("order") for section in sections if isinstance(section, dict)]
+        if len(section_orders) != len(sections) or any(not isinstance(order, int) or order < 1 for order in section_orders) or section_orders != sorted(section_orders) or len(set(section_orders)) != len(section_orders):
+            errors.append(f"section order is invalid for lesson {lesson.get('id')}")
         for section in sections:
             if not isinstance(section, dict):
                 errors.append("section must be an object")
@@ -533,7 +568,12 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
             errors.append("Arabic explanation has non-Boolean guidance flag")
         if not _valid_content_version(explanation.get("contentVersion")):
             errors.append("Arabic explanation has invalid content version")
-        _exact_keys(explanation.get("review"), VALIDATED_REVIEW_KEYS, f"Arabic explanation {explanation_id} review", errors)
+        explanation_review = explanation.get("review")
+        _exact_keys(explanation_review, VALIDATED_REVIEW_KEYS if isinstance(explanation_review, dict) and explanation_review.get("status") == "validated" else HUMAN_REVIEW_KEYS if isinstance(explanation_review, dict) and explanation_review.get("status") == "human-reviewed" else set(), f"Arabic explanation {explanation_id} review", errors)
+        if isinstance(explanation_review, dict) and explanation_review.get("status") == "human-reviewed":
+            _exact_keys(explanation_review.get("approval"), APPROVAL_KEYS, f"Arabic explanation {explanation_id} approval", errors)
+        if not _review_valid(explanation):
+            errors.append(f"Arabic explanation review binding is invalid for {explanation_id}")
         question = next((item for item in questions if isinstance(item, dict) and item.get("id") == explanation.get("questionId")), None)
         if question is not None and (explanation.get("id") != f"explanation-{question['id']}-ar" or explanation.get("contentVersion") != question.get("contentVersion") or explanation.get("sourceRefs") != question.get("sourceRefs")):
             errors.append("Arabic explanation is incompatible with its linked question")
@@ -595,7 +635,16 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
     reported = set(course.get("coverage", {}).get("referencedTeachingPages", []))
     actual = _reference_pages(lessons)
     non_teaching = {page_id for page_id in actual if tuple([page_id.rsplit(":", 1)[0], int(page_id.rsplit(":", 1)[1])]) in classifications and classifications[tuple([page_id.rsplit(":", 1)[0], int(page_id.rsplit(":", 1)[1])])] != "teaching"}
-    errors = validate_payloads(payloads)
+    canonical_parts = load_content_parts()
+    expected_lessons = {lesson["id"] for part in canonical_parts for lesson in part["lessons"]}
+    actual_lessons = {lesson.get("id") for lesson in lessons if isinstance(lesson, dict)}
+    expected_objectives = {objective["id"] for part in canonical_parts for lesson in part["lessons"] for objective in lesson["learningObjectives"]}
+    actual_objectives = {objective_id for lesson in lessons if isinstance(lesson, dict) for objective_id in lesson.get("objectiveIds", [])}
+    expected_sections = {section["id"] for part in canonical_parts for lesson in part["lessons"] for section in lesson["materialSections"]}
+    actual_sections = {section.get("id") for lesson in lessons if isinstance(lesson, dict) for section in lesson.get("materialSections", []) if isinstance(section, dict)}
+    questions = payloads["questions"].get("questions", [])
+    explanations = payloads["explanations-ar"].get("explanations", [])
+    normalized = [(question.get("type"), _normalize_prompt(question.get("prompt", ""))) for question in questions if isinstance(question, dict)]
     return {
         "classificationCounts": Counter(page["classification"] for page in extraction["pages"]),
         "totalPages": len(extraction["pages"]),
@@ -605,10 +654,12 @@ def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
         "missing": expected - reported,
         "unexpected": reported - expected,
         "nonTeaching": non_teaching,
-        "errors": errors,
-        "evidenceOk": not any("evidence" in error.lower() for error in errors),
-        "arabicOk": not any("arabic" in error.lower() for error in errors),
-        "duplicatesOk": not any("duplicate" in error.lower() for error in errors),
+        "omittedLessons": expected_lessons - actual_lessons,
+        "omittedObjectives": expected_objectives - actual_objectives,
+        "omittedSections": expected_sections - actual_sections,
+        "evidenceOk": len(questions) == 210 and all(_answer_and_evidence_valid(question) for question in questions if isinstance(question, dict)),
+        "arabicOk": len(explanations) == len(questions) and all(isinstance(explanation, dict) and explanation.get("language") == "ar" and explanation.get("generatedStudyGuidance") is True and _non_empty(explanation.get("translation")) and isinstance(explanation.get("explanation"), list) and 2 <= len(explanation["explanation"]) <= 3 for explanation in explanations),
+        "duplicatesOk": len(normalized) == len(set(normalized)),
     }
 
 
@@ -623,13 +674,13 @@ def build_reports(payloads: dict[str, dict]) -> dict[str, str]:
     module_pages = {module["id"]: set().union(*(lesson_pages[lesson["id"]] for lesson in lessons if lesson["moduleId"] == module["id"])) for module in course["modules"]}
     module_lines = [f"- `{module['id']}`: {len(module_pages[module['id']])} teaching pages, {sum(1 for lesson in lessons if lesson['moduleId'] == module['id'])} lessons" for module in course["modules"]]
     lesson_lines = [f"- `{lesson['id']}`: {len(lesson_pages[lesson['id']])} teaching pages" for lesson in lessons]
-    question_modules = Counter(lesson_to_module["lesson-" + re.sub(r"-\d{3}$", "", question["id"])[3:]] for question in payloads["questions"]["questions"])
+    question_modules = Counter(lesson_to_module.get("lesson-" + re.sub(r"-\d{3}$", "", question["id"])[3:], "unmapped") for question in payloads["questions"]["questions"] if isinstance(question, dict))
     coverage_report = "\n".join([
         "# Content Coverage Report", "", "Generated from canonical payload data; no timestamp is used.", "",
         f"- Sources: {counts['sources']} PDFs", f"- Extracted pages: {coverage['totalPages']}",
         f"- Teaching pages: {measured['classificationCounts']['teaching']}; cover {measured['classificationCounts']['cover']}, divider {measured['classificationCounts']['divider']}, closing {measured['classificationCounts']['closing']}, reference {measured['classificationCounts']['reference']}.",
         f"- Teaching-page coverage: {len(measured['reportedTeaching'])}/{len(measured['expectedTeaching'])}; missing {len(measured['missing'])}, unexpected {len(measured['unexpected'])}, non-teaching references {len(measured['nonTeaching'])}.",
-        f"- Modules: {counts['modules']}; lessons: {counts['lessons']}; questions: {counts['questions']}; Arabic explanations: {counts['explanations']}.", "", "## Module coverage", "", *module_lines, "", "## Lesson teaching-page coverage", "", *lesson_lines, "", "## Omissions", "", "- None (0).",
+        f"- Modules: {counts['modules']}; lessons: {counts['lessons']}; questions: {counts['questions']}; Arabic explanations: {counts['explanations']}.", "", "## Module coverage", "", *module_lines, "", "## Lesson teaching-page coverage", "", *lesson_lines, "", "## Omissions", "", f"- Omitted lessons {len(measured['omittedLessons'])}; omitted objectives {len(measured['omittedObjectives'])}; omitted sections {len(measured['omittedSections'])}.",
     ]) + "\n"
     def rendered(counter: Counter) -> str:
         return ", ".join(f"{key} {counter[key]}" for key in sorted(counter))

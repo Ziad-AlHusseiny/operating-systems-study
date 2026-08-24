@@ -44,4 +44,4 @@ Generated from canonical payload data; no timestamp is used.
 
 ## Omissions
 
-- None (0).
+- Omitted lessons 0; omitted objectives 0; omitted sections 0.

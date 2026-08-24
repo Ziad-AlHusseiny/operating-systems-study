@@ -213,6 +213,60 @@ class BuildOperatingSystemsSiteDataTests(unittest.TestCase):
         question["review"] = {"status": "human-reviewed", "approval": {"reviewedRecordId": question["id"], "reviewedContentVersion": "9.9.9", "status": "completed", "decision": "approved", "reviewer": "reviewer-1", "reviewedAt": "2026-08-23T12:00:00Z", "reason": "checked", "notes": "checked"}}
         self.assertTrue(any("review state" in error.lower() for error in validate_payloads(approved)))
 
+    def test_section_order_and_lesson_review_binding_are_enforced(self):
+        mutated = copy.deepcopy(self.payloads)
+        lesson = mutated["lessons"]["lessons"][0]
+        lesson["materialSections"][1]["order"] = 0
+        lesson["review"] = {
+            "status": "human-reviewed",
+            "approval": {
+                "reviewedRecordId": "lesson-other",
+                "reviewedContentVersion": lesson["contentVersion"],
+                "status": "completed",
+                "decision": "approved",
+                "reviewer": "reviewer-1",
+                "reviewedAt": "2026-08-23T12:00:00Z",
+                "reason": "checked",
+                "notes": "checked"
+            }
+        }
+        errors = validate_payloads(mutated)
+        self.assertTrue(any("section order" in error.lower() for error in errors))
+        self.assertTrue(any("lesson review" in error.lower() and "binding" in error.lower() for error in errors))
+
+    def test_invalid_approval_timestamp_and_answer_evidence_exclude_eligibility(self):
+        mutated = copy.deepcopy(self.payloads)
+        question = mutated["questions"]["questions"][0]
+        question["qualityState"] = "approved"
+        question["reviewState"] = "approved"
+        question["review"] = {"status": "human-reviewed", "approval": {"reviewedRecordId": question["id"], "reviewedContentVersion": question["contentVersion"], "status": "completed", "decision": "approved", "reviewer": "reviewer-1", "reviewedAt": "not-a-dateZ", "reason": "checked", "notes": "checked"}}
+        mutated["course"]["contentPolicy"]["generatedQuestionsRequireHumanReviewForExam"] = True
+        self.assertNotIn(question["id"], eligible_question_ids(mutated, "mock-exam"))
+        question["review"]["approval"]["reviewedAt"] = "2026-08-23T12:00:00Z"
+        question["correctAnswer"] = "bad"
+        self.assertNotIn(question["id"], eligible_question_ids(mutated, "mock-exam"))
+
+    def test_arabic_review_binding_and_malformed_root_are_rejected(self):
+        mutated = copy.deepcopy(self.payloads)
+        explanation = mutated["explanations-ar"]["explanations"][0]
+        explanation["review"] = {"status": "human-reviewed", "approval": {"reviewedRecordId": "wrong", "reviewedContentVersion": explanation["contentVersion"], "status": "completed", "decision": "approved", "reviewer": "reviewer-1", "reviewedAt": "2026-08-23T12:00:00Z", "reason": "checked", "notes": "checked"}}
+        self.assertTrue(any("arabic explanation review" in error.lower() and "binding" in error.lower() for error in validate_payloads(mutated)))
+        malformed = copy.deepcopy(self.payloads)
+        malformed["course"] = []
+        self.assertTrue(validate_payloads(malformed))
+
+    def test_reports_measure_omissions_and_validation_categories(self):
+        mutated = copy.deepcopy(self.payloads)
+        mutated["lessons"]["lessons"].pop()
+        mutated["questions"]["questions"][0]["rationale"] = ""
+        mutated["explanations-ar"]["explanations"][0]["translation"] = ""
+        mutated["questions"]["questions"][1]["prompt"] = mutated["questions"]["questions"][0]["prompt"]
+        reports = build_reports(mutated)
+        self.assertIn("omitted lessons 1", reports["coverage"].lower())
+        self.assertIn("Evidence/source references: failed", reports["quality"])
+        self.assertIn("Arabic records: failed", reports["quality"])
+        self.assertIn("duplicate normalized prompts: failed", reports["quality"])
+
 
 if __name__ == "__main__":
     unittest.main()
