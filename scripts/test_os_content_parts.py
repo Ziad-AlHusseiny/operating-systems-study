@@ -357,6 +357,268 @@ NEW_TRUE_FALSE_SOURCE_VERIFIED_HASHES = {
 }
 
 
+PART_THREE_MCQ_ANSWER_KEY = {'gq-os-ch06-part1-001': 0,
+ 'gq-os-ch06-part1-002': 1,
+ 'gq-os-ch06-part1-003': 2,
+ 'gq-os-ch06-part1-004': 1,
+ 'gq-os-ch06-part1-005': 1,
+ 'gq-os-ch06-part1-006': 2,
+ 'gq-os-ch06-part2-001': 0,
+ 'gq-os-ch06-part2-002': 1,
+ 'gq-os-ch06-part2-003': 2,
+ 'gq-os-ch06-part2-004': 1,
+ 'gq-os-ch06-part2-005': 1,
+ 'gq-os-ch06-part2-006': 2,
+ 'gq-os-ch08-part1-001': 0,
+ 'gq-os-ch08-part1-002': 1,
+ 'gq-os-ch08-part1-003': 2,
+ 'gq-os-ch08-part1-004': 1,
+ 'gq-os-ch08-part1-005': 1,
+ 'gq-os-ch08-part1-006': 2,
+ 'gq-os-ch08-part2-001': 0,
+ 'gq-os-ch08-part2-002': 1,
+ 'gq-os-ch08-part2-003': 1,
+ 'gq-os-ch08-part2-004': 2,
+ 'gq-os-ch08-part2-005': 1,
+ 'gq-os-ch08-part2-006': 1,
+ 'gq-os-ch08-part3-001': 0,
+ 'gq-os-ch08-part3-002': 1,
+ 'gq-os-ch08-part3-003': 2,
+ 'gq-os-ch08-part3-004': 1,
+ 'gq-os-ch08-part3-005': 1,
+ 'gq-os-ch08-part3-006': 2,
+ 'gq-os-ch09-part1-001': 0,
+ 'gq-os-ch09-part1-002': 1,
+ 'gq-os-ch09-part1-003': 2,
+ 'gq-os-ch09-part1-004': 2,
+ 'gq-os-ch09-part1-005': 1,
+ 'gq-os-ch09-part1-006': 2,
+ 'gq-os-ch09-part2-001': 0,
+ 'gq-os-ch09-part2-002': 1,
+ 'gq-os-ch09-part2-003': 1,
+ 'gq-os-ch09-part2-004': 1,
+ 'gq-os-ch09-part2-005': 2,
+ 'gq-os-ch09-part2-006': 2}
+
+PART_THREE_MCQ_SOURCE_VERIFIED_HASHES = {'gq-os-ch06-part1-001': '0ec56e19f8f206ea36a13bcbd201ea08091ac54d7fb6a529a12438e2f87d6ac1',
+ 'gq-os-ch06-part1-002': 'aad6314dee0dbb5c870a9d1b583e07f527678bfd986e22e4090f3171ade089cb',
+ 'gq-os-ch06-part1-003': '63821136bc06805137e5ab0744fd9df015df1179e3dee7a5042937fe7579bb55',
+ 'gq-os-ch06-part1-004': 'cf17febaf52614df3f31e76419ccb84630b60c86960cec740e5ff259fddbcd4d',
+ 'gq-os-ch06-part1-005': '03cb4989e372396793e86cb19c82b6caaa8a7a7d0b03dd20429e0912ac263a2f',
+ 'gq-os-ch06-part1-006': 'e299e046dd0a4c42bb97c349c37b5ab3db42dabc1c6206f0c8f8fcddea65e68a',
+ 'gq-os-ch06-part2-001': 'bb6ad1c4950a15768c93d9e9b9ca3b1dca84afe9171e1cb36ac3f33809b85808',
+ 'gq-os-ch06-part2-002': 'ffb9c6a391b859d9ae6668ae528d97542416c9c3ca744941270635b16542570d',
+ 'gq-os-ch06-part2-003': '53e2198238ec03d4dbfc581e9b3d8793173dacc3ea4ea7043817ba75bb8edc4c',
+ 'gq-os-ch06-part2-004': 'dbb449b990d442b8b69ecdb679fb35ce3b8d42c41c19b9673d9b14e1554ce7d8',
+ 'gq-os-ch06-part2-005': '96521d7e981f0e037428d60f3ca5dbef65edff25ba67fd9e90760481d4d0ea9c',
+ 'gq-os-ch06-part2-006': 'ab4faafa93fe3d14b3f5d128ab627526cd583f65ab28fc135c96798797ddf2b9',
+ 'gq-os-ch08-part1-001': '422c67471c4cf43e0570a36340714936d8de611f6881ff468761394cd68cd62e',
+ 'gq-os-ch08-part1-002': 'c7cc2af6c9ba7621c102e1e8b4eccc11d9763a0d2ca8ab140361f1cbfd38fbd5',
+ 'gq-os-ch08-part1-003': 'f884c9c1c526a5344b197cf929cb6cbb414c4aeb96cd6c8101622a9b935ce4eb',
+ 'gq-os-ch08-part1-004': 'c39207c3e0106389d3aba4cc6e840e6fc67ca44bea9718d94a4b5a25a0a10a48',
+ 'gq-os-ch08-part1-005': 'fbd92201578324beb33a2034487d58b0ddd5af72e930cc534c7aa8c8639c02a3',
+ 'gq-os-ch08-part1-006': '632d94ab3897d445d78633b4478332796b9897b2b1c150dff0c19af4424e773e',
+ 'gq-os-ch08-part2-001': '567a3c471fb73cbe736ce00a4c41e86fe6b7dc58b8af3287337cf8cbb7e524b0',
+ 'gq-os-ch08-part2-002': '7453d0acf7d054e7b7622387126c131f031b389a07c04864df051bf8714bd7ca',
+ 'gq-os-ch08-part2-003': '9bceaa9d69a0e28106bc111195c148370028580bff6a651f685af42329e5db94',
+ 'gq-os-ch08-part2-004': 'fd9236ae20ea5d51b3887fa0b3ee5386bc90339472a3fd9fee35e28b0ae3e4ba',
+ 'gq-os-ch08-part2-005': '39d01d2446a10a13356e3f9b85623dcb104cacd0762b74ee391d564195b0e59b',
+ 'gq-os-ch08-part2-006': 'a536c8d44ae9ee552b32c7657ff710ef1e81374fe17f79f94c18f7d0c860ce4c',
+ 'gq-os-ch08-part3-001': 'e119faf39a65101065ac462d3af38a70838037d8f5b9f9fceeba0963c443fa8b',
+ 'gq-os-ch08-part3-002': '5f629d24d15ac9e9b5a53030bd1c0365b5543c4a3c64996ae238a0572b6587f7',
+ 'gq-os-ch08-part3-003': '04a9bc441d099f422201d340a12a60ce158711b444126ab27059594267e36a39',
+ 'gq-os-ch08-part3-004': '6a35aa80d4499b88d9d86dc05a6608b5ec5a6c8904118e6b15341246bab9ae70',
+ 'gq-os-ch08-part3-005': '70aecfb2ac516553a74151233a519b00797d5741012583194fcc4bdc0eb37e29',
+ 'gq-os-ch08-part3-006': 'ee68335ec9284236f41fc4155bea4cfb869c8f6aaa949f3e794a1e7623b4e364',
+ 'gq-os-ch09-part1-001': '81e7217168d13d60478c321c8821a596ce4de4f846444062adba3da8110ccafa',
+ 'gq-os-ch09-part1-002': 'bbe47217aa19593e62920d340ddbdc461e5d54d8a01809a5a11a0a17dca3acf6',
+ 'gq-os-ch09-part1-003': '2fae19e9a30c9c2b353c30d3f60edef5abf7fd08517d672d4f3ef562cdf47b27',
+ 'gq-os-ch09-part1-004': 'd625229e2a52c1fea3b0981adac76b9b4028cc9b0a1e48a76f49065fec1eef0c',
+ 'gq-os-ch09-part1-005': '541767293a01b725c1920feb51e25523b6a3225180fc7587e0b591520fea4c3a',
+ 'gq-os-ch09-part1-006': '1b11fac7e9b3522ef9f1a2bc7351c8a385d568cb1ef54edbc2134bc2ad79372b',
+ 'gq-os-ch09-part2-001': 'bb8ec29f4a0d3047d7f034fcb4230a8d5ca28dae130a49850ff4a0be883e7fe9',
+ 'gq-os-ch09-part2-002': 'c59a7475e3dda62a551fd36b008c0670fa1254141454c8d635989a6763ea16d8',
+ 'gq-os-ch09-part2-003': '476926d27486afbb61ad8d485bfdd53177c774f416383fabac798ed6b5353145',
+ 'gq-os-ch09-part2-004': '1c7666bb22d8dca92739f8f961fd8a55abe41eae0e0cb0c61b9c8e01af67a735',
+ 'gq-os-ch09-part2-005': 'baf5972673fcfa69a0b9ff381967f5a1475f87a6db02cbceca3ffdf4faa4dfa8',
+ 'gq-os-ch09-part2-006': '89b143ad0e3a8d430056d1123c16138870d84b2f41ac96c3dc103f34024e46f4'}
+
+PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES = {'gq-os-ch06-part1-007': '1f534d797eccb3c1b8f6232dcb9f4337724e211cde33b19e6b14304a2a18fd38',
+ 'gq-os-ch06-part1-008': 'eb9ca5554f3e0164dd4428e3b7a6842a308ed95ad7e0e3d5677315b4231f6718',
+ 'gq-os-ch06-part1-009': '7945c1020c63292b9aff23355d9af6de8652e007c18c4f5412d358acf19668e7',
+ 'gq-os-ch06-part1-010': '77ee2d99103ec985c541ee9b69dfe0e14807cd62bb2c95d890a985e66a7a77a9',
+ 'gq-os-ch06-part2-007': '25360e64a8fef2b2605ee2b5c1e0f505db2b42b8f025544e995eb3bd2c1697a7',
+ 'gq-os-ch06-part2-008': 'ad4d744ef3e4249afe59c8de7646a4f1c8a38a833fe971a6a5086a5c1de7ddb1',
+ 'gq-os-ch06-part2-009': 'd0dccb8abe7cf8727aa3788b17580d3c2ce676521e1d4d7133635fabc70d6cc4',
+ 'gq-os-ch06-part2-010': '4c94b4cfadc61eba3d772d5b1f2c2e5360676d9d67b3257d05cb0177f20917aa',
+ 'gq-os-ch08-part1-007': 'a22ad8933c1031cc4bd870cb6e5520464cdd3d7b3ff7a287bf78d88c87e5ecc0',
+ 'gq-os-ch08-part1-008': '8b92191ffa79b8a2d826a683a51a98547f457118d6c218da6b71b7d14f1fb6dc',
+ 'gq-os-ch08-part1-009': 'fd615640663e28e417969c06ad4ce16a827d808dd47ec789e081ef9003f9ff74',
+ 'gq-os-ch08-part1-010': '706e3fda7a89daef53b86e9ce90902c8df65363c868ebc6f513e8097ae34aa73',
+ 'gq-os-ch08-part2-007': 'da4a06fec0909c2e400c4ad8a0e01698f038bf8e5facc11fc95463a13b0748f8',
+ 'gq-os-ch08-part2-008': '5d94ec2bc3ea22c6fd5190b4ba49916bb036eb6f30c43cb5d039855b92e4b747',
+ 'gq-os-ch08-part2-009': 'b7e6ae34c883222266d4d5d423e0ef031473ce2997dd7fb56c4e3d1211f35db2',
+ 'gq-os-ch08-part2-010': '812b80f4ef6f2f336bc68221d069937586fe9b020001ab351866ba4a7ee659f5',
+ 'gq-os-ch08-part3-007': '5d014fcb3f0f729473cdcd72c6621d93734617d3ba949595eb9de828f4aba49e',
+ 'gq-os-ch08-part3-008': '502931c1e503f401b8aa8bb4208719ab2ee9ca03f931fa9469cc1a0d7a64079b',
+ 'gq-os-ch08-part3-009': '324d38f623dfb27387b1be564d3ff9f428be12a47f634d940371bbc9335443b0',
+ 'gq-os-ch08-part3-010': '6df2f1b618cfa56665559d067a53108c7c43368b8b87468169e078d9ff9b01b2',
+ 'gq-os-ch09-part1-007': '130bdfa878c13ffa76fadf7f14da058176a1f4b440ea059c58a91ad44dcfc2c3',
+ 'gq-os-ch09-part1-008': '296ac3bb59be92cb2150b9103e876cc3b2a54d29aadf16f2a51f19aca6de8acc',
+ 'gq-os-ch09-part1-009': 'ce594bda0964bda11a1f9fdfc7d981b7bf1c15048a1017b6ef7bcaf40aab6e3f',
+ 'gq-os-ch09-part1-010': 'ea7467a1c8fd038f665a12832b113826614079895999bfd3d2107a02a3066096',
+ 'gq-os-ch09-part2-007': '8395bae32ed0682e409760fba06c0684a1f920d26061208ff7a58c2662220fdf',
+ 'gq-os-ch09-part2-008': 'c3fd2f2f07ae977f6fc45c1bec022122de79c5ecb4f43a971b498c6f842bf467',
+ 'gq-os-ch09-part2-009': 'e66f9386c84759f8eca1c77b6a11b0a3c675a2552122fe6d423f033572ba4c63',
+ 'gq-os-ch09-part2-010': '9394b70fab9f3cd37f49bacedac0facd971af79b379e9babece4987dbbab43c0'}
+
+PART_THREE_ARABIC_EXPLANATION_HASHES = {'gq-os-ch06-part1-001': 'd2f587ad5a4683ca44962663007ed30c80293fb0d8f8e711e85ac71724d5cb62',
+ 'gq-os-ch06-part1-002': '414e8db46d20fb2aeb6d420e938c9e00ed0abd0ff0072c6e0fc5d4af747fa18d',
+ 'gq-os-ch06-part1-003': '66c2d50e6cb2a08d33bb022aacc2cdaba793945cfe71c6ed68a90a05a8ddc530',
+ 'gq-os-ch06-part1-004': '62b5ced487aec4a16fbe25779810cf9195e34852f3edca5b2b8efb28cde677d6',
+ 'gq-os-ch06-part1-005': 'bd4e963aa6ca26816e9354a2da9addb0e658630be0e46b305def78ad3ffe0f16',
+ 'gq-os-ch06-part1-006': 'f35720963c39772f75c9390c6424f31238f0d403bd3302e6af8f7e11aeab5126',
+ 'gq-os-ch06-part1-007': 'aca99383a2c8dabd2f1a62d190251b217e05de871e7dcafb10eb601bfaa0bb8d',
+ 'gq-os-ch06-part1-008': 'ea195247d71314466809b26f6ca4f9ed72a98057570b4c663607429a0ae676ce',
+ 'gq-os-ch06-part1-009': 'beeca3f678468bb7b5a0b90b637d40ff09dd833bba979c51729d189f36818c18',
+ 'gq-os-ch06-part1-010': '501ab7d56e29d066b656c28f351f679f3b44a81b7b2a7502a306253ecce0e8a4',
+ 'gq-os-ch06-part2-001': '8cb0f4f604c3ec9f99465898b20303a107c34e805030d8a0b58d87b8baf8141c',
+ 'gq-os-ch06-part2-002': '29af1f98e862056f9b22088ed0dfd84d655917710e496940592d4c54c1cf6050',
+ 'gq-os-ch06-part2-003': '1cda40eafa782ff6e4cb261aa7a4eb4916847dd4516dd908849fdc4ab8f46659',
+ 'gq-os-ch06-part2-004': '6e51613a86ca2a713c1df9e74aa092a27cb9f57568314092911f5b1a171bb2ad',
+ 'gq-os-ch06-part2-005': 'cd1dc6ce0ed61db11c53daa940519550a644834221fb4893ed04182b33f05f56',
+ 'gq-os-ch06-part2-006': 'cd4c776c09aad5fe2239e2e25a9c2b6a6eef0d3e1244db94927efe805f7feae2',
+ 'gq-os-ch06-part2-007': '0580c4a279970d81260cd500f13fcf1d442445626a779ac0af8ecdf66336f8ff',
+ 'gq-os-ch06-part2-008': 'c8fb06f6282e35905ce79b9b5be60dc05a330753abc45f39a70fe7f2cfe3923c',
+ 'gq-os-ch06-part2-009': 'fbbb95d0c70d1de91bef1d97f9efaf424b42f6c359ac7ef14033dab2dac114e2',
+ 'gq-os-ch06-part2-010': '5874cce6f5e8837acf8652dad718d78761282148bdd1db0763f5b08bfda588e0',
+ 'gq-os-ch08-part1-001': 'af6b6ae0474c171ceb5aed17cb7628908d61c930f0f009640a22863122e8cb64',
+ 'gq-os-ch08-part1-002': 'aa216b3c527649b91a9e40b70cda29d4a52fdfa610724f01e763f567f54abf05',
+ 'gq-os-ch08-part1-003': '9924fb7ec0e3df7c4b3ba9660bea11a49d072dbe069c1dc4b6226f6de5e508e1',
+ 'gq-os-ch08-part1-004': '116d97ac4933d338d5c476f395d7d74e1b043acf997e418eb19912ce6ddf1548',
+ 'gq-os-ch08-part1-005': 'a8271a2b53a0cd73435906c14f7351eab8ec52b8a5ba51a8ae7728346a5ab7ef',
+ 'gq-os-ch08-part1-006': 'd74b7bf98653b0ce8ee6d33b067691e97227ca7c19502f8e8521d7b77e691ce6',
+ 'gq-os-ch08-part1-007': 'e317a6a73f428840100aaccc25c43344a867dae3d0dbf9bf04f1dbace86f0cea',
+ 'gq-os-ch08-part1-008': '5605b24a08a947be8118e205814a6b4e4f325da72e3036f9a98d243a4459f218',
+ 'gq-os-ch08-part1-009': '4cbaa27d125454673fc53b3089e7bbe0317c5d7b96f622752c5d057c89c90520',
+ 'gq-os-ch08-part1-010': '6dd4e4291928a90cb100bbb18e805ff998393e378ab7687ec4fbb70eeb4b2310',
+ 'gq-os-ch08-part2-001': 'fa7b9e7bfd4492c45ccecd75e19af68740a5d1a17944c88235a6926fc5ddfa8f',
+ 'gq-os-ch08-part2-002': '7e4819da23a3377ad3f9d2ad14e38f8a52dff0effba8fa7e839b5aef5a57674d',
+ 'gq-os-ch08-part2-003': 'bb5475aa071f8121f7845389490b69c82925c946b16cd056b2b0dda482e5837a',
+ 'gq-os-ch08-part2-004': '74f84b5bfe4b3da3d505f0677be338510d1887be4be1413ada52f3d5cb36387c',
+ 'gq-os-ch08-part2-005': '5fefacca68d651819d19f104ac6cb50b3c8a12ff6347261186b3bb6027d6de2f',
+ 'gq-os-ch08-part2-006': 'f18e398e501bb2e9880f064469c3d7cd54870a07fba29df69a17704313c70794',
+ 'gq-os-ch08-part2-007': 'ea5e720637729ead64b14052be35f8411fb3816957654e96187cee462898c103',
+ 'gq-os-ch08-part2-008': '7cb3e46702c464ddbf6fca932a25fa1ad7be633c1c40fb9b47488fcff1d0c87c',
+ 'gq-os-ch08-part2-009': '1127665cdd2af5109aa3d548e510fcba918c1bb4eb1f0c183b7f57060c1916c9',
+ 'gq-os-ch08-part2-010': 'c554a22fafb15bebce0221185175f3a39b6532af59bafcdbbaa1f707bbc215a6',
+ 'gq-os-ch08-part3-001': '3a68e70894685e725f1c8ccb01aafd0b7ab415ae25f63f57d9ff734a27c63e7f',
+ 'gq-os-ch08-part3-002': '819219fbffb5f9568406c5727222e57cb832248de662624a1d0cd30c8e25227b',
+ 'gq-os-ch08-part3-003': '66106fdde46a2199c807c3e14800d3f416d807781665041af523804d1158f0c5',
+ 'gq-os-ch08-part3-004': '480a22207059a992e84b24ba3848954eb7db3dfd2a155c17138fa81a133502fd',
+ 'gq-os-ch08-part3-005': '2ab04557485b8326cb695c5afe352eb1fcbf7f8c2357f3fc116a4b3c9a324c90',
+ 'gq-os-ch08-part3-006': '562bec00dd6b203b0808257f76cecd8d199212d3bbbabad42e7f1cf89db13534',
+ 'gq-os-ch08-part3-007': 'c7ed7c9dae147b8c1cc5d38752e6a87fdf77f68c247a8870453b340c4e2c0613',
+ 'gq-os-ch08-part3-008': 'ed9186d4caedc3c5f2d4eacc91b82cd204bbd2732a57bc22d3ccecf510ea610b',
+ 'gq-os-ch08-part3-009': '01b0abc6efd1c0c746a95e0bfe06e4bfc9b31a5a968b68c0530faf1857a3cd87',
+ 'gq-os-ch08-part3-010': '7c79d31289130e80a86e4d2eb85d2a955dc415a0d0e3f334b310951517ad0f08',
+ 'gq-os-ch09-part1-001': 'ac2bc5c189809b7ce14ef499fa522b90dec1049f69dee963218416b656db1639',
+ 'gq-os-ch09-part1-002': '0d846fd79ec58d8aff7bd4373a03f5ae734bc918f3bbf5bbbb90f95381bd961d',
+ 'gq-os-ch09-part1-003': 'ca9f2129a85b7717778d6b80dcd262a00ecaa013d2c93bd6a472b046623e58b4',
+ 'gq-os-ch09-part1-004': '390b9320497682396375afcaef145d6db8acfe6bd903451cdc601ee90f093b88',
+ 'gq-os-ch09-part1-005': '3ff150dad2150a78a006906d3d356e8a208169d24e85392d4cf04caa6b41ac41',
+ 'gq-os-ch09-part1-006': '5b926a5752117dae9a631eaa97f2761e36f50049c61ef103a069d9a63a35f5b0',
+ 'gq-os-ch09-part1-007': 'f360b74199a1c727409e5f10d173bd548a671d890df7b50702fa10ffde1504c6',
+ 'gq-os-ch09-part1-008': 'bef66091ade6e85d0a71283dede0408270181b6a78fa882d9467a11d45e1b9a5',
+ 'gq-os-ch09-part1-009': 'cf8ce79f40d9d911e666a5ffbc049a4b4855e4457601478b9520a7c34a906134',
+ 'gq-os-ch09-part1-010': 'e15b7e13d6ed0656860111f0df10e16f1aca07f238e59d421020dab05ee4f257',
+ 'gq-os-ch09-part2-001': '910004f3d80815d07963db2a265625327016c4b54582f3c70f61ed222a6f5d53',
+ 'gq-os-ch09-part2-002': '29b3eb140d6fbe637c22e284362077e080f8eeaa9d03ee44cae9ea48848539b8',
+ 'gq-os-ch09-part2-003': '1f06bc7b5d1551744d53ee645b005a313d552493f323b647015a6fecb7641d2d',
+ 'gq-os-ch09-part2-004': '9d865391acd8fe4c5edf3e4728e9d2fbb7902eceaa62e563756865cc1c45a20b',
+ 'gq-os-ch09-part2-005': '7ff8517a7b7eadc0988c48b58d1bda3d1910d8b4638e11bc194f033ef6521ac6',
+ 'gq-os-ch09-part2-006': '203251fa29b0b40edf298bf9124c5411d78119add3f65c191e62447e75538bf6',
+ 'gq-os-ch09-part2-007': '20d285b48979316a59d712601960e58bbb81868f671474ea72cb07393f10cccd',
+ 'gq-os-ch09-part2-008': '51d849d755801c89916101780f9cc666d809dba05cae6dde69a45a0bba34f7da',
+ 'gq-os-ch09-part2-009': 'dc8018d0d29c1b1256696b5f2a78f41ace38202637e39806212fe0c0bef29c79',
+ 'gq-os-ch09-part2-010': '716d92974b216e5e6e0daf68b32901ef1b80851fd950dee42dd488db5c168c62'}
+
+PART_THREE_QUESTION_METADATA = {'gq-os-ch06-part1-001': ('objective-os-ch06-part1-1', 'Cooperating-process data sharing', 'material-section-os-ch06-part1-races'),
+ 'gq-os-ch06-part1-002': ('objective-os-ch06-part1-1', 'Producer-consumer counter initialization', 'material-section-os-ch06-part1-races'),
+ 'gq-os-ch06-part1-003': ('objective-os-ch06-part1-1', 'Critical-section exclusion', 'material-section-os-ch06-part1-critical-section'),
+ 'gq-os-ch06-part1-004': ('objective-os-ch06-part1-1', 'Critical-section progress', 'material-section-os-ch06-part1-critical-section'),
+ 'gq-os-ch06-part1-005': ('objective-os-ch06-part1-2', 'Peterson shared variables', 'material-section-os-ch06-part1-peterson'),
+ 'gq-os-ch06-part1-006': ('objective-os-ch06-part1-3', 'Reordering diagnosis', 'material-section-os-ch06-part1-reordering'),
+ 'gq-os-ch06-part1-007': ('objective-os-ch06-part1-1', 'Interrupt disabling scope', 'material-section-os-ch06-part1-critical-section'),
+ 'gq-os-ch06-part1-008': ('objective-os-ch06-part1-2', 'Peterson scalability', 'material-section-os-ch06-part1-peterson'),
+ 'gq-os-ch06-part1-009': ('objective-os-ch06-part1-1', 'Counter interleaving analysis', 'material-section-os-ch06-part1-races'),
+ 'gq-os-ch06-part1-010': ('objective-os-ch06-part1-2', 'Peterson entry sequence', 'material-section-os-ch06-part1-peterson'),
+ 'gq-os-ch06-part2-001': ('objective-os-ch06-part2-1', 'Memory-barrier visibility', 'material-section-os-ch06-part2-hardware'),
+ 'gq-os-ch06-part2-002': ('objective-os-ch06-part2-1', 'Test-and-set return value', 'material-section-os-ch06-part2-hardware'),
+ 'gq-os-ch06-part2-003': ('objective-os-ch06-part2-2', 'Mutex spinlock cost', 'material-section-os-ch06-part2-mutex'),
+ 'gq-os-ch06-part2-004': ('objective-os-ch06-part2-2', 'Semaphore domains', 'material-section-os-ch06-part2-semaphores'),
+ 'gq-os-ch06-part2-005': ('objective-os-ch06-part2-2', 'Event-order semaphore', 'material-section-os-ch06-part2-semaphores'),
+ 'gq-os-ch06-part2-006': ('objective-os-ch06-part2-3', 'Bounded-buffer sequence analysis', 'material-section-os-ch06-part2-classical'),
+ 'gq-os-ch06-part2-007': ('objective-os-ch06-part2-1', 'Test-and-set bounded waiting', 'material-section-os-ch06-part2-hardware'),
+ 'gq-os-ch06-part2-008': ('objective-os-ch06-part2-2', 'Counting resource initialization', 'material-section-os-ch06-part2-classical'),
+ 'gq-os-ch06-part2-009': ('objective-os-ch06-part2-3', 'Priority-inversion diagnosis', 'material-section-os-ch06-part2-semaphores'),
+ 'gq-os-ch06-part2-010': ('objective-os-ch06-part2-3', 'Incorrect semaphore order', 'material-section-os-ch06-part2-semaphores'),
+ 'gq-os-ch08-part1-001': ('objective-os-ch08-part1-1', 'No-cycle conclusion', 'material-section-os-ch08-part1-graphs'),
+ 'gq-os-ch08-part1-002': ('objective-os-ch08-part1-2', 'Deadlock handling choices', 'material-section-os-ch08-part1-handling'),
+ 'gq-os-ch08-part1-003': ('objective-os-ch08-part1-3', 'Sharable resource exclusion', 'material-section-os-ch08-part1-prevention'),
+ 'gq-os-ch08-part1-004': ('objective-os-ch08-part1-3', 'Hold-and-wait prevention', 'material-section-os-ch08-part1-prevention'),
+ 'gq-os-ch08-part1-005': ('objective-os-ch08-part1-3', 'No-preemption limitation', 'material-section-os-ch08-part1-prevention'),
+ 'gq-os-ch08-part1-006': ('objective-os-ch08-part1-3', 'Ordering trade-off analysis', 'material-section-os-ch08-part1-ordering'),
+ 'gq-os-ch08-part1-007': ('objective-os-ch08-part1-2', 'Prevention versus detection', 'material-section-os-ch08-part1-handling'),
+ 'gq-os-ch08-part1-008': ('objective-os-ch08-part1-3', 'No-preemption release', 'material-section-os-ch08-part1-prevention'),
+ 'gq-os-ch08-part1-009': ('objective-os-ch08-part1-3', 'Increasing order', 'material-section-os-ch08-part1-ordering'),
+ 'gq-os-ch08-part1-010': ('objective-os-ch08-part1-2', 'Ignoring deadlocks policy', 'material-section-os-ch08-part1-handling'),
+ 'gq-os-ch08-part2-001': ('objective-os-ch08-part2-1', 'Avoidance maximum claims', 'material-section-os-ch08-part2-safety'),
+ 'gq-os-ch08-part2-002': ('objective-os-ch08-part2-1', 'Unsafe-state meaning', 'material-section-os-ch08-part2-safety'),
+ 'gq-os-ch08-part2-003': ('objective-os-ch08-part2-1', 'Claim-edge transition', 'material-section-os-ch08-part2-rag-avoidance'),
+ 'gq-os-ch08-part2-004': ('objective-os-ch08-part2-1', 'Single-instance grant check', 'material-section-os-ch08-part2-rag-avoidance'),
+ 'gq-os-ch08-part2-005': ('objective-os-ch08-part2-2', 'Need computation', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-006': ('objective-os-ch08-part2-3', 'Safe-sequence analysis', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-007': ('objective-os-ch08-part2-2', 'Banker instance scope', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-008': ('objective-os-ch08-part2-2', 'Request-algorithm order', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-009': ('objective-os-ch08-part2-3', 'P0 unsafe request', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part2-010': ('objective-os-ch08-part2-3', 'P1 request update', 'material-section-os-ch08-part2-banker'),
+ 'gq-os-ch08-part3-001': ('objective-os-ch08-part3-1', 'Detection-recovery policy', 'material-section-os-ch08-part3-single-instance'),
+ 'gq-os-ch08-part3-002': ('objective-os-ch08-part3-1', 'Wait-for nodes', 'material-section-os-ch08-part3-single-instance'),
+ 'gq-os-ch08-part3-003': ('objective-os-ch08-part3-1',
+                          'Multiple-instance request matrix',
+                          'material-section-os-ch08-part3-multiple-instance'),
+ 'gq-os-ch08-part3-004': ('objective-os-ch08-part3-1',
+                          'Detection Finish initialization',
+                          'material-section-os-ch08-part3-multiple-instance'),
+ 'gq-os-ch08-part3-005': ('objective-os-ch08-part3-1', 'Detection complexity', 'material-section-os-ch08-part3-multiple-instance'),
+ 'gq-os-ch08-part3-006': ('objective-os-ch08-part3-2', 'P2-request analysis', 'material-section-os-ch08-part3-example-usage'),
+ 'gq-os-ch08-part3-007': ('objective-os-ch08-part3-3', 'Total rollback', 'material-section-os-ch08-part3-recovery'),
+ 'gq-os-ch08-part3-008': ('objective-os-ch08-part3-2', 'Detection frequency cost', 'material-section-os-ch08-part3-example-usage'),
+ 'gq-os-ch08-part3-009': ('objective-os-ch08-part3-3', 'Termination method', 'material-section-os-ch08-part3-recovery'),
+ 'gq-os-ch08-part3-010': ('objective-os-ch08-part3-3', 'Preemption victim cost', 'material-section-os-ch08-part3-recovery'),
+ 'gq-os-ch09-part1-001': ('objective-os-ch09-part1-1', 'Direct CPU storage', 'material-section-os-ch09-part1-binding'),
+ 'gq-os-ch09-part1-002': ('objective-os-ch09-part1-1', 'Base-limit meanings', 'material-section-os-ch09-part1-binding'),
+ 'gq-os-ch09-part1-003': ('objective-os-ch09-part1-1', 'Address binding stages', 'material-section-os-ch09-part1-binding'),
+ 'gq-os-ch09-part1-004': ('objective-os-ch09-part1-1', 'Execution-time address spaces', 'material-section-os-ch09-part1-mmu'),
+ 'gq-os-ch09-part1-005': ('objective-os-ch09-part1-1', 'MMU role', 'material-section-os-ch09-part1-mmu'),
+ 'gq-os-ch09-part1-006': ('objective-os-ch09-part1-1', 'Dynamic relocation calculation', 'material-section-os-ch09-part1-mmu'),
+ 'gq-os-ch09-part1-007': ('objective-os-ch09-part1-1', 'Compiler relocation role', 'material-section-os-ch09-part1-binding'),
+ 'gq-os-ch09-part1-008': ('objective-os-ch09-part1-1', 'Base-limit privilege', 'material-section-os-ch09-part1-binding'),
+ 'gq-os-ch09-part1-009': ('objective-os-ch09-part1-3', 'External fragmentation diagnosis', 'material-section-os-ch09-part1-fragmentation'),
+ 'gq-os-ch09-part1-010': ('objective-os-ch09-part1-2', 'Adjacent-hole merging', 'material-section-os-ch09-part1-contiguous'),
+ 'gq-os-ch09-part2-001': ('objective-os-ch09-part2-1', 'Paging blocks', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-002': ('objective-os-ch09-part2-1', 'Paging address fields', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-003': ('objective-os-ch09-part2-1', 'PTBR function', 'material-section-os-ch09-part2-tables'),
+ 'gq-os-ch09-part2-004': ('objective-os-ch09-part2-1', 'Page protection bit', 'material-section-os-ch09-part2-tables'),
+ 'gq-os-ch09-part2-005': ('objective-os-ch09-part2-1', 'Paging bit calculation', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-006': ('objective-os-ch09-part2-1', 'Reentrant-code sharing', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-007': ('objective-os-ch09-part2-1', 'Paging fragmentation', 'material-section-os-ch09-part2-paging'),
+ 'gq-os-ch09-part2-008': ('objective-os-ch09-part2-2', 'Page-out direction', 'material-section-os-ch09-part2-swapping'),
+ 'gq-os-ch09-part2-009': ('objective-os-ch09-part2-3', 'Virtual address-space scope', 'material-section-os-ch09-part2-virtual'),
+ 'gq-os-ch09-part2-010': ('objective-os-ch09-part2-3', 'Page-fault sequence', 'material-section-os-ch09-part2-virtual')}
+
+
 class OSContentPartTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -463,10 +725,20 @@ class OSContentPartTests(unittest.TestCase):
         self.assertEqual(len(part["lessons"]), 7)
         self.assert_all_teaching_pages_covered(part, {f"os-lec-{n:02d}" for n in range(8, 15)})
 
+    def test_chapters_six_eight_and_nine_have_seven_traceable_lessons(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        self.assertEqual(
+            [module["id"] for module in part["modules"]],
+            ["module-os-ch06", "module-os-ch08", "module-os-ch09"],
+        )
+        self.assertEqual([module["order"] for module in part["modules"]], [5, 6, 7])
+        self.assertEqual(len(part["lessons"]), 7)
+        self.assert_all_teaching_pages_covered(part, {f"os-lec-{n:02d}" for n in range(15, 22)})
+
     def test_every_generated_question_has_separate_arabic_guidance(self):
         part = self.combined_part()
         explanations = {item["questionId"]: item for item in part["explanations"]}
-        self.assertEqual(len(part["questions"]), 140)
+        self.assertEqual(len(part["questions"]), 210)
         for question in part["questions"]:
             self.assertEqual(question["origin"], "generated")
             self.assertIn(question["id"], explanations)
@@ -559,7 +831,7 @@ class OSContentPartTests(unittest.TestCase):
 
     def test_question_counts_quotas_and_deterministic_true_false_patterns(self):
         part = self.combined_part()
-        self.assertEqual(Counter(question["type"] for question in part["questions"]), {"mcq": 84, "true-false": 56})
+        self.assertEqual(Counter(question["type"] for question in part["questions"]), {"mcq": 126, "true-false": 84})
         patterns = ["TTFF", "TFTF", "TFFT", "FTTF", "FTFT", "FFTT"]
         true_false_answers = []
         for lesson in part["lessons"]:
@@ -576,7 +848,7 @@ class OSContentPartTests(unittest.TestCase):
             actual_pattern = "".join("T" if question["correctAnswer"] else "F" for question in true_false)
             self.assertEqual(actual_pattern, expected_pattern)
             true_false_answers.extend(question["correctAnswer"] for question in true_false)
-        self.assertEqual(Counter(true_false_answers), {True: 28, False: 28})
+        self.assertEqual(Counter(true_false_answers), {True: 42, False: 42})
 
     def test_generated_questions_use_exact_answer_evidence_and_provenance_shapes(self):
         part = self.combined_part()
@@ -639,7 +911,12 @@ class OSContentPartTests(unittest.TestCase):
         direct_option_claims = Counter()
         option_claims = Counter()
         for question in (item for item in part["questions"] if item["type"] == "mcq"):
-            part_name = "ch01-ch02" if question["id"].startswith(("gq-os-ch01-", "gq-os-ch02-")) else "ch03-ch05"
+            if question["id"].startswith(("gq-os-ch01-", "gq-os-ch02-")):
+                part_name = "ch01-ch02"
+            elif question["id"].startswith(("gq-os-ch03-", "gq-os-ch05-")):
+                part_name = "ch03-ch05"
+            else:
+                part_name = "ch06-ch08-ch09"
             evidence = {item["target"]: item for item in question["evidenceMap"]}
             signatures = []
             for index, option in enumerate(question["options"]):
@@ -665,7 +942,7 @@ class OSContentPartTests(unittest.TestCase):
                 option_claims[part_name] += 1
                 direct_option_claims[part_name] += option_claim["support"] == "direct"
             uniform_option_evidence[part_name] += len(set(signatures)) == 1
-        for part_name in ("ch01-ch02", "ch03-ch05"):
+        for part_name in ("ch01-ch02", "ch03-ch05", "ch06-ch08-ch09"):
             self.assertLessEqual(uniform_option_evidence[part_name], 8)
             self.assertLess(direct_option_claims[part_name], option_claims[part_name])
 
@@ -676,8 +953,9 @@ class OSContentPartTests(unittest.TestCase):
             for question in part["questions"]
             if question["type"] == "mcq"
         }
-        self.assertEqual(set(actual), set(VERIFIED_MCQ_ANSWER_KEY))
-        for question_id, expected_answer in VERIFIED_MCQ_ANSWER_KEY.items():
+        expected_answers = VERIFIED_MCQ_ANSWER_KEY | PART_THREE_MCQ_ANSWER_KEY
+        self.assertEqual(set(actual), set(expected_answers))
+        for question_id, expected_answer in expected_answers.items():
             self.assertEqual(
                 actual[question_id],
                 expected_answer,
@@ -687,7 +965,7 @@ class OSContentPartTests(unittest.TestCase):
     def test_analyze_items_require_multistep_reasoning_signals(self):
         part = self.combined_part()
         analyze_items = [question for question in part["questions"] if question["bloomLevel"] == "analyze"]
-        self.assertEqual(len(analyze_items), 28)
+        self.assertEqual(len(analyze_items), 42)
         reasoning_signal = re.compile(
             r"\b(after|although|before|because|compared|despite|diagnos|fails?|observes?|rather than|sequence|trade-off|when|while)\b",
             re.IGNORECASE,
@@ -750,8 +1028,8 @@ class OSContentPartTests(unittest.TestCase):
     def test_arabic_explanations_use_exact_shape_and_match_questions(self):
         part = self.combined_part()
         questions = {question["id"]: question for question in part["questions"]}
-        self.assertEqual(len(part["explanations"]), 140)
-        self.assertEqual(len({item["id"] for item in part["explanations"]}), 140)
+        self.assertEqual(len(part["explanations"]), 210)
+        self.assertEqual(len({item["id"] for item in part["explanations"]}), 210)
         for item in part["explanations"]:
             self.assertEqual(set(item), EXPLANATION_KEYS)
             self.assertEqual(item["id"], f"explanation-{item['questionId']}-ar")
@@ -874,6 +1152,96 @@ class OSContentPartTests(unittest.TestCase):
             digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
             self.assertEqual(digest, NEW_ARABIC_EXPLANATION_HASHES[question_id], question_id)
 
+    def test_part_three_records_match_immutable_source_verified_oracles(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        mcqs = {question["id"]: question for question in part["questions"] if question["type"] == "mcq"}
+        true_false = {question["id"]: question for question in part["questions"] if question["type"] == "true-false"}
+        explanations = {item["questionId"]: item for item in part["explanations"]}
+        self.assertEqual({question_id: question["correctAnswer"] for question_id, question in mcqs.items()}, PART_THREE_MCQ_ANSWER_KEY)
+        self.assertEqual(set(mcqs), set(PART_THREE_MCQ_SOURCE_VERIFIED_HASHES))
+        self.assertEqual(set(true_false), set(PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES))
+        self.assertEqual(set(explanations), set(PART_THREE_ARABIC_EXPLANATION_HASHES))
+        mcq_fields = ("prompt", "options", "correctAnswer", "rationale", "distractorRationales", "evidenceMap")
+        true_false_fields = ("prompt", "correctAnswer", "rationale", "correctedStatement", "learningObjectiveId", "topic", "sourceRefs", "evidenceMap")
+        explanation_fields = ("translation", "explanation", "body", "note", "sourceRefs")
+        for question_id, question in mcqs.items():
+            payload = {field: question[field] for field in mcq_fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, PART_THREE_MCQ_SOURCE_VERIFIED_HASHES[question_id], question_id)
+        for question_id, question in true_false.items():
+            payload = {field: question[field] for field in true_false_fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, PART_THREE_TRUE_FALSE_SOURCE_VERIFIED_HASHES[question_id], question_id)
+        for question_id, explanation in explanations.items():
+            payload = {field: explanation[field] for field in explanation_fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, PART_THREE_ARABIC_EXPLANATION_HASHES[question_id], question_id)
+
+    def test_part_three_objective_topic_and_section_mapping_is_semantic(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        linked_sections = {
+            question_id: section["id"]
+            for lesson in part["lessons"]
+            for section in lesson["materialSections"]
+            for question_id in section["linkedQuestionIds"]
+        }
+        self.assertEqual(set(questions), set(PART_THREE_QUESTION_METADATA))
+        self.assertEqual(set(linked_sections), set(questions))
+        for question_id, (objective_id, topic, section_id) in PART_THREE_QUESTION_METADATA.items():
+            self.assertEqual(questions[question_id]["learningObjectiveId"], objective_id, question_id)
+            self.assertEqual(questions[question_id]["topic"], topic, question_id)
+            self.assertEqual(linked_sections[question_id], section_id, question_id)
+
+    def test_part_three_arabic_explanations_are_specific_and_joined_exactly(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        explanations = part["explanations"]
+        self.assertEqual(len(explanations), 70)
+        second_paragraphs = [item["explanation"][1] for item in explanations]
+        self.assertEqual(len(second_paragraphs), len(set(second_paragraphs)))
+        for item in explanations:
+            question = questions[item["questionId"]]
+            self.assertGreaterEqual(len(ARABIC_RE.findall(item["translation"])), 12, item["id"])
+            self.assertIn(len(item["explanation"]), (2, 3), item["id"])
+            self.assertEqual(item["body"], "\n\n".join(item["explanation"]), item["id"])
+            for paragraph in item["explanation"]:
+                self.assertGreaterEqual(len(ARABIC_RE.findall(paragraph)), 25, item["id"])
+                self.assertGreaterEqual(len(ARABIC_WORD_RE.findall(paragraph)), 12, item["id"])
+            self.assertEqual(item["sourceRefs"], question["sourceRefs"], item["id"])
+            if question["type"] == "true-false" and question["correctedStatement"]:
+                self.assertNotIn(question["correctedStatement"], item["body"], item["id"])
+
+    def test_part_three_mcq_distractors_are_distinct_and_option_specific(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        all_rationales = []
+        for question in (item for item in part["questions"] if item["type"] == "mcq"):
+            self.assertEqual(len(question["distractorRationales"]), 4, question["id"])
+            self.assertEqual(len(set(question["distractorRationales"])), 4, question["id"])
+            for index, rationale in enumerate(question["distractorRationales"]):
+                self.assertFalse(rationale.endswith(question["rationale"]), f"{question['id']} option {index}")
+                self.assertTrue(
+                    self.content_tokens(rationale, EVIDENCE_STOP_WORDS)
+                    & self.content_tokens(question["options"][index], EVIDENCE_STOP_WORDS),
+                    f"{question['id']} option {index}",
+                )
+                all_rationales.append(self.normalized_prompt(rationale))
+        self.assertEqual(len(all_rationales), len(set(all_rationales)))
+
+    def test_part_three_source_exercises_lock_their_inputs_and_results(self):
+        part = self.load_part("content/os/ch06-ch08-ch09.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        self.assertFalse(questions["gq-os-ch06-part1-009"]["correctAnswer"])
+        self.assertIn("four, five, and six", questions["gq-os-ch06-part1-009"]["correctedStatement"])
+        self.assertFalse(questions["gq-os-ch08-part2-009"]["correctAnswer"])
+        self.assertIn("unsafe", questions["gq-os-ch08-part2-009"]["correctedStatement"].casefold())
+        self.assertTrue(questions["gq-os-ch08-part2-010"]["correctAnswer"])
+        self.assertIn("(3,0,2)", questions["gq-os-ch08-part2-010"]["prompt"])
+        self.assertEqual(questions["gq-os-ch09-part1-006"]["correctAnswer"], 2)
+        self.assertIn("14346", questions["gq-os-ch09-part1-006"]["options"])
+        self.assertEqual(questions["gq-os-ch09-part2-005"]["correctAnswer"], 2)
+        self.assertIn("Sixteen", questions["gq-os-ch09-part2-005"]["options"][2])
+
     def test_cross_part_ids_and_semantic_propositions_are_unique(self):
         parts = self.existing_parts()
         combined = self.combined_part()
@@ -888,7 +1256,6 @@ class OSContentPartTests(unittest.TestCase):
         for records in id_groups:
             ids = [record["id"] for record in records]
             self.assertEqual(len(ids), len(set(ids)))
-
         semantic_signatures = []
         for question in combined["questions"]:
             answer = (
@@ -896,19 +1263,20 @@ class OSContentPartTests(unittest.TestCase):
                 if question["type"] == "mcq"
                 else question["correctedStatement"] or str(question["correctAnswer"])
             )
-            semantic_signatures.append(self.normalized_prompt(
-                " ".join((question["prompt"], question["rationale"], answer))
-            ))
+            semantic_signatures.append(self.normalized_prompt(" ".join((question["prompt"], question["rationale"], answer))))
         self.assertEqual(len(semantic_signatures), len(set(semantic_signatures)))
-
-        old_questions = parts[0]["questions"]
-        new_questions = parts[1]["questions"]
-        for old_question in old_questions:
-            old_tokens = self.proposition_tokens(old_question)
-            for new_question in new_questions:
-                new_tokens = self.proposition_tokens(new_question)
-                overlap = len(old_tokens & new_tokens) / min(len(old_tokens), len(new_tokens))
-                self.assertLess(overlap, 0.58, f"cross-part semantic near-duplicate: {old_question['id']} / {new_question['id']}")
+        for left_index, left_part in enumerate(parts):
+            for right_part in parts[left_index + 1:]:
+                for left_question in left_part["questions"]:
+                    for right_question in right_part["questions"]:
+                        left_tokens = self.proposition_tokens(left_question)
+                        right_tokens = self.proposition_tokens(right_question)
+                        overlap = len(left_tokens & right_tokens) / min(len(left_tokens), len(right_tokens))
+                        self.assertLess(
+                            overlap,
+                            0.58,
+                            f"cross-part semantic near-duplicate: {left_question['id']} / {right_question['id']}",
+                        )
 
     def test_generated_guidance_is_arabic_and_prohibited_official_claims_are_absent(self):
         part = self.combined_part()
@@ -918,7 +1286,10 @@ class OSContentPartTests(unittest.TestCase):
                     self.assertTrue(ARABIC_RE.search(section["summary"]))
                     self.assertTrue(all(ARABIC_RE.search(paragraph) for paragraph in section["explanation"]))
         serialized = json.dumps(part, ensure_ascii=False).casefold()
-        for prohibited in ("official exam question", "official question", "from the exam", "past-paper question", "certified", "guaranteed to appear"):
+        for prohibited in (
+            "official exam question", "official question", "from the exam",
+            "past-paper question", "certified", "guaranteed to appear",
+        ):
             self.assertNotIn(prohibited, serialized)
 
 
