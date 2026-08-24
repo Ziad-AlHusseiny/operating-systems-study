@@ -39,6 +39,7 @@ EXPLANATION_KEYS = {
     "needsReview", "reviewNotes", "review",
 }
 ARABIC_RE = re.compile(r"[\u0600-\u06ff]")
+ARABIC_WORD_RE = re.compile(r"[\u0621-\u064a]+")
 EVIDENCE_STOP_WORDS = {
     "a", "an", "and", "are", "as", "at", "be", "because", "by", "does",
     "for", "from", "in", "into", "is", "it", "its", "of", "on", "or",
@@ -133,6 +134,226 @@ VERIFIED_MCQ_ANSWER_KEY = {
     "gq-os-ch05-part4-004": 3,
     "gq-os-ch05-part4-005": 1,
     "gq-os-ch05-part4-006": 2,
+}
+
+EXPECTED_NEW_QUESTION_METADATA = {
+    "gq-os-ch03-part1-001": ("objective-os-ch03-part1-1", "Process memory", "material-section-os-ch03-part1-process-memory"),
+    "gq-os-ch03-part1-002": ("objective-os-ch03-part1-1", "Process state", "material-section-os-ch03-part1-states-trace"),
+    "gq-os-ch03-part1-003": ("objective-os-ch03-part1-2", "PCB context", "material-section-os-ch03-part1-pcb-threads"),
+    "gq-os-ch03-part1-004": ("objective-os-ch03-part1-3", "Multithreading", "material-section-os-ch03-part1-pcb-threads"),
+    "gq-os-ch03-part1-005": ("objective-os-ch03-part1-3", "I/O wait queue", "material-section-os-ch03-part1-scheduling-queues"),
+    "gq-os-ch03-part1-006": ("objective-os-ch03-part1-3", "Swapping trade-off", "material-section-os-ch03-part1-scheduling-queues"),
+    "gq-os-ch03-part1-007": ("objective-os-ch03-part1-1", "Dynamic memory layout", "material-section-os-ch03-part1-process-memory"),
+    "gq-os-ch03-part1-008": ("objective-os-ch03-part1-2", "Linux current pointer", "material-section-os-ch03-part1-pcb-threads"),
+    "gq-os-ch03-part1-009": ("objective-os-ch03-part1-3", "Thread state sharing", "material-section-os-ch03-part1-pcb-threads"),
+    "gq-os-ch03-part1-010": ("objective-os-ch03-part1-3", "Time-slice queue trace", "material-section-os-ch03-part1-states-trace"),
+    "gq-os-ch03-part2-001": ("objective-os-ch03-part2-1", "Context-switch state save", "material-section-os-ch03-part2-context-browser"),
+    "gq-os-ch03-part2-002": ("objective-os-ch03-part2-2", "UNIX exec", "material-section-os-ch03-part2-creation"),
+    "gq-os-ch03-part2-003": ("objective-os-ch03-part2-2", "fork return value", "material-section-os-ch03-part2-creation"),
+    "gq-os-ch03-part2-004": ("objective-os-ch03-part2-2", "Orphan process", "material-section-os-ch03-part2-termination-ipc"),
+    "gq-os-ch03-part2-005": ("objective-os-ch03-part2-3", "Shared-memory performance", "material-section-os-ch03-part2-termination-ipc"),
+    "gq-os-ch03-part2-006": ("objective-os-ch03-part2-3", "Bounded-buffer capacity", "material-section-os-ch03-part2-shared-buffer"),
+    "gq-os-ch03-part2-007": ("objective-os-ch03-part2-1", "Context-switch overhead", "material-section-os-ch03-part2-context-browser"),
+    "gq-os-ch03-part2-008": ("objective-os-ch03-part2-1", "Chrome renderer isolation", "material-section-os-ch03-part2-context-browser"),
+    "gq-os-ch03-part2-009": ("objective-os-ch03-part2-3", "Shared-memory synchronization", "material-section-os-ch03-part2-shared-buffer"),
+    "gq-os-ch03-part2-010": ("objective-os-ch03-part2-2", "Zombie status retention", "material-section-os-ch03-part2-termination-ipc"),
+    "gq-os-ch03-part3-001": ("objective-os-ch03-part3-1", "Message receive primitive", "material-section-os-ch03-part3-message-links"),
+    "gq-os-ch03-part3-002": ("objective-os-ch03-part3-2", "Indirect mailbox naming", "material-section-os-ch03-part3-naming-mailboxes"),
+    "gq-os-ch03-part3-003": ("objective-os-ch03-part3-2", "Non-blocking send", "material-section-os-ch03-part3-sync-buffering"),
+    "gq-os-ch03-part3-004": ("objective-os-ch03-part3-3", "Named-pipe properties", "material-section-os-ch03-part3-pipes"),
+    "gq-os-ch03-part3-005": ("objective-os-ch03-part3-3", "UNIX command pipe", "material-section-os-ch03-part3-pipes"),
+    "gq-os-ch03-part3-006": ("objective-os-ch03-part3-3", "Socket-pair uniqueness", "material-section-os-ch03-part3-sockets"),
+    "gq-os-ch03-part3-007": ("objective-os-ch03-part3-1", "Message-passing address spaces", "material-section-os-ch03-part3-message-links"),
+    "gq-os-ch03-part3-008": ("objective-os-ch03-part3-2", "Direct communication link", "material-section-os-ch03-part3-naming-mailboxes"),
+    "gq-os-ch03-part3-009": ("objective-os-ch03-part3-2", "Bounded message buffering", "material-section-os-ch03-part3-sync-buffering"),
+    "gq-os-ch03-part3-010": ("objective-os-ch03-part3-3", "Ordinary-pipe direction", "material-section-os-ch03-part3-pipes"),
+    "gq-os-ch05-part1-001": ("objective-os-ch05-part1-1", "I/O-bound burst distribution", "material-section-os-ch05-part1-foundations"),
+    "gq-os-ch05-part1-002": ("objective-os-ch05-part1-2", "Response time", "material-section-os-ch05-part1-criteria"),
+    "gq-os-ch05-part1-003": ("objective-os-ch05-part1-1", "Running-to-waiting decision", "material-section-os-ch05-part1-scheduler-dispatcher"),
+    "gq-os-ch05-part1-004": ("objective-os-ch05-part1-2", "Dispatcher sequence", "material-section-os-ch05-part1-scheduler-dispatcher"),
+    "gq-os-ch05-part1-005": ("objective-os-ch05-part1-3", "FCFS waiting calculation", "material-section-os-ch05-part1-fcfs"),
+    "gq-os-ch05-part1-006": ("objective-os-ch05-part1-3", "FCFS convoy effect", "material-section-os-ch05-part1-fcfs"),
+    "gq-os-ch05-part1-007": ("objective-os-ch05-part1-1", "CPU-I/O burst cycle", "material-section-os-ch05-part1-foundations"),
+    "gq-os-ch05-part1-008": ("objective-os-ch05-part1-1", "Nonpreemptive CPU retention", "material-section-os-ch05-part1-scheduler-dispatcher"),
+    "gq-os-ch05-part1-009": ("objective-os-ch05-part1-3", "FCFS FIFO mechanics", "material-section-os-ch05-part1-fcfs"),
+    "gq-os-ch05-part1-010": ("objective-os-ch05-part1-1", "Preemption race condition", "material-section-os-ch05-part1-scheduler-dispatcher"),
+    "gq-os-ch05-part2-001": ("objective-os-ch05-part2-1", "SJF tie breaking", "material-section-os-ch05-part2-sjf"),
+    "gq-os-ch05-part2-002": ("objective-os-ch05-part2-1", "Exponential-average alpha", "material-section-os-ch05-part2-prediction"),
+    "gq-os-ch05-part2-003": ("objective-os-ch05-part2-2", "SRTF preemption", "material-section-os-ch05-part2-srtf"),
+    "gq-os-ch05-part2-004": ("objective-os-ch05-part2-3", "RR queue rotation", "material-section-os-ch05-part2-rr"),
+    "gq-os-ch05-part2-005": ("objective-os-ch05-part2-3", "RR waiting bound", "material-section-os-ch05-part2-rr"),
+    "gq-os-ch05-part2-006": ("objective-os-ch05-part2-2", "SJF preemption comparison", "material-section-os-ch05-part2-srtf"),
+    "gq-os-ch05-part2-007": ("objective-os-ch05-part2-1", "SJF burst uncertainty", "material-section-os-ch05-part2-sjf"),
+    "gq-os-ch05-part2-008": ("objective-os-ch05-part2-1", "SJF optimality", "material-section-os-ch05-part2-sjf"),
+    "gq-os-ch05-part2-009": ("objective-os-ch05-part2-3", "RR fairness", "material-section-os-ch05-part2-rr"),
+    "gq-os-ch05-part2-010": ("objective-os-ch05-part2-1", "Exponential-average weights", "material-section-os-ch05-part2-prediction"),
+    "gq-os-ch05-part3-001": ("objective-os-ch05-part3-1", "Large RR quantum", "material-section-os-ch05-part3-rr-tuning"),
+    "gq-os-ch05-part3-002": ("objective-os-ch05-part3-2", "Priority-number convention", "material-section-os-ch05-part3-priority"),
+    "gq-os-ch05-part3-003": ("objective-os-ch05-part3-2", "Priority aging", "material-section-os-ch05-part3-priority"),
+    "gq-os-ch05-part3-004": ("objective-os-ch05-part3-3", "Per-queue algorithms", "material-section-os-ch05-part3-multilevel"),
+    "gq-os-ch05-part3-005": ("objective-os-ch05-part3-3", "Feedback-queue demotion", "material-section-os-ch05-part3-multilevel"),
+    "gq-os-ch05-part3-006": ("objective-os-ch05-part3-1", "RR context-switch count", "material-section-os-ch05-part3-rr-tuning"),
+    "gq-os-ch05-part3-007": ("objective-os-ch05-part3-1", "Small-quantum overhead", "material-section-os-ch05-part3-rr-tuning"),
+    "gq-os-ch05-part3-008": ("objective-os-ch05-part3-1", "RR turnaround calculation", "material-section-os-ch05-part3-rr-tuning"),
+    "gq-os-ch05-part3-009": ("objective-os-ch05-part3-3", "Multilevel queue preemption", "material-section-os-ch05-part3-multilevel"),
+    "gq-os-ch05-part3-010": ("objective-os-ch05-part3-2", "Feedback trace", "material-section-os-ch05-part3-priority"),
+    "gq-os-ch05-part4-001": ("objective-os-ch05-part4-1", "Symmetric multiprocessing", "material-section-os-ch05-part4-multiprocessor"),
+    "gq-os-ch05-part4-002": ("objective-os-ch05-part4-2", "Logical processor count", "material-section-os-ch05-part4-multicore"),
+    "gq-os-ch05-part4-003": ("objective-os-ch05-part4-2", "Pull migration", "material-section-os-ch05-part4-balance-affinity"),
+    "gq-os-ch05-part4-004": ("objective-os-ch05-part4-2", "Hard processor affinity", "material-section-os-ch05-part4-balance-affinity"),
+    "gq-os-ch05-part4-005": ("objective-os-ch05-part4-3", "Little's law", "material-section-os-ch05-part4-evaluation"),
+    "gq-os-ch05-part4-006": ("objective-os-ch05-part4-3", "Deterministic evaluation", "material-section-os-ch05-part4-evaluation"),
+    "gq-os-ch05-part4-007": ("objective-os-ch05-part4-1", "Asymmetric bottleneck", "material-section-os-ch05-part4-multiprocessor"),
+    "gq-os-ch05-part4-008": ("objective-os-ch05-part4-2", "Common-queue balancing", "material-section-os-ch05-part4-balance-affinity"),
+    "gq-os-ch05-part4-009": ("objective-os-ch05-part4-2", "NUMA memory placement", "material-section-os-ch05-part4-balance-affinity"),
+    "gq-os-ch05-part4-010": ("objective-os-ch05-part4-3", "Implementation limits", "material-section-os-ch05-part4-evaluation"),
+}
+
+NEW_MCQ_SOURCE_VERIFIED_HASHES = {
+    "gq-os-ch03-part1-001": "2aa20ebb6b6143eb4a9d93954cd33d730f81930e1a6b26c59cee3ad5cc67cbe3",
+    "gq-os-ch03-part1-002": "dd946a38db289930cb04e0e034bd1d29c6b4b233b9393ce65dc3cff04a18d528",
+    "gq-os-ch03-part1-003": "6d81e54fc0937963e3980a78e7e8e3277dbbfab240a53ee5109ae3d1cfde126f",
+    "gq-os-ch03-part1-004": "1cdc8fe1a1390154096721625c8979b9c25294961f5dd792621e2d97a82cbf4c",
+    "gq-os-ch03-part1-005": "7638935294f319a388b1caa19d6f6f584c094fcf424fd0e4ebab13406cbe66e2",
+    "gq-os-ch03-part1-006": "b9cb328f2be3a884a9830fa23e01c4ef90135fb8e35e15115ee4ba48509568d9",
+    "gq-os-ch03-part2-001": "f4ec13bd2047bc19c391221e7a7cf1460b581068f463f4ce8702e63aa75ae971",
+    "gq-os-ch03-part2-002": "dc93d4211d21ed61219630ce3b16c50d499b8f4fa50ed5902219696f0f90e86e",
+    "gq-os-ch03-part2-003": "e0c7e617f444662be08dada51d34cec3ca071efd6de0d984945900376a9af234",
+    "gq-os-ch03-part2-004": "411503fcb805eb7befb65682134135b31c18a96c887d749bf94d20225c84dab6",
+    "gq-os-ch03-part2-005": "a0844b51ab88bce0c92708c43905fb51b703ccb5bb6df9c939f7994667792d1e",
+    "gq-os-ch03-part2-006": "797951fbb8c3d2904078cade1bc8106badaa05b76078fb2110e28e757c77cdf8",
+    "gq-os-ch03-part3-001": "3ea60b7fcff9a2deb7767c4f97a7afbb8cca3773beee62551b3f584f4e0360d7",
+    "gq-os-ch03-part3-002": "001cc5d624b0b6c7e9a4b0613ac9fc815cdfae444ad5737ea2c8fcd974e81439",
+    "gq-os-ch03-part3-003": "8c24e6901df37466661c5b3b3410ec7327d65d56e08142ffc11da707baa04399",
+    "gq-os-ch03-part3-004": "fdc9510ed3f3fcbd0e889a4caf27b040b1be9f26ac88c1a50442368011eb438c",
+    "gq-os-ch03-part3-005": "36f497265d9d3940c1d265346924f6e02b7d52f6a3fb217b8661386c459de8c5",
+    "gq-os-ch03-part3-006": "444662c90885bdcf0c33c32f5ccca3081946df63d48dd5915e879997b40cfd0d",
+    "gq-os-ch05-part1-001": "bf4b5f4904b129f1b5e896596ac93f6a966568be8e1009635458480c3f5ad548",
+    "gq-os-ch05-part1-002": "c8df4116d1eed43b5f8fa2c8ae3eac1ed4392eb1007da3d291b9a51b4f43e1e9",
+    "gq-os-ch05-part1-003": "493e53762c21135b1e8f621d236abc434dd0fb7095294fde7db558eeb75f60fc",
+    "gq-os-ch05-part1-004": "9626cda559fa39a86658f3399b88f6bad1f4b6aaad9d08051baa3e230b9634cb",
+    "gq-os-ch05-part1-005": "2653b25e2ad1f3e9b1c1a9ed1e13583763ca49c694504c522740ade468ef9e14",
+    "gq-os-ch05-part1-006": "2a367b06f0b5b885d986802f80868f62a089fa8f14ede14c960e7f272eeb838f",
+    "gq-os-ch05-part2-001": "bdee0ad832473db4f3a1ac5ef4786a379199454d8138da000b04ded11ee16ff7",
+    "gq-os-ch05-part2-002": "2d5d5dc18f5e7a3f5a7519d29c59e9ceaab64ba292b2720fade14d9e8a207ba9",
+    "gq-os-ch05-part2-003": "5bb07078f3a1fcfbe1226d818272c1f3bef8bb9d9ea5ae531fb8c8307c86fcc8",
+    "gq-os-ch05-part2-004": "004b481b83011ca43c9e981a30d03ee32e961a7dc689c1e1adf3744b56618da7",
+    "gq-os-ch05-part2-005": "da0eb04f998b2f67345a7c4865cc976a171a6b3db945a942e0ce623a95d1f280",
+    "gq-os-ch05-part2-006": "5897b6f0b30f1fbf31318e8c9d2b0df98c9258908f2e1c055a6b404e9b7c3c75",
+    "gq-os-ch05-part3-001": "37acef5c5d0c9cf3f45bbd88efc72717ece6366870b1ac3b4ff4705fe3dbab83",
+    "gq-os-ch05-part3-002": "0f15d81c6a9d1a818a368b092bf50703cb83c6a34fcd28ac3eba41f9fc93892e",
+    "gq-os-ch05-part3-003": "195d6dce21f143fe33acb381dc5c3dd7e907f050791b6bc0af272e9d06dcf40f",
+    "gq-os-ch05-part3-004": "088ebb22673ae408ae05186802c9dbc063b1dea90ee7b6262ef63cdb7282d10c",
+    "gq-os-ch05-part3-005": "968368f6ce526015769b1c03b72f19fc3f45852366ab4521d0e9c37b371c9872",
+    "gq-os-ch05-part3-006": "37a8256906afe551893681eb35ffba6116bb3f0dc89299420deac750cc610ab1",
+    "gq-os-ch05-part4-001": "847d4af3943e25959fa51f6e343b509f20ce7e715f227ab57accc74a14894d9b",
+    "gq-os-ch05-part4-002": "86fb63b4d73f15937b3e50f507625288ece867bec1bee98ee370bdf4168ca44e",
+    "gq-os-ch05-part4-003": "3da4788f866a73b142e0b8f39683732505c7afca938f8bd691c87c0f501adb2a",
+    "gq-os-ch05-part4-004": "bd28a72cf638d2bfb45483d678109f384de103a7b4c1e92588abbb820db54370",
+    "gq-os-ch05-part4-005": "6d2df871c0404480ecea99afa68eb1f4800ecb5f4d87fb6f557361cf1fd8c001",
+    "gq-os-ch05-part4-006": "431a2186f2c54a69b0c6d51c3eef174a80c285b5efcfce1200422559fe3c896f",
+}
+NEW_ARABIC_EXPLANATION_HASHES = {
+    "gq-os-ch03-part1-001": "8337624a94815b42188bb8117006957d20b4475d832c81b706b7bc21b94b72c5",
+    "gq-os-ch03-part1-002": "e3fbbc3eec2a6d0903ae724d78a43d8df55c6764ff9decf680fdb56fd72f3154",
+    "gq-os-ch03-part1-003": "6eee3db640ced8a06ab606827cdc38f1ee3e8049fea54d5bcb67546d0ed5da52",
+    "gq-os-ch03-part1-004": "4b90178517ab59574fb18b11b80e0a5c61857edf8333f79abdae21b24593c389",
+    "gq-os-ch03-part1-005": "aa2a0cf0a5155d77b3014f9a9b53f3db4c9ab2d44f3c365e80a1b54d8df41e3a",
+    "gq-os-ch03-part1-006": "3632bf7ffcf264bd87ea9efee14af4aa05b15f5eb84c995a1aefafc67b9e087f",
+    "gq-os-ch03-part1-007": "6bc8619d00e6230aeef0d725823960edf00def2aa12e63a9a5872a0843653b0d",
+    "gq-os-ch03-part1-008": "0fc8aa85fbb797d8c9d080626c18c931e3909f85a57865286928ad7d2416ba65",
+    "gq-os-ch03-part1-009": "8515a1ac53aa7729b60d153c14fb8865e787d32dde07729955cec972cd4c3978",
+    "gq-os-ch03-part1-010": "2b70a6d1d94789789351283bc35a52f0d7d251276dc084f45acadce8ef6abf45",
+    "gq-os-ch03-part2-001": "bc015a369df574f3a69283d0a2fd06dc0d9c42d5788ab18421b8af724452fee4",
+    "gq-os-ch03-part2-002": "25bedba78cd24b49137c2c1a308750df0fd8f7a953d05368429673703e481d28",
+    "gq-os-ch03-part2-003": "db408382ac198bf62b31596437a79afc2488fe2e72dcc41b68d9544a19d2f795",
+    "gq-os-ch03-part2-004": "b6ebb90e54d8ee16dff3f81c76b713543149010af851b5a9a000d001d61fca5c",
+    "gq-os-ch03-part2-005": "ebc7249306c1f1838cff18cbfb42d8a50d480baa0d0fecd07ca009d1581e4fa5",
+    "gq-os-ch03-part2-006": "56a714891ec6aaa61b9102c0db4f20be5a49cdcf87818d6776eda80773f2f68a",
+    "gq-os-ch03-part2-007": "005c08757163b87752209fcbc503bfea9a9c6c3bb180310797024ed5a129cc17",
+    "gq-os-ch03-part2-008": "b8eb36f80c333e70ac778e0c2a69b70af06a345faa7392a31bf48d370668eada",
+    "gq-os-ch03-part2-009": "0d0f3fda5193c071a71dab965acd188fbe978ccaa26e200c6b887468037b6bd7",
+    "gq-os-ch03-part2-010": "2b881ef0e98c25ed2a6d3aeb1fa889426e1db99d0fb43dd3cc11d9a1499b2f43",
+    "gq-os-ch03-part3-001": "14b10721d4dd5462566d2cc2e651d97bb5fffe60ecbe86f6504bfb3260c1a2c4",
+    "gq-os-ch03-part3-002": "c477c040f63420f3c6181d45669d47fabb2683641c2bd7dd4c16f3e2047cc96a",
+    "gq-os-ch03-part3-003": "a251fda68d4a8008de82bdfc4eb677be72b241b753fbc7017576bc7911229eaf",
+    "gq-os-ch03-part3-004": "4c3161f051607e08f38a0b74c709a0de0e5768c16326bee073096dd1f0b58739",
+    "gq-os-ch03-part3-005": "86a870d52e9b4d8a86378e313cdb34b4d35c54845a3cc3c418af2a48fd4ef38e",
+    "gq-os-ch03-part3-006": "269198735e798fff869c93f8fbf2a2b07b5f9ddf62bcd7c0585f5390040131a1",
+    "gq-os-ch03-part3-007": "d195a36da86f6ce8a8a1e8ad160c9eefaf0493405439486682a7a3839210da8b",
+    "gq-os-ch03-part3-008": "1d170cfdf30f0d949299fd2511cd6b1c0a4fa051a0c04e0020015ed419370e5f",
+    "gq-os-ch03-part3-009": "44805440667ee3c1c610e05ecac5e1e290e2416f0a27d896053ce0b3cff71595",
+    "gq-os-ch03-part3-010": "849ecfc1e8176e72a0d99a222012b0a4106cb48fcf713cc99b634e341f12d8c2",
+    "gq-os-ch05-part1-001": "64737b5e7f5896f48456d1cdfe410ff574aed2e9ac7c70fe105f435eedfef34b",
+    "gq-os-ch05-part1-002": "4f28b0cec969bdfc785942a89268eeef5f23ebe379b9a96a3ace09842f9461db",
+    "gq-os-ch05-part1-003": "9f7d928e574a7ecd1adbec83dffcb27ac693a8326fe819d7b49f1bf2e0b7d503",
+    "gq-os-ch05-part1-004": "4dce4455d33c01222bdb9fd9af92856dbc962e8953d77437d3fcf4feca716d8f",
+    "gq-os-ch05-part1-005": "8d10d7e0182ded4fef87c81cdd4434a181e100f13940ae3d7898e8f87ba1d3aa",
+    "gq-os-ch05-part1-006": "3b6fdeb2c674475eafa9e3afb5dce673d261f1fa898841e3d348952dbc809166",
+    "gq-os-ch05-part1-007": "307aa70181f323add8773fac10c9a2175a8d35fc190a88f275a71a01e17dced0",
+    "gq-os-ch05-part1-008": "c819b5fa7c0d54bf0539ac067afc0544e0147fa6e1ad2705de915e884eb77131",
+    "gq-os-ch05-part1-009": "3b710cd900af00a23b39a4ad31669b2021d0ee7837d9b01072e28e27716f85af",
+    "gq-os-ch05-part1-010": "ecc2709e4aea84c1890a898c0dd3c4c6b9aae16870916a945c901de424d0c59c",
+    "gq-os-ch05-part2-001": "95830fa64a481640cd2694cd2d393c49dc71ebd2fff2bf532e8b1ce5a200be76",
+    "gq-os-ch05-part2-002": "2e823530f0e0902707b0c148bc2a3b5a1a51daf63f8b3ceb2db8091211a56490",
+    "gq-os-ch05-part2-003": "685f1b98262f1297a0e14c83117b6e5af28db96f93cbb930a663a132d4ce35d8",
+    "gq-os-ch05-part2-004": "2c9001b34b5c186519524e817a51b91540426c9c1716b46e2f20b76f311dc22c",
+    "gq-os-ch05-part2-005": "66c565a25dfdb3e11ee2456521ea01657cb1caff7f82171e7465d2ab1063b7d8",
+    "gq-os-ch05-part2-006": "2c26f7233a6457fa63934111e36f7d662a1bba4a72dfd3818d1fc3c0074a5b8e",
+    "gq-os-ch05-part2-007": "0e000080df828f772a421a20f4e883b6b4a4b9d53c2bc0da61976022af4b511a",
+    "gq-os-ch05-part2-008": "23a94d7e07d75265fb41e749d2555af8a55106a5e4c564c6aa4d2516579f64eb",
+    "gq-os-ch05-part2-009": "a53aa7cf02d12c5368f31f290f6e65fbb465c7b5f4237cdd977dc94311cce734",
+    "gq-os-ch05-part2-010": "cf3261935ea580d122c7a0ae939557822dae96dfb1799d297db8f4cb9971b12c",
+    "gq-os-ch05-part3-001": "39875002e3d3b3a30d33933e2659e8afa8d9dfecffc81afbc2f35a607b36f075",
+    "gq-os-ch05-part3-002": "8e22e6804ac2eb65841975a1676b36a460bc13fe77d6ace159395125e0100043",
+    "gq-os-ch05-part3-003": "9b87a20ca067dbf574754c25a4ed69bf280d55d1cffc4d60f4bdaa316b27077e",
+    "gq-os-ch05-part3-004": "0b37f0a93a168f05720aefd0ce987a9f9400d21430f5d3c54457800c3335f73d",
+    "gq-os-ch05-part3-005": "c4715ac4f66bacf84b9386a7c178ba281a2394548e57a75072f29fee3e5cb19d",
+    "gq-os-ch05-part3-006": "331db2243c6beb4b036975bfb982b857d0afba915c3c394064b65a634a749627",
+    "gq-os-ch05-part3-007": "6896da36e813c9cb72c80dbca4b6109f0af4ac7181e4de0398d01b3aa12ec145",
+    "gq-os-ch05-part3-008": "0e7cf53b7f70974446d3045c4da18aec19c84521029126d4d552487029da4e04",
+    "gq-os-ch05-part3-009": "a804510a79a17aa5432174d2c9fcb1297f77364ed716cf2f2f0e3beb4252e2e2",
+    "gq-os-ch05-part3-010": "debbf463b8d3a55d1a51f3f4423a3300aedd6824d2e3b33dae1f9e284c7deece",
+    "gq-os-ch05-part4-001": "37ec3ada63caeebd890be6ec6cab1f8fdec57abd6ea41685c6f83a02eb0c26ba",
+    "gq-os-ch05-part4-002": "0d7d56580d61e3c89714e09b1cd9fb13ffdbc93ac91d685838dcd71add68c0cf",
+    "gq-os-ch05-part4-003": "28e5cd1ca3a26cbf2b70fe07e30197d4bb8bb38f2320710d9cf46015be681688",
+    "gq-os-ch05-part4-004": "8923f2a121d283e8b8479eb178c08047cc5eec0dd5c23f21432b3e4b4cd4b57f",
+    "gq-os-ch05-part4-005": "73b1e0352292a5a6e5cb007bacd5dc366cf5c22888dc13aa18287a7acd3f3ec3",
+    "gq-os-ch05-part4-006": "cf6912b2fb62e8c2fdf6f82bbbcc65aecc6f24f2c456ba55b806ca481a656ea9",
+    "gq-os-ch05-part4-007": "f6cfcc6cef36b9d0f54fbc0034435b9b81f42979d1da602209419fa10389c155",
+    "gq-os-ch05-part4-008": "9c19d9be80dd052cb238c6e23fd9d3ae5985b4620c9d7eb35b498cd4e6d8479b",
+    "gq-os-ch05-part4-009": "c85b393b5cedc83f77ce36f3188167b3448915499a3fff006ac0d0ded95cb9f2",
+    "gq-os-ch05-part4-010": "ad268b9ab789279d9daf80104e2ef84026f0a1fe55d7151860f714930adbd613",
+}
+NEW_TRUE_FALSE_SOURCE_VERIFIED_HASHES = {
+    "gq-os-ch03-part1-007": "8c17f1c7a31d9d3431024dff5f5c0f83b12d60195b792e0c85b17b04e205810b",
+    "gq-os-ch03-part1-008": "d78334f548f31275e65dedf07ed5a31d5340e9b7507f9c57477e1ba14fbcc087",
+    "gq-os-ch03-part1-009": "c9f953185967c204ee0ea60798631e21172a20f273552bf91a5dcdef20d17753",
+    "gq-os-ch03-part1-010": "a7d955df9daf1602a7fe525fa2c54f62d453bae0e673b5286e5d26246b29f896",
+    "gq-os-ch03-part2-007": "0d0451a568322229f89bb1f6d00a0ae2db4cd24d7ebf785f9205d5dd2249639b",
+    "gq-os-ch03-part2-008": "47b5b2cd0bf29c5945bccea80b00ec4ca5ff269250ab9a61560b683df5695cff",
+    "gq-os-ch03-part2-009": "b0944967c4d1fb1ebd28cffdb72f97ea18b984500a76c4db6b73ec4b1098bd80",
+    "gq-os-ch03-part2-010": "6404538acab6799e7f2b6b68434ba0cdb3654411b4994aba37401a6492d07665",
+    "gq-os-ch03-part3-007": "09f7fead356b61a517a671458b3a87fab5efefcca83201a3b3e211497b955d77",
+    "gq-os-ch03-part3-008": "9fc1deed7a252f21ef13085fd1f110e6ce1842239319b90e6560d570befae452",
+    "gq-os-ch03-part3-009": "fbd8d50c3edd32d7295091fb09bd6ff1831c4f34a6f03f73b9dbb26874390009",
+    "gq-os-ch03-part3-010": "9cc25250651d0573f0f724f8e3a60d43107053667d13a7dfc2f10fa8303dcac7",
+    "gq-os-ch05-part1-007": "5e78c26b323cfbd4e0d7a4ec5a35bb140d187ca3d5e932f5fe86343a3959b434",
+    "gq-os-ch05-part1-008": "f1b0ba6f87496eef9e08a3ca769cc08554a8fac729621e2496727ef547d4ba81",
+    "gq-os-ch05-part1-009": "011a48bce0c30e18785f3a681a98757a808e2c7caf48d08e3843eb0a6a22d1e7",
+    "gq-os-ch05-part1-010": "5bc5374778794643338f3c34c8f7e581e553cf14944d554a8725ba0b7cc3ca5a",
+    "gq-os-ch05-part2-007": "5df145c72a2c8e289b2027edda0e085ff9e7aa1991a1f5cb4f452ef81d37765d",
+    "gq-os-ch05-part2-008": "a6403bcd97f9e301bacfd2973ba829226d0eba04f11f9fc672686c582bd2eb56",
+    "gq-os-ch05-part2-009": "ad4e12baa5248c8f25cd9ef1029d5dc739ef8c1a82bbb4c80ea47b99abec77ed",
+    "gq-os-ch05-part2-010": "1f23ca8f8d4ca9bcfc3a65a0205d584319dd7bdb82b0681f1ec6a104674fe0d4",
+    "gq-os-ch05-part3-007": "7299fc4345b48ab829e36e8adfb59dd205fd5f4abb868ce7cfeaf6be20872313",
+    "gq-os-ch05-part3-008": "3c162a151db4772f776876ba7cd513f5446c024a037d332bb09c9b0020358543",
+    "gq-os-ch05-part3-009": "91a5fea405b7779ab3694056974eebad5d66af3ad0138b7572c195cbdb1c0709",
+    "gq-os-ch05-part3-010": "a0df7a7e96ba4d3fff7189ffec565abbc17a89d8405c98b1ef036bb4bfa54b49",
+    "gq-os-ch05-part4-007": "fc7d467bcf22aecf2dc1c8009d2afae1e63b8277bdf57b8a433681c3473895d2",
+    "gq-os-ch05-part4-008": "2c62e1b37f22348c4ef5d5c86ff4032455d7791cff6ee69e460813677594c513",
+    "gq-os-ch05-part4-009": "362dabd37e97614d95f83e1b38f1996054e2191472eef70b33451c7b3a0eb89f",
+    "gq-os-ch05-part4-010": "3e725167d4526161ae94465ae66f7f367d019598a50111d7085f8bf6f838a72f",
 }
 
 
@@ -554,6 +775,104 @@ class OSContentPartTests(unittest.TestCase):
         self.assertEqual(len(part["explanations"]), 70)
         for explanation in part["explanations"]:
             self.assertEqual(explanation["body"], "\n\n".join(explanation["explanation"]))
+
+    def test_new_question_objectives_topics_and_section_links_match_the_source_map(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        self.assertEqual(set(questions), set(EXPECTED_NEW_QUESTION_METADATA))
+        linked_sections = {
+            question_id: section["id"]
+            for lesson in part["lessons"]
+            for section in lesson["materialSections"]
+            for question_id in section["linkedQuestionIds"]
+        }
+        self.assertEqual(set(linked_sections), set(questions))
+        for question_id, (objective_id, topic, section_id) in EXPECTED_NEW_QUESTION_METADATA.items():
+            self.assertEqual(questions[question_id]["learningObjectiveId"], objective_id, question_id)
+            self.assertEqual(questions[question_id]["topic"], topic, question_id)
+            self.assertEqual(linked_sections[question_id], section_id, question_id)
+
+    def test_new_arabic_explanations_are_question_specific_and_fully_arabic(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        second_paragraphs = [explanation["explanation"][1] for explanation in part["explanations"]]
+        for explanation in part["explanations"]:
+            question = questions[explanation["questionId"]]
+            self.assertGreaterEqual(len(ARABIC_RE.findall(explanation["translation"])), 12, explanation["id"])
+            for paragraph in explanation["explanation"]:
+                self.assertGreaterEqual(len(ARABIC_RE.findall(paragraph)), 25, explanation["id"])
+                self.assertGreaterEqual(len(ARABIC_WORD_RE.findall(paragraph)), 12, explanation["id"])
+            if question["type"] == "true-false" and question["correctedStatement"]:
+                self.assertNotIn(question["correctedStatement"], explanation["body"], explanation["id"])
+            self.assertNotRegex(explanation["body"], r"التصحيح الكامل للعبارة هو:\s*[A-Z]", explanation["id"])
+        self.assertEqual(len(second_paragraphs), len(set(second_paragraphs)))
+
+    def test_new_distractor_rationales_are_distinct_option_specific_rejections(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        all_rationales = []
+        for question in (item for item in part["questions"] if item["type"] == "mcq"):
+            self.assertEqual(len(set(question["distractorRationales"])), 4, question["id"])
+            for index, rationale in enumerate(question["distractorRationales"]):
+                self.assertFalse(rationale.endswith(question["rationale"]), f"{question['id']} option {index}")
+                rationale_tokens = self.content_tokens(rationale, EVIDENCE_STOP_WORDS)
+                option_tokens = self.content_tokens(question["options"][index], EVIDENCE_STOP_WORDS)
+                self.assertTrue(rationale_tokens & option_tokens, f"{question['id']} option {index}")
+                all_rationales.append(self.normalized_prompt(rationale))
+        self.assertEqual(len(all_rationales), len(set(all_rationales)))
+
+    def test_exponential_average_true_false_is_valid_at_its_stated_boundaries(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        question = next(item for item in part["questions"] if item["id"] == "gq-os-ch05-part2-010")
+        self.assertTrue(question["correctAnswer"])
+        self.assertIn("0 < alpha < 1", question["prompt"])
+        self.assertNotIn("do not exceed one", question["prompt"])
+        self.assertEqual(
+            {(ref["sourceId"], ref["location"]) for ref in question["sourceRefs"]},
+            {("os-lec-12", 7), ("os-lec-12", 10)},
+        )
+
+    def test_known_io_wait_duplicate_was_replaced_with_a_distinct_burst_cycle_proposition(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        questions = {question["id"]: question for question in part["questions"]}
+        replacement = questions["gq-os-ch05-part1-007"]
+        self.assertEqual(replacement["topic"], "CPU-I/O burst cycle")
+        self.assertIn("final CPU burst", replacement["prompt"])
+        left = self.proposition_tokens(questions["gq-os-ch05-part1-003"])
+        right = self.proposition_tokens(replacement)
+        self.assertLess(len(left & right) / min(len(left), len(right)), 0.25)
+
+    def test_new_mcq_records_match_the_source_verified_immutable_oracle(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        mcqs = {question["id"]: question for question in part["questions"] if question["type"] == "mcq"}
+        self.assertEqual(set(mcqs), set(NEW_MCQ_SOURCE_VERIFIED_HASHES))
+        fields = ("prompt", "options", "correctAnswer", "rationale", "distractorRationales", "evidenceMap")
+        for question_id, question in mcqs.items():
+            payload = {field: question[field] for field in fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, NEW_MCQ_SOURCE_VERIFIED_HASHES[question_id], question_id)
+
+    def test_new_true_false_records_match_the_source_verified_immutable_oracle(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        questions = {question["id"]: question for question in part["questions"] if question["type"] == "true-false"}
+        self.assertEqual(set(questions), set(NEW_TRUE_FALSE_SOURCE_VERIFIED_HASHES))
+        fields = (
+            "prompt", "correctAnswer", "rationale", "correctedStatement",
+            "learningObjectiveId", "topic", "sourceRefs", "evidenceMap",
+        )
+        for question_id, question in questions.items():
+            payload = {field: question[field] for field in fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, NEW_TRUE_FALSE_SOURCE_VERIFIED_HASHES[question_id], question_id)
+
+    def test_new_arabic_explanations_match_the_immutable_oracle(self):
+        part = self.load_part("content/os/ch03-ch05.json")
+        explanations = {item["questionId"]: item for item in part["explanations"]}
+        self.assertEqual(set(explanations), set(NEW_ARABIC_EXPLANATION_HASHES))
+        fields = ("translation", "explanation", "body", "note", "sourceRefs")
+        for question_id, explanation in explanations.items():
+            payload = {field: explanation[field] for field in fields}
+            digest = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+            self.assertEqual(digest, NEW_ARABIC_EXPLANATION_HASHES[question_id], question_id)
 
     def test_cross_part_ids_and_semantic_propositions_are_unique(self):
         parts = self.existing_parts()
