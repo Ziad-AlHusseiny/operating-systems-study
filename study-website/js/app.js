@@ -159,6 +159,7 @@ function save(next) { app.state = saveState(next, undefined, canonical()); retur
 function notify(message, error) {
   const region = document.querySelector("#toast-region");
   if (!region) return;
+  region.replaceChildren();
   const item = document.createElement("div");
   item.className = "toast" + (error ? " error" : "");
   item.textContent = message;

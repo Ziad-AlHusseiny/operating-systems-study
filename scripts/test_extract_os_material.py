@@ -10,6 +10,8 @@ from scripts.extract_os_material import (
     _classify_page,
     _source_verified_classification,
     build_payload,
+    check_artifacts,
+    write_artifacts,
 )
 
 
@@ -92,6 +94,24 @@ class ExtractOperatingSystemsMaterialTests(unittest.TestCase):
         self.assertEqual(classification, "teaching")
         self.assertEqual(evidence["method"], "ambiguous-override")
         self.assertEqual(review["status"], "needs-review")
+
+    def test_check_artifacts_reports_drift_without_rewriting_committed_files(self):
+        """Check mode compares every generated artifact and never repairs drift."""
+        payload = build_payload(self.fixture_root)
+        with tempfile.TemporaryDirectory() as directory:
+            repository_root = Path(directory)
+            write_artifacts(payload, repository_root)
+
+            self.assertEqual(check_artifacts(payload, repository_root), [])
+
+            manifest_path = repository_root / "content" / "source-manifest.json"
+            manifest_path.write_text("stale manifest\n", encoding="utf-8")
+
+            self.assertEqual(
+                check_artifacts(payload, repository_root),
+                ["generated artifact drift: content/source-manifest.json"],
+            )
+            self.assertEqual(manifest_path.read_text(encoding="utf-8"), "stale manifest\n")
 
     def test_committed_corpus_inventory_and_classification_evidence(self):
         payload = json.loads(

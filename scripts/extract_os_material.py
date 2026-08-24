@@ -297,14 +297,44 @@ def _audit_report(payload: dict) -> str:
 
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(_render_json(payload), encoding="utf-8")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pdf-root", required=True, type=Path)
-    arguments = parser.parse_args()
-    payload = build_payload(arguments.pdf_root)
+def _render_json(payload: dict) -> str:
+    return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+
+
+def expected_artifacts(payload: dict) -> dict[Path, str]:
+    """Render every committed extraction artifact without touching the filesystem."""
+    return {
+        Path("extraction/os-pages.json"): _render_json(payload),
+        Path("content/source-manifest.json"): _render_json(build_source_manifest(payload)),
+        Path("reports/SOURCE_AUDIT_REPORT.md"): _audit_report(payload),
+    }
+
+
+def write_artifacts(payload: dict, repository_root: Path) -> None:
+    """Write the deterministic extraction artifacts to a repository root."""
+    for relative_path, rendered in expected_artifacts(payload).items():
+        output_path = repository_root / relative_path
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(rendered, encoding="utf-8")
+
+
+def check_artifacts(payload: dict, repository_root: Path) -> list[str]:
+    """Return drift errors for generated artifacts without writing to disk."""
+    errors = []
+    for relative_path, expected in expected_artifacts(payload).items():
+        output_path = repository_root / relative_path
+        if not output_path.is_file():
+            errors.append(f"missing generated artifact: {relative_path.as_posix()}")
+        elif output_path.read_text(encoding="utf-8") != expected:
+            errors.append(f"generated artifact drift: {relative_path.as_posix()}")
+    return errors
+
+
+def _validate_operating_systems_corpus(payload: dict) -> None:
+    """Keep source acceptance checks shared by write and non-writing modes."""
     if len(payload["sources"]) != 21 or len(payload["pages"]) != 517:
         raise ValueError("Expected exactly 21 lecture PDFs and 517 pages")
     if any(
@@ -315,13 +345,37 @@ def main() -> None:
     ):
         raise ValueError("Every teaching page must have extracted text")
 
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--pdf-root", required=True, type=Path)
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="recompute and compare extraction, manifest, and audit artifacts without writing",
+    )
+    arguments = parser.parse_args(argv)
+    payload = build_payload(arguments.pdf_root)
+    _validate_operating_systems_corpus(payload)
+
     repository_root = Path(__file__).resolve().parents[1]
-    _write_json(repository_root / "extraction" / "os-pages.json", payload)
-    _write_json(repository_root / "content" / "source-manifest.json", build_source_manifest(payload))
-    report_path = repository_root / "reports" / "SOURCE_AUDIT_REPORT.md"
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(_audit_report(payload), encoding="utf-8")
+    if arguments.check:
+        errors = check_artifacts(payload, repository_root)
+        if errors:
+            raise ValueError("\n".join(errors))
+        print(
+            f"OS extraction artifacts are current: {len(payload['sources'])} sources, "
+            f"{len(payload['pages'])} pages."
+        )
+        return 0
+
+    write_artifacts(payload, repository_root)
+    print(
+        f"Wrote OS extraction artifacts: {len(payload['sources'])} sources, "
+        f"{len(payload['pages'])} pages."
+    )
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

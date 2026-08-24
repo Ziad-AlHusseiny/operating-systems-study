@@ -6,15 +6,7 @@ from pathlib import Path
 from scripts.build_explanations import build_payload, validate_entry
 
 
-SELECTION_CASES = json.loads(
-    (
-        Path(__file__).resolve().parents[1]
-        / "study-website"
-        / "tests"
-        / "fixtures"
-        / "q103-selection-cases.json"
-    ).read_text(encoding="utf-8")
-)
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 VALID_ENTRY = {
@@ -133,39 +125,6 @@ class ValidateEntryTests(unittest.TestCase):
                     validate_entry("q-103", entry),
                 )
 
-    def test_q103_rejects_explicit_answer_selection_patterns(self) -> None:
-        base = {
-            **VALID_ENTRY,
-            "translation": "يوجد تعارض بين المصدرين.",
-            "explanation": [
-                "يذكر المصدر الأول Differential.",
-                "ويذكر المصدر الثاني Incremental.",
-            ],
-        }
-
-        for selection in SELECTION_CASES["reject"]:
-            with self.subTest(selection=selection):
-                entry = {**base, "note": f"ملاحظة للمراجعة: {selection}."}
-                self.assertIn(
-                    "q-103 must not select an answer",
-                    validate_entry("q-103", entry),
-                )
-
-    def test_q103_selection_fixture_preserves_sentence_boundaries(self) -> None:
-        base = {
-            **VALID_ENTRY,
-            "translation": "يوجد تعارض بين المصدرين.",
-            "explanation": [
-                "يذكر المصدر الأول Differential دون ترجيح.",
-                "ويذكر المصدر الثاني Incremental دون ترجيح.",
-            ],
-        }
-
-        for neutral_text in SELECTION_CASES["allow"]:
-            with self.subTest(neutral_text=neutral_text):
-                entry = {**base, "note": f"ملاحظة عربية: {neutral_text}"}
-                self.assertEqual(validate_entry("q-103", entry), [])
-
     def test_q103_accepts_neutral_conflict_text(self) -> None:
         entry = {
             **VALID_ENTRY,
@@ -177,6 +136,33 @@ class ValidateEntryTests(unittest.TestCase):
         }
 
         self.assertEqual(validate_entry("q-103", entry), [])
+
+
+class CurrentOperatingSystemsExplanationArtifactTests(unittest.TestCase):
+    def test_current_os_explanations_cover_every_question_with_traceability(self) -> None:
+        """The OS branch validates its checked-in artifacts, not deleted ITS fixtures."""
+        questions = json.loads(
+            (REPOSITORY_ROOT / "study-website" / "data" / "questions.json").read_text(
+                encoding="utf-8"
+            )
+        )["questions"]
+        explanations = json.loads(
+            (
+                REPOSITORY_ROOT / "study-website" / "data" / "explanations-ar.json"
+            ).read_text(encoding="utf-8")
+        )["explanations"]
+
+        question_ids = {question["id"] for question in questions}
+        explanation_question_ids = {entry["questionId"] for entry in explanations}
+        self.assertEqual(len(questions), 210)
+        self.assertEqual(len(explanations), 210)
+        self.assertEqual(explanation_question_ids, question_ids)
+        self.assertTrue(all(entry["id"] == f"explanation-{entry['questionId']}-ar" for entry in explanations))
+        self.assertTrue(all(entry["translation"].strip() for entry in explanations))
+        self.assertTrue(
+            all(len(entry["explanation"]) in (2, 3) for entry in explanations)
+        )
+        self.assertTrue(all(entry["sourceRefs"] for entry in explanations))
 
 
 class BuildPayloadTests(unittest.TestCase):

@@ -95,6 +95,16 @@ test("filters questions with AND semantics, state IDs, normalized search, stable
   assert.deepEqual(filterQuestions(questions, { order: (items) => [...items].reverse() }, indexes).map((item) => item.id), ["gq-two", "gq-one"]);
 });
 
+test("leaves question status unrestricted when the UI passes absent bookmark and mistake collections", () => {
+  const questions = [
+    { id: "gq-one", origin: "generated", type: "mcq", topic: "PAGING", prompt: "First question", options: ["a", "b", "c", "d"], correctAnswer: 0, learningObjectiveId: "objective-a", difficulty: "easy", bloomLevel: "remember", needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", sourceRefs: [{ sourceId: "os-lec-01" }], ...eligibleFields() },
+    { id: "gq-two", origin: "generated", type: "true-false", topic: "Scheduling", prompt: "Second question", correctAnswer: true, correctedStatement: null, learningObjectiveId: "objective-b", difficulty: "hard", bloomLevel: "analyze", needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", sourceRefs: [{ sourceId: "os-lec-02" }], ...eligibleFields("true-false", true) },
+  ];
+  const indexes = { objectiveToLesson: { "objective-a": "lesson-a", "objective-b": "lesson-b" }, lessonToModule: { "lesson-a": "module-a", "lesson-b": "module-b" } };
+  const uiFilters = { status: "all", bookmarkedIds: undefined, mistakeIds: undefined };
+  assert.deepEqual(filterQuestions(questions, uiFilters, indexes).map((question) => question.id), ["gq-one", "gq-two"]);
+});
+
 test("scores only exact MCQ and true-false response types without coercion", () => {
   const mcq = { id: "gq-mcq", origin: "generated", type: "mcq", prompt: "Which option is correct?", options: ["a", "b", "c", "d"], correctAnswer: 0, needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", sourceRefs: [{ sourceId: "os-lec-01" }], ...eligibleFields() };
   const trueFalse = { ...mcq, id: "gq-tf", type: "true-false", correctAnswer: false, correctedStatement: "The statement is false.", ...eligibleFields("true-false", false) };

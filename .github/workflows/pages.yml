@@ -3,7 +3,7 @@ name: Deploy GitHub Pages
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 permissions:
@@ -21,6 +21,36 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Set up current stable Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Set up current stable Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Check committed source extraction artifacts
+        run: python -B -m unittest scripts.test_extract_os_material.ExtractOperatingSystemsMaterialTests.test_committed_corpus_inventory_and_classification_evidence -v
+
+      - name: Check generated public payloads
+        run: python -B scripts/build_os_site_data.py --check
+
+      - name: Validate public site artifacts
+        run: python -B scripts/validate_os_site.py
+
+      - name: Run Python unit suite
+        run: python -B -m unittest discover -s scripts -p "test_*.py" -v
+
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check study-website/js/app.js
+          node --check study-website/tests/browser-check.mjs
+
+      - name: Run Node unit suite
+        run: node --test study-website/tests/*.test.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

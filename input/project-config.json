@@ -34,8 +34,8 @@
   },
   "deployment": {
     "provider": "github-pages",
-    "repository": "Ziad-AlHusseiny/its-device-configuration-study",
-    "branch": "master",
-    "publicUrl": "https://ziad-alhusseiny.github.io/its-device-configuration-study/"
+    "repository": "Ziad-AlHusseiny/operating-systems-study",
+    "branch": "main",
+    "publicUrl": "https://ziad-alhusseiny.github.io/operating-systems-study/"
   }
 }

@@ -110,10 +110,12 @@ function matchesValue(value, filter) {
 }
 
 export function filterQuestions(questions, filters = {}, indexes = filters.indexes ?? {}) {
-  const bookmarkedIds = setFrom(filters.bookmarkedIds ?? filters.bookmarks);
-  const mistakeIds = setFrom(filters.mistakeIds ?? filters.mistakes);
-  const bookmarkScope = Object.hasOwn(filters, "bookmarkedIds") || Object.hasOwn(filters, "bookmarks");
-  const mistakeScope = Object.hasOwn(filters, "mistakeIds") || Object.hasOwn(filters, "mistakes");
+  const bookmarkedCollection = filters.bookmarkedIds ?? filters.bookmarks;
+  const mistakeCollection = filters.mistakeIds ?? filters.mistakes;
+  const bookmarkedIds = setFrom(bookmarkedCollection);
+  const mistakeIds = setFrom(mistakeCollection);
+  const bookmarkScope = bookmarkedCollection !== undefined;
+  const mistakeScope = mistakeCollection !== undefined;
   const search = normalized(filters.search);
   const result = (Array.isArray(questions) ? questions : []).filter((question) => {
     const objectiveId = question.learningObjectiveId ?? question.objectiveId;
