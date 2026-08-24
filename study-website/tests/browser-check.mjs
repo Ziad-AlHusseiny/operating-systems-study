@@ -254,6 +254,13 @@ async function assertMobileLayout(page) {
   pass("mobile layout", `390px viewport, no horizontal overflow, fixed navigation, ${layout.rtl.width}px RTL region, 44px targets`);
 }
 
+async function assertIntermediateTouchTargets(page) {
+  const targets = await page.locator(".navigator button").evaluateAll((items) => items.map((item) => item.getBoundingClientRect().height));
+  assert.ok(targets.length > 0, "intermediate touch viewport must render session navigator targets");
+  assert.ok(targets.every((height) => height >= 44), `intermediate session navigator targets below 44px: ${JSON.stringify(targets)}`);
+  pass("intermediate touch layout", `768px viewport, ${targets.length} session navigator targets at least 44px high`);
+}
+
 async function assertReadableRevisionRows(page) {
   const separatedMetadata = await page.locator(".item-row > span").evaluateAll((items) => items.every((item) => {
     const title = item.querySelector("strong");
@@ -286,6 +293,8 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   assert.match(await metricText(page, "Questions"), /210/);
   assert.doesNotMatch(await page.locator("body").innerText(), /vite error|webpack|application error|runtime error overlay/i);
   assert.equal(await page.locator("#app-loading").count(), 0, "Dashboard retained a stale loading state");
+  assert.equal(await page.locator('.sidebar-nav [data-route="dashboard"]').getAttribute("aria-current"), "page", "desktop primary navigation must expose the active page");
+  assert.equal(await page.locator('#mobile-navigation [data-route="dashboard"]').getAttribute("aria-current"), "page", "mobile primary navigation must expose the active page");
   await capture(page, screenshotDirectory, "dashboard-desktop-light.png");
   pass("dashboard", "7 modules, 21 lessons, 21 sources, 454 teaching pages, and 210 questions");
 
@@ -318,6 +327,14 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   await page.getByRole("button", { name: "Bookmark lesson" }).click();
   await page.getByRole("button", { name: "Remove bookmark" }).waitFor({ state: "visible" });
   await capture(page, screenshotDirectory, "lesson-desktop-light.png", { fullPage: true });
+  const linkedQuestion = page.locator('article.material-section a[href^="#/questions/"]').first();
+  const linkedQuestionId = (await linkedQuestion.getAttribute("href"))?.split("/").pop();
+  assert.match(linkedQuestionId || "", /^gq-os-ch\d\d-part\d-\d{3}$/);
+  await linkedQuestion.click();
+  await waitForView(page, "Question Bank");
+  assert.match(page.url(), new RegExp(`#\\/questions\\/${linkedQuestionId}$`));
+  assert.equal(await page.locator("article.question-card").count(), 1, "lesson deep link must render exactly one Question Bank record");
+  assert.equal(await page.locator("article.question-card").getAttribute("data-question-id"), linkedQuestionId, "lesson deep link must preserve its canonical question ID");
   pass("material and lesson", "search/filter, long lesson, source and Arabic guidance, citations, completion, and bookmark state");
 
   await go(page, "practice", "Practice");
@@ -365,13 +382,12 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
 
   await go(page, "questions", "Question Bank");
   assert.match(await page.locator(".filter-result").innerText(), /210 results\s*·\s*page 1 of 21/i);
-  const questionSearch = page.locator('form[data-filter-form="questions"] input[name="search"]');
-  const questionPrompt = (await page.locator(".question-card h2").first().textContent()).trim();
-  await questionSearch.fill(questionPrompt);
-  await questionSearch.press("Tab");
-  assert.match(await page.locator(".filter-result").innerText(), /1 result\s*·\s*page 1 of 1/i);
+  assert.equal(await page.locator("[data-more-menu] summary").getAttribute("aria-current"), "page", "More must expose its active state for Question Bank");
+  assert.equal(await page.locator('#mobile-navigation [data-route="questions"]').getAttribute("aria-current"), "page", "the active More destination must expose its current page state");
   const firstQuestion = page.locator(".question-card").first();
-  assert.ok(await firstQuestion.count(), `Question Bank search produced no cards: ${await page.locator("main").innerText()}`);
+  assert.ok(await firstQuestion.count(), `Question Bank produced no cards: ${await page.locator("main").innerText()}`);
+  const questionId = await firstQuestion.getAttribute("data-question-id");
+  assert.match(questionId || "", /^gq-os-ch\d\d-part\d-\d{3}$/);
   await firstQuestion.locator('[data-action="reveal-answer"]').click();
   await firstQuestion.getByText("Answer:", { exact: false }).waitFor({ state: "visible" });
   const guidanceLink = firstQuestion.getByRole("link", { name: "Read Arabic guidance" });
@@ -380,18 +396,21 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   if (await bookmarkButton.count()) await bookmarkButton.click();
   await guidanceLink.click();
   await waitForView(page, "Question Explanations");
-  assert.match(page.url(), /#\/explanations$/);
-  const explanationSearch = page.locator('form[data-filter-form="explanations"] input[name="search"]');
-  await explanationSearch.fill(questionPrompt);
-  await explanationSearch.press("Tab");
+  assert.match(page.url(), new RegExp(`#\\/explanations\\/${questionId}$`));
   assert.match(await page.locator(".filter-result").innerText(), /1 bilingual explanation record/i);
   const explanationCard = page.locator("article.explanation-card").first();
+  assert.equal(await page.locator("article.explanation-card").count(), 1, "record deep link must render exactly one explanation");
+  assert.equal(await explanationCard.getAttribute("data-question-id"), questionId, "Arabic guidance must resolve the exact Question Bank record");
   assert.ok(await explanationCard.locator('[lang="en"][dir="ltr"]').count(), "Arabic guidance destination lacks the linked English source prompt");
   assert.ok(await explanationCard.locator('[lang="ar"][dir="rtl"] p').count() >= 4, "Arabic guidance destination lacks the translation, paragraphs, or note");
   assert.ok(await explanationCard.locator(".citation").count(), "Arabic guidance destination lacks citations");
-  pass("question bank and explanations", "searched and paginated Question Bank, revealed and followed Arabic guidance, then verified filtered full guidance and citations");
+  pass("question bank and explanations", "paginated Question Bank, revealed and followed a canonical Arabic-guidance deep link without search, then verified exactly one full guidance record and citations");
+  await page.goto(applicationUrl("questions/gq-os-ch99-part9-999"), { waitUntil: "networkidle" });
+  await waitForView(page, "Page not found");
+  assert.match(await page.locator("main").innerText(), /unavailable/i);
 
   await go(page, "exam", "Mock Exam");
+  assert.equal(await page.locator("[data-more-menu] summary").getAttribute("aria-current"), null, "More must clear its active state outside More destinations");
   await setSetupValue(page, "exam", "count", 2);
   await setSetupValue(page, "exam", "minutes", 1);
   await page.getByRole("button", { name: "Start Mock Exam" }).click();
@@ -439,6 +458,24 @@ async function runFlows(page, screenshotDirectory, downloadDirectory) {
   await capture(page, screenshotDirectory, "revision-desktop-dark.png");
   await assertReadableRevisionRows(page);
   pass("revision, mistakes, and bookmarks", "prior sessions, ranked mistake Practice, separate bookmarks, focused action, and dark revision view");
+
+  await page.setViewportSize({ width: 768, height: 900 });
+  await go(page, "settings", "Settings");
+  await page.getByRole("radio", { name: "Light" }).focus();
+  const themeFocus = await page.getByRole("radio", { name: "Light" }).evaluate((input) => getComputedStyle(input.closest("label")).outlineStyle);
+  assert.equal(themeFocus, "solid", "theme radio focus must visibly outline its label");
+  await page.goto(applicationUrl("practice"), { waitUntil: "networkidle" });
+  if (await page.getByRole("heading", { level: 1, name: "Practice complete" }).count()) {
+    await page.getByRole("link", { name: "Try another Practice" }).click();
+  }
+  await waitForView(page, "Practice");
+  await setSetupValue(page, "practice", "count", 1);
+  await page.getByRole("button", { name: "Start Practice" }).click();
+  await waitForView(page, "Practice");
+  await assertIntermediateTouchTargets(page);
+  await page.getByRole("button", { name: "Finish" }).click();
+  await waitForView(page, "Practice complete");
+  await page.setViewportSize({ width: 1440, height: 1000 });
 
   await go(page, "settings", "Settings");
   const downloadPromise = page.waitForEvent("download");

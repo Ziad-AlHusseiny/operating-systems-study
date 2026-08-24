@@ -34,6 +34,34 @@ class BuildOperatingSystemsSiteDataTests(unittest.TestCase):
         self.assertEqual(210, len(self.payloads["questions"]["questions"]))
         self.assertEqual(210, len(self.payloads["explanations-ar"]["explanations"]))
 
+    def test_project_input_matches_low_stakes_exam_policy_and_pages_deployment(self):
+        config = json.loads((ROOT / "input" / "project-config.json").read_text(encoding="utf-8"))
+        project_input = (ROOT / "input" / "PROJECT_INPUT.md").read_text(encoding="utf-8")
+        self.assertFalse(config["contentPolicy"]["generatedQuestionsRequireHumanReviewForExam"])
+        self.assertIn("Human review is not required only for source-backed, validated, low-stakes study questions.", project_input)
+        self.assertIn("High-stakes, credentialing, admissions, employment, compliance, and externally reported assessment remain prohibited without complete current human approval.", project_input)
+        self.assertIn("GitHub repository: Ziad-AlHusseiny/operating-systems-study", project_input)
+        self.assertIn("GitHub branch: main", project_input)
+        self.assertIn("Public URL: https://ziad-alhusseiny.github.io/operating-systems-study/", project_input)
+
+    def test_chapters_one_and_two_explanation_bodies_join_every_arabic_paragraph_and_reviewed_records_are_precise(self):
+        parts = load_content_parts()
+        first_part = parts[0]
+        self.assertEqual(70, len(first_part["explanations"]))
+        for explanation in first_part["explanations"]:
+            self.assertEqual("\n\n".join(explanation["explanation"]), explanation["body"], explanation["id"])
+
+        question = next(item for part in parts for item in part["questions"] if item["id"] == "gq-os-ch05-part3-010")
+        self.assertEqual("Priority and round-robin scheduling trace", question["topic"])
+        scheduling_note = next(item for part in parts for item in part["explanations"] if item["questionId"] == question["id"])["note"]
+        self.assertIn("الجدولة بالأولوية وبالدوران الدوري", scheduling_note)
+
+        priority_explanation = next(item for part in parts for item in part["explanations"] if item["questionId"] == "gq-os-ch06-part2-009")
+        joined_priority_text = " ".join(priority_explanation["explanation"])
+        self.assertIn("توريث الأولوية", joined_priority_text)
+        self.assertNotIn("أو تحريره", joined_priority_text)
+        self.assertNotIn("or release it", joined_priority_text)
+
     def test_valid_payloads_resolve_every_public_reference(self):
         self.assertEqual([], validate_payloads(self.payloads))
 

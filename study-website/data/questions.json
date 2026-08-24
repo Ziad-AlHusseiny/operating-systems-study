@@ -23586,7 +23586,7 @@
           "sourceId": "os-lec-13"
         }
       ],
-      "topic": "Feedback trace",
+      "topic": "Priority and round-robin scheduling trace",
       "type": "true-false"
     },
     {

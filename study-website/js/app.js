@@ -39,7 +39,21 @@ export function routeFromHash(hash) {
   if (raw === "bank") return { name: "questions" };
   if (Object.hasOwn(ROUTE_TITLES, raw)) return { name: raw };
   const lesson = raw.match(/^lesson\/(lesson-)?(os-[a-z0-9-]+)$/);
-  return lesson ? { name: "lesson", id: "lesson-" + lesson[2] } : { name: "not-found" };
+  if (lesson) return { name: "lesson", id: "lesson-" + lesson[2] };
+  const record = raw.match(/^(questions|explanations)\/(gq-os-ch\d\d-part\d-\d{3})$/);
+  return record ? { name: record[1], id: record[2] } : { name: "not-found" };
+}
+
+export function questionRecordRoute(kind, id) {
+  if (!["questions", "explanations"].includes(kind) || !/^gq-os-ch\d\d-part\d-\d{3}$/.test(id || "")) return "#/dashboard";
+  return `#/${kind}/${id}`;
+}
+
+export function navigationCurrentState(route) {
+  const name = route?.name;
+  const desktop = name === "lesson" ? "material" : Object.hasOwn(ROUTE_TITLES, name) ? name : null;
+  const mobile = ["dashboard", "material", "practice", "exam"].includes(desktop) ? desktop : null;
+  return { desktop, mobile, more: Boolean(desktop && !mobile) };
 }
 
 export function shouldHandleShortcut(event) {
@@ -217,7 +231,7 @@ export function renderDashboard() {
 
 export function renderMaterial() {
   const filters = app.filters.material;
-  const lessons = filterLessons(app.data.lessons, Object.assign({}, filters, { lessonProgress: app.state.lessonProgress }));
+  const lessons = filterLessons(app.data.lessons, Object.assign({}, filters, { lessonProgress: app.state.lessonProgress }), { modules: app.data.modules, sources: app.data.course.sources });
   return heading("Material", "Search the source-backed lessons, then read or practice linked content.") + routeFilters("material", filters, false) + '<p class="filter-result">' + lessons.length + " of " + app.data.lessons.length + " lessons shown.</p>" +
     (lessons.length ? lessons.map(function (lesson) {
       const progress = app.state.lessonProgress[lesson.id] && app.state.lessonProgress[lesson.id].status || "unstarted";
@@ -235,7 +249,7 @@ export function renderLesson(route) {
   const sections = lesson.materialSections.map(function (section) {
     const language = lessonSectionLanguage(section);
     const terms = section.terms && section.terms.length ? '<dl class="term-list">' + section.terms.map(function (term) { return "<div><dt>" + escapeHtml(term.term) + "</dt><dd>" + escapeHtml(term.definition) + " " + citation(term.sourceRefs) + "</dd></div>"; }).join("") + "</dl>" : "";
-    const links = section.linkedQuestionIds && section.linkedQuestionIds.length ? '<p><a href="#/questions">Open ' + section.linkedQuestionIds.length + ' linked Question Bank record' + (section.linkedQuestionIds.length === 1 ? "" : "s") + '</a> · <a href="#/explanations">Read bilingual explanations</a></p>' : "";
+    const links = section.linkedQuestionIds && section.linkedQuestionIds.length ? '<p>Linked Question Bank records: ' + section.linkedQuestionIds.map(function (id) { return '<a href="' + questionRecordRoute("questions", id) + '">' + escapeHtml(id) + "</a>"; }).join(" · ") + "</p>" : "";
     return '<article class="' + language.className + '" lang="' + language.lang + '" dir="' + language.dir + '"><span class="origin-label" lang="en" dir="ltr">' + escapeHtml(section.label || (section.generatedStudyGuidance ? "Generated study guidance" : "Source material")) + "</span><h2>" + escapeHtml(section.title) + "</h2>" + section.summaries.map(function (entry) { return "<p>" + escapeHtml(entry.body) + " " + citation(entry.sourceRefs) + "</p>"; }).join("") + terms + contentGroup("Worked examples", section.examples) + contentGroup("Common mistakes", section.mistakes) + contentGroup("Exam tips", section.examTips) + contentGroup("Recap", section.recaps) + links + "</article>";
   }).join("");
   return heading(lesson.title, (moduleFor(lesson.moduleId) || {}).title || lesson.moduleId, actions) + '<section class="panel lesson-intro"><div>' + status(progress) + "</div><h2>Learning objectives</h2><ol class=\"objective-list\">" + lesson.learningObjectives.map(function (objective) { return "<li>" + escapeHtml(objective.text) + " " + citation(objective.sourceRefs) + "</li>"; }).join("") + '</ol></section><section class="panel">' + sections + "</section>";
@@ -245,27 +259,31 @@ function previewQuestion(question) {
   const shown = app.revealed.has(question.id);
   const answer = question.type === "mcq" ? question.options[question.correctAnswer] : question.correctAnswer ? "True" : "False";
   const mark = app.state.bookmarks.questionIds.includes(question.id) ? "Remove bookmark" : "Bookmark";
-  return '<article class="question-card">' + questionMeta(question) + '<h2 lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</h2><div class="question-card__footer"><div><button class="btn btn--quiet" data-action="reveal-answer" data-question="' + escapeHtml(question.id) + '">' + (shown ? "Hide answer" : "Show answer") + "</button>" + (shown ? "<p><strong>Answer:</strong> " + escapeHtml(answer) + "</p><p>" + escapeHtml(question.rationale) + '</p><a href="#/explanations">Read Arabic guidance</a>' : "") + '</div><button class="btn btn--quiet" data-action="bookmark-question" data-question="' + escapeHtml(question.id) + '">' + mark + "</button></div></article>";
+  return '<article class="question-card" data-question-id="' + escapeHtml(question.id) + '">' + questionMeta(question) + '<h2 lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</h2><div class="question-card__footer"><div><button class="btn btn--quiet" data-action="reveal-answer" data-question="' + escapeHtml(question.id) + '">' + (shown ? "Hide answer" : "Show answer") + "</button>" + (shown ? "<p><strong>Answer:</strong> " + escapeHtml(answer) + "</p><p>" + escapeHtml(question.rationale) + '</p><a href="' + questionRecordRoute("explanations", question.id) + '">Read Arabic guidance</a>' : "") + '</div><button class="btn btn--quiet" data-action="bookmark-question" data-question="' + escapeHtml(question.id) + '">' + mark + "</button></div></article>";
 }
-export function renderQuestions() {
-  const rows = filteredQuestions(app.filters.questions);
+export function renderQuestions(route = {}) {
+  const directRecord = route.id ? app.data.questionById[route.id] : null;
+  if (route.id && !directRecord) return renderNotFound("That Question Bank record is unavailable.");
+  const rows = directRecord ? [directRecord] : filteredQuestions(app.filters.questions);
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   app.pages.questions = Math.min(app.pages.questions, pages);
   const page = app.pages.questions;
-  return heading("Question Bank", "Find source-grounded questions and explicitly reveal answers when you are ready to study.") + routeFilters("questions", app.filters.questions, true) + '<p class="filter-result">' + rows.length + " result" + (rows.length === 1 ? "" : "s") + " · page " + page + " of " + pages + "</p>" + (rows.length ? rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(previewQuestion).join("") : '<div class="empty-state"><strong>No questions match these filters.</strong><p>Your filters are still active. Reset them to return to all questions.</p><button class="btn" data-action="reset-filters" data-kind="questions">Reset filters</button></div>') + navPages("questions", page, pages);
+  return heading("Question Bank", directRecord ? "Viewing one exact source-grounded question record." : "Find source-grounded questions and explicitly reveal answers when you are ready to study.") + (directRecord ? '<p><a href="#/questions">Browse all Question Bank records</a></p>' : routeFilters("questions", app.filters.questions, true)) + '<p class="filter-result">' + rows.length + " result" + (rows.length === 1 ? "" : "s") + " · page " + page + " of " + pages + "</p>" + (rows.length ? rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(previewQuestion).join("") : '<div class="empty-state"><strong>No questions match these filters.</strong><p>Your filters are still active. Reset them to return to all questions.</p><button class="btn" data-action="reset-filters" data-kind="questions">Reset filters</button></div>') + navPages("questions", page, pages);
 }
 
-export function renderExplanations() {
-  const rows = filteredQuestions(app.filters.explanations);
+export function renderExplanations(route = {}) {
+  const directRecord = route.id ? app.data.questionById[route.id] : null;
+  if (route.id && (!directRecord || !app.data.explanationByQuestionId[route.id])) return renderNotFound("That Arabic guidance record is unavailable.");
+  const rows = directRecord ? [directRecord] : filteredQuestions(app.filters.explanations);
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   app.pages.explanations = Math.min(app.pages.explanations, pages);
   const page = app.pages.explanations;
   const visible = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const records = visible.map(function (question) {
     const arabic = app.data.explanationByQuestionId[question.id];
-    return '<article class="explanation-card">' + questionMeta(question) + '<h2 lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</h2>' + (arabic ? '<div class="arabic" lang="ar" dir="rtl"><h3>الترجمة والشرح</h3><p>' + escapeHtml(arabic.translation) + "</p>" + arabic.explanation.map(function (paragraph) { return "<p>" + escapeHtml(paragraph) + "</p>"; }).join("") + "<p><strong>ملاحظة مراجعة:</strong> " + escapeHtml(arabic.note) + "</p></div>" + citation(arabic.sourceRefs) : '<p class="muted">Arabic study guidance is unavailable for this record.</p>') + "</article>";
+    return '<article class="explanation-card" data-question-id="' + escapeHtml(question.id) + '">' + questionMeta(question) + '<h2 lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</h2>' + (arabic ? '<div class="arabic" lang="ar" dir="rtl"><h3>الترجمة والشرح</h3><p>' + escapeHtml(arabic.translation) + "</p>" + arabic.explanation.map(function (paragraph) { return "<p>" + escapeHtml(paragraph) + "</p>"; }).join("") + "<p><strong>ملاحظة مراجعة:</strong> " + escapeHtml(arabic.note) + "</p></div>" + citation(arabic.sourceRefs) : '<p class="muted">Arabic study guidance is unavailable for this record.</p>') + "</article>";
   }).join("");
-  return heading("Question Explanations", "Read the original English prompt alongside the complete Arabic study guidance.") + routeFilters("explanations", app.filters.explanations, true) + '<p class="filter-result">' + rows.length + " bilingual explanation record" + (rows.length === 1 ? "" : "s") + '.</p><section class="panel">' + (records || '<div class="empty-state"><strong>No explanations match these filters.</strong><p>Reset filters to return to the complete bilingual guidance set.</p></div>') + "</section>" + navPages("explanations", page, pages);
+  return heading("Question Explanations", directRecord ? "Viewing complete Arabic study guidance for one exact record." : "Read the original English prompt alongside the complete Arabic study guidance.") + (directRecord ? '<p><a href="#/explanations">Browse all explanations</a></p>' : routeFilters("explanations", app.filters.explanations, true)) + '<p class="filter-result">' + rows.length + " bilingual explanation record" + (rows.length === 1 ? "" : "s") + '.</p><section class="panel">' + (records || '<div class="empty-state"><strong>No explanations match these filters.</strong><p>Reset filters to return to the complete bilingual guidance set.</p></div>') + "</section>" + navPages("explanations", page, pages);
 }
 
 function setupDefaults(mode) {
@@ -362,13 +380,20 @@ function renderView(route) {
   if (route.name === "lesson") return renderLesson(route);
   if (route.name === "not-found") return renderNotFound();
   const views = { dashboard: renderDashboard, material: renderMaterial, questions: renderQuestions, explanations: renderExplanations, practice: renderPractice, exam: renderExam, revision: renderRevision, mistakes: renderMistakes, bookmarks: renderBookmarks, settings: renderSettings };
-  return views[route.name] ? views[route.name]() : renderNotFound();
+  return views[route.name] ? views[route.name](route) : renderNotFound();
 }
 function updateNav(route) {
+  const current = navigationCurrentState(route);
   document.querySelectorAll("[data-route]").forEach(function (item) {
-    item.toggleAttribute("aria-current", item.dataset.route === route.name || route.name === "lesson" && item.dataset.route === "material");
+    const mobile = item.closest("#mobile-navigation");
+    const active = mobile ? item.dataset.route === current.mobile || Boolean(current.more && item.closest(".more-menu") && item.dataset.route === current.desktop) : item.dataset.route === current.desktop;
+    if (active) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current");
   });
-  document.querySelectorAll(".more-menu").forEach(function (menu) { menu.removeAttribute("open"); });
+  document.querySelectorAll(".more-menu").forEach(function (menu) {
+    const summary = menu.querySelector("summary");
+    if (current.more) summary?.setAttribute("aria-current", "page"); else summary?.removeAttribute("aria-current");
+    menu.removeAttribute("open");
+  });
 }
 function render(options) {
   if (!app.data) return;

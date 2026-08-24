@@ -20276,7 +20276,7 @@
         "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.",
         "الاختيارات الأخرى إمّا تضيف شرطا غير موجود أو تخالف دور OS كوسيط بين المستخدم وhardware."
       ],
-      "body": "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.",
+      "body": "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.\n\nالاختيارات الأخرى إمّا تضيف شرطا غير موجود أو تخالف دور OS كوسيط بين المستخدم وhardware.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على أهداف نظام التشغيل الثلاثة.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20302,7 +20302,7 @@
         "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.",
         "لا تخلط بين kernel وبين system programs التي قد تأتي مع النظام لكنها ليست جزءا من kernel."
       ],
-      "body": "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.",
+      "body": "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.\n\nلا تخلط بين kernel وبين system programs التي قد تأتي مع النظام لكنها ليست جزءا من kernel.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على الفرق بين kernel وsystem programs.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20333,7 +20333,7 @@
         "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.",
         "قاعدة سريعة: PC للتعليمة التالية، وAR للعنوان، وBR للبيانات المنقولة."
       ],
-      "body": "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.",
+      "body": "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.\n\nقاعدة سريعة: PC للتعليمة التالية، وAR للعنوان، وBR للبيانات المنقولة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على وظائف PC وMAR وMBR.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20364,7 +20364,7 @@
         "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.",
         "إذا كان المعالج ينفذ فحصا دوريا للحالة فهذه polling، أما interrupt فيسمح له بتنفيذ عمل آخر."
       ],
-      "body": "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.",
+      "body": "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.\n\nإذا كان المعالج ينفذ فحصا دوريا للحالة فهذه polling، أما interrupt فيسمح له بتنفيذ عمل آخر.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على المقارنة بين polling وinterrupts.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20395,7 +20395,7 @@
         "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.",
         "اربط كلمة uniform interface بطبقة device-driver، ولا تربطها بسجلات CPU أو application."
       ],
-      "body": "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.",
+      "body": "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.\n\nاربط كلمة uniform interface بطبقة device-driver، ولا تربطها بسجلات CPU أو application.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور device driver.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20441,7 +20441,7 @@
         "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.",
         "بعد انتهاء ISR يستعيد CPU الحالة المحفوظة ويستكمل البرنامج من نقطة المقاطعة، وليس من بدايته."
       ],
-      "body": "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.",
+      "body": "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.\n\nبعد انتهاء ISR يستعيد CPU الحالة المحفوظة ويستكمل البرنامج من نقطة المقاطعة، وليس من بدايته.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تحديد ISR باستخدام interrupt vector.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20492,7 +20492,7 @@
         "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.",
         "hardware يوفر الموارد، وOS ينسقها، وapplications تستخدمها لحل مشكلات users."
       ],
-      "body": "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.",
+      "body": "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.\n\nhardware يوفر الموارد، وOS ينسقها، وapplications تستخدمها لحل مشكلات users.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تعريف kernel.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20518,7 +20518,7 @@
         "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.",
         "احفظ الوظيفتين معا: next address ثم increment بعد الجلب."
       ],
-      "body": "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.",
+      "body": "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.\n\nاحفظ الوظيفتين معا: next address ثم increment بعد الجلب.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور PC في fetch.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20544,7 +20544,7 @@
         "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.",
         "يعمل interrupt number كفهرس داخل vector للوصول إلى عنوان ISR المناسب."
       ],
-      "body": "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.",
+      "body": "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.\n\nيعمل interrupt number كفهرس داخل vector للوصول إلى عنوان ISR المناسب.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على سبب انخفاض CPU utilization مع polling.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20580,7 +20580,7 @@
         "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.",
         "تسمح interrupts بعمل مفيد أثناء I/O، لكنها لا تلغي الاعتماد عندما تصل program إلى طلب لاحق قبل اكتمال السابق."
       ],
-      "body": "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.",
+      "body": "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.\n\nتسمح interrupts بعمل مفيد أثناء I/O، لكنها لا تلغي الاعتماد عندما تصل program إلى طلب لاحق قبل اكتمال السابق.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على حفظ الحالة واستكمال التنفيذ.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20611,7 +20611,7 @@
         "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.",
         "أما تعطيل interrupts فيجعل الطلب الجديد pending حتى يعاد تفعيلها ويؤدي إلى ترتيب تسلسلي."
       ],
-      "body": "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.",
+      "body": "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.\n\nأما تعطيل interrupts فيجعل الطلب الجديد pending حتى يعاد تفعيلها ويؤدي إلى ترتيب تسلسلي.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على ترتيب multiple interrupts حسب priority.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20647,7 +20647,7 @@
         "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.",
         "فرّق بين واجهة المستخدم التي تخدم التفاعل وبين إدارة الموارد التي تصف رؤية النظام."
       ],
-      "body": "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.",
+      "body": "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.\n\nفرّق بين واجهة المستخدم التي تخدم التفاعل وبين إدارة الموارد التي تصف رؤية النظام.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور OS كـ resource allocator.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20683,7 +20683,7 @@
         "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.",
         "وفي الاتجاه نفسه يقل cost per bit وتقل frequency of access من المعالج."
       ],
-      "body": "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.",
+      "body": "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.\n\nوفي الاتجاه نفسه يقل cost per bit وتقل frequency of access من المعالج.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على اتجاهات storage hierarchy.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20724,7 +20724,7 @@
         "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.",
         "Programmed I/O وpolling يستهلكان CPU، وinterrupt per byte يزيد overhead الذي تعالجه DMA."
       ],
-      "body": "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.",
+      "body": "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.\n\nProgrammed I/O وpolling يستهلكان CPU، وinterrupt per byte يزيد overhead الذي تعالجه DMA.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على سبب اختيار DMA للنقل الكبير.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20770,7 +20770,7 @@
         "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.",
         "وجود master يصف asymmetric multiprocessing، ووجود hot standby يصف asymmetric clustering."
       ],
-      "body": "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.",
+      "body": "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.\n\nوجود master يصف asymmetric multiprocessing، ووجود hot standby يصف asymmetric clustering.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خصائص SMP.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20821,7 +20821,7 @@
         "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.",
         "الهدف هو تشغيل العملية قرب local memory الخاصة بها لتقليل NUMA penalty، وليس تجاهل فرق الوصول."
       ],
-      "body": "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.",
+      "body": "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.\n\nالهدف هو تشغيل العملية قرب local memory الخاصة بها لتقليل NUMA penalty، وليس تجاهل فرق الوصول.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تقليل NUMA penalty.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20852,7 +20852,7 @@
         "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.",
         "لهذا لا تُستخدم main memory وحدها لحفظ كل البرامج والبيانات بشكل دائم."
       ],
-      "body": "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.",
+      "body": "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.\n\nلهذا لا تُستخدم main memory وحدها لحفظ كل البرامج والبيانات بشكل دائم.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خصائص main memory.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20878,7 +20878,7 @@
         "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.",
         "تنفيذ عمل آخر أثناء انتظار الجهاز يميّز interrupt-driven I/O أو DMA حسب طريقة النقل."
       ],
-      "body": "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.",
+      "body": "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.\n\nتنفيذ عمل آخر أثناء انتظار الجهاز يميّز interrupt-driven I/O أو DMA حسب طريقة النقل.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على busy waiting في programmed I/O.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20904,7 +20904,7 @@
         "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.",
         "التصنيف يعتمد على general-purpose processors وليس عدد وحدات التحكم."
       ],
-      "body": "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.",
+      "body": "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.\n\nالتصنيف يعتمد على general-purpose processors وليس عدد وحدات التحكم.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تمييز CPU العام عن device controller.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20930,7 +20930,7 @@
         "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.",
         "asymmetric clustering تستخدم active server واحدا وhot-standby host يراقبه ويتولى العمل عند الفشل."
       ],
-      "body": "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.",
+      "body": "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.\n\nasymmetric clustering تستخدم active server واحدا وhot-standby host يراقبه ويتولى العمل عند الفشل.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على الفرق بين symmetric وasymmetric clustering.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20956,7 +20956,7 @@
         "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.",
         "يعمل bootstrap من firmware قبل تشغيل daemons أو user processes."
       ],
-      "body": "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.",
+      "body": "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.\n\nيعمل bootstrap من firmware قبل تشغيل daemons أو user processes.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على ترتيب bootstrap وkernel.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -20982,7 +20982,7 @@
         "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.",
         "system call أيضا software-generated لكنها طلب خدمة مقصود، بينما controller signal مقاطعة hardware."
       ],
-      "body": "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.",
+      "body": "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.\n\nsystem call أيضا software-generated لكنها طلب خدمة مقصود، بينما controller signal مقاطعة hardware.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مصادر software interrupt.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21008,7 +21008,7 @@
         "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.",
         "لا تستخدم وقت الانتظار كبسط؛ البسط هو وقت تنفيذ CPU الفعلي."
       ],
-      "body": "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.",
+      "body": "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.\n\nلا تستخدم وقت الانتظار كبسط؛ البسط هو وقت تنفيذ CPU الفعلي.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على حساب CPU utilization.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21034,7 +21034,7 @@
         "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.",
         "هذه الآلية ترفع utilization من غير أن تعيد تشغيل العمليات من البداية."
       ],
-      "body": "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.",
+      "body": "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.\n\nهذه الآلية ترفع utilization من غير أن تعيد تشغيل العمليات من البداية.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على التبديل عند I/O wait.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21075,7 +21075,7 @@
         "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.",
         "هذا الانتقال المنضبط يمنع user code من تعيين kernel mode بنفسه."
       ],
-      "body": "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.",
+      "body": "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.\n\nهذا الانتقال المنضبط يمنع user code من تعيين kernel mode بنفسه.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على انتقال mode مع system call.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21106,7 +21106,7 @@
         "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.",
         "عندما يصل counter إلى zero يولد interrupt يعيد التحكم إلى OS حتى من دون تعاون العملية."
       ],
-      "body": "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.",
+      "body": "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.\n\nعندما يصل counter إلى zero يولد interrupt يعيد التحكم إلى OS حتى من دون تعاون العملية.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على حماية CPU باستخدام timer.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21142,7 +21142,7 @@
         "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.",
         "ترتبط هذه الآلية بإدارة الذاكرة والحفاظ على response time في multitasking."
       ],
-      "body": "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.",
+      "body": "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.\n\nترتبط هذه الآلية بإدارة الذاكرة والحفاظ على response time في multitasking.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على فائدة virtual memory.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21168,7 +21168,7 @@
         "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.",
         "system call أو interrupt أو trap ينقل التحكم إلى kernel mode بقيمة 0."
       ],
-      "body": "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.",
+      "body": "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.\n\nsystem call أو interrupt أو trap ينقل التحكم إلى kernel mode بقيمة 0.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على قيم mode bit.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21194,7 +21194,7 @@
         "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.",
         "وجود CPU وmemory وI/O resources مع التنفيذ يدل على process."
       ],
-      "body": "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.",
+      "body": "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.\n\nوجود CPU وmemory وI/O resources مع التنفيذ يدل على process.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تمييز program وprocess.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21220,7 +21220,7 @@
         "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.",
         "PC واحدة تناسب single-threaded process، أما multithreaded process فلها PC لكل thread."
       ],
-      "body": "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.",
+      "body": "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.\n\nPC واحدة تناسب single-threaded process، أما multithreaded process فلها PC لكل thread.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على عدد program counters مع threads.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21246,7 +21246,7 @@
         "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.",
         "وتشمل المسؤوليات أيضا allocation وdeallocation وتحديد ما يدخل ويخرج من memory."
       ],
-      "body": "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.",
+      "body": "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.\n\nوتشمل المسؤوليات أيضا allocation وdeallocation وتحديد ما يدخل ويخرج من memory.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على وظائف memory management.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21287,7 +21287,7 @@
         "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.",
         "file-system ينظم files في directories ويدير access وmapping إلى secondary storage."
       ],
-      "body": "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.",
+      "body": "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.\n\nfile-system ينظم files في directories ويدير access وmapping إلى secondary storage.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على الـ file كـ logical abstraction.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21323,7 +21323,7 @@
         "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.",
         "الانتقال إلى hard disk يحدث فقط إذا لم توجد القيمة في cache ولا main memory."
       ],
-      "body": "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.",
+      "body": "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.\n\nالانتقال إلى hard disk يحدث فقط إذا لم توجد القيمة في cache ولا main memory.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على ترتيب cache lookup.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21354,7 +21354,7 @@
         "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.",
         "الحماية تضبط الصلاحيات، لكن الأمن يدافع ضد إساءة استخدام الهوية والهجمات."
       ],
-      "body": "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.",
+      "body": "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.\n\nالحماية تضبط الصلاحيات، لكن الأمن يدافع ضد إساءة استخدام الهوية والهجمات.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على الفرق بين protection وsecurity.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21390,7 +21390,7 @@
         "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.",
         "فرّق بين host OS وVMM الذي يقدم virtualization services وguest OS."
       ],
-      "body": "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.",
+      "body": "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.\n\nفرّق بين host OS وVMM الذي يقدم virtualization services وguest OS.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور VMM.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21426,7 +21426,7 @@
         "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.",
         "client-server يفصل الأدوار، وdistributed OS يركز على illusion لنظام واحد، وcloud يعتمد virtualization services."
       ],
-      "body": "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.",
+      "body": "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.\n\nclient-server يفصل الأدوار، وdistributed OS يركز على illusion لنظام واحد، وcloud يعتمد virtualization services.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تمييز P2P عن client-server.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21467,7 +21467,7 @@
         "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.",
         "cache coherency تمنع CPU أخرى من الاستمرار في استخدام نسخة قديمة بعد التحديث."
       ],
-      "body": "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.",
+      "body": "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.\n\ncache coherency تمنع CPU أخرى من الاستمرار في استخدام نسخة قديمة بعد التحديث.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على ترتيب مستويات caching.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21493,7 +21493,7 @@
         "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.",
         "هذا القيد يحمي integrity للأجهزة، مثلما تحمي address hardware مساحة كل process."
       ],
-      "body": "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.",
+      "body": "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.\n\nهذا القيد يحمي integrity للأجهزة، مثلما تحمي address hardware مساحة كل process.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تعريف protection وsecurity.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21519,7 +21519,7 @@
         "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.",
         "تضيف البيئة أيضا cloud management tools وfirewalls وload balancers."
       ],
-      "body": "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.",
+      "body": "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.\n\nتضيف البيئة أيضا cloud management tools وfirewalls وload balancers.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على علاقة cloud وvirtualization.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21545,7 +21545,7 @@
         "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.",
         "الوصول إلى نتيجة صحيحة بعد deadline لا يحقق شرط النظام ولذلك يُعد failure."
       ],
-      "body": "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.",
+      "body": "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.\n\nالوصول إلى نتيجة صحيحة بعد deadline لا يحقق شرط النظام ولذلك يُعد failure.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على شرطي صحة real-time system.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21571,7 +21571,7 @@
         "الإجابة program execution لأنها تشمل load وrun وtermination.",
         "لا تخلط بينها وبين I/O أوfile manipulation أوlogging."
       ],
-      "body": "الإجابة program execution لأنها تشمل load وrun وtermination.",
+      "body": "الإجابة program execution لأنها تشمل load وrun وtermination.\n\nلا تخلط بينها وبين I/O أوfile manipulation أوlogging.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خدمة program execution.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21607,7 +21607,7 @@
         "الإجابة shared memory وmessage passing.",
         "الأولى تشارك memory region والثانية تنقل OS packets بين processes."
       ],
-      "body": "الإجابة shared memory وmessage passing.",
+      "body": "الإجابة shared memory وmessage passing.\n\nالأولى تشارك memory region والثانية تنقل OS packets بين processes.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على نماذج process communication.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21648,7 +21648,7 @@
         "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.",
         "أما built-in command فتتطلب تعديل shell عند إضافة feature جديدة."
       ],
-      "body": "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.",
+      "body": "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.\n\nأما built-in command فتتطلب تعديل shell عند إضافة feature جديدة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على built-in مقابل external commands.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21684,7 +21684,7 @@
         "الإجابة gestures وvirtual keyboard وvoice commands.",
         "touch-screen replaces mouse actions على mobile systems وتدعم pressing وswiping."
       ],
-      "body": "الإجابة gestures وvirtual keyboard وvoice commands.",
+      "body": "الإجابة gestures وvirtual keyboard وvoice commands.\n\ntouch-screen replaces mouse actions على mobile systems وتدعم pressing وswiping.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خصائص touch-screen interface.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21730,7 +21730,7 @@
         "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.",
         "يوضح المثال أن API function قد لا تحمل اسم system call التي تنفذ العمل."
       ],
-      "body": "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.",
+      "body": "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.\n\nيوضح المثال أن API function قد لا تحمل اسم system call التي تنفذ العمل.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مثال printf() وwrite().",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21771,7 +21771,7 @@
         "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.",
         "ينفذ kernel call المطلوبة ثم يعيد status، بينما تبقى تفاصيل التنفيذ مخفية عن application programmer."
       ],
-      "body": "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.",
+      "body": "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.\n\nينفذ kernel call المطلوبة ثم يعيد status، بينما تبقى تفاصيل التنفيذ مخفية عن application programmer.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على اختيار parameter passing method.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21807,7 +21807,7 @@
         "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.",
         "صحيح أن كثيرا من commands تتعامل مع files، لكن external system programs تسمح بعمليات أخرى أيضا."
       ],
-      "body": "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.",
+      "body": "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.\n\nصحيح أن كثيرا من commands تتعامل مع files، لكن external system programs تسمح بعمليات أخرى أيضا.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على أماكن تنفيذ CLI.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21838,7 +21838,7 @@
         "العبارة خاطئة؛ parameters وreturn values جزء من API contract.",
         "تفاصيل تنفيذ system call داخل kernel يمكن أن تبقى مخفية خلف هذه الواجهة."
       ],
-      "body": "العبارة خاطئة؛ parameters وreturn values جزء من API contract.",
+      "body": "العبارة خاطئة؛ parameters وreturn values جزء من API contract.\n\nتفاصيل تنفيذ system call داخل kernel يمكن أن تبقى مخفية خلف هذه الواجهة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مكونات API.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21864,7 +21864,7 @@
         "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.",
         "يمكن حفظ الخطوات في file ثم تشغيلها بدلا من إدخال كل command يدويا في كل مرة."
       ],
-      "body": "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.",
+      "body": "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.\n\nيمكن حفظ الخطوات في file ثم تشغيلها بدلا من إدخال كل command يدويا في كل مرة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مزايا block وstack.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21890,7 +21890,7 @@
         "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.",
         "system-call interface تعترض API function وتستدعي kernel call اللازمة ثم تعيد status."
       ],
-      "body": "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.",
+      "body": "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.\n\nsystem-call interface تعترض API function وتستدعي kernel call اللازمة ثم تعيد status.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تتبع library إلى system call.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21921,7 +21921,7 @@
         "الإجابة Process control وهو أول تصنيف في القائمة.",
         "التصنيفات الأخرى تشمل file وdevice وinformation وcommunications وprotection."
       ],
-      "body": "الإجابة Process control وهو أول تصنيف في القائمة.",
+      "body": "الإجابة Process control وهو أول تصنيف في القائمة.\n\nالتصنيفات الأخرى تشمل file وdevice وinformation وcommunications وprotection.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تصنيفات system calls.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21967,7 +21967,7 @@
         "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.",
         "الغرض هو الحفاظ على integrity عندما توجد عدة processes."
       ],
-      "body": "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.",
+      "body": "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.\n\nالغرض هو الحفاظ على integrity عندما توجد عدة processes.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور locks.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -21993,7 +21993,7 @@
         "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.",
         "shared-memory model يتطلب إنشاء والوصول إلى memory region مشتركة."
       ],
-      "body": "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.",
+      "body": "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.\n\nshared-memory model يتطلب إنشاء والوصول إلى memory region مشتركة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على message passing مقابل shared memory.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22019,7 +22019,7 @@
         "يقرأ input ويكتب output ويتحقق من status لكل عملية.",
         "قد تكشف status عن EOF أوparity error أوعدم وجود disk space."
       ],
-      "body": "يقرأ input ويكتب output ويتحقق من status لكل عملية.",
+      "body": "يقرأ input ويكتب output ويتحقق من status لكل عملية.\n\nقد تكشف status عن EOF أوparity error أوعدم وجود disk space.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على فحص status في file copy.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22055,7 +22055,7 @@
         "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.",
         "تعمل background services في user context رغم أنها تخدم النظام."
       ],
-      "body": "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.",
+      "body": "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.\n\nتعمل background services في user context رغم أنها تخدم النظام.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على أمثلة daemons.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22096,7 +22096,7 @@
         "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.",
         "يقوم loader بعملية relocation للعناوين، ويمكن أن تستدعي shell هذا المسار باستخدام fork() ثم exec()."
       ],
-      "body": "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.",
+      "body": "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.\n\nيقوم loader بعملية relocation للعناوين، ويمكن أن تستدعي shell هذا المسار باستخدام fork() ثم exec().",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تسلسل linker وloader.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22127,7 +22127,7 @@
         "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.",
         "حتى supplied programs يجب تصنيفها حسب الدور لا حسب وجودها في الحزمة."
       ],
-      "body": "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.",
+      "body": "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.\n\nحتى supplied programs يجب تصنيفها حسب الدور لا حسب وجودها في الحزمة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تمييز application عن OS.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22153,7 +22153,7 @@
         "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.",
         "تُحمّل عند الحاجة ويمكن لكل processes التي تستخدم نفس version مشاركة النسخة الموجودة في memory."
       ],
-      "body": "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.",
+      "body": "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.\n\nتُحمّل عند الحاجة ويمكن لكل processes التي تستخدم نفس version مشاركة النسخة الموجودة في memory.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على فصل وظائف linker وloader.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22179,7 +22179,7 @@
         "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.",
         "لهذا تُعد Arduino single-tasking في المثال."
       ],
-      "body": "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.",
+      "body": "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.\n\nلهذا تُعد Arduino single-tasking في المثال.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خصائص Arduino.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22210,7 +22210,7 @@
         "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.",
         "في FreeBSD تنشئ shell process بـ fork() وتحمل program بـ exec()، أما Arduino فتستبدل sketch القديمة عند تحميل أخرى."
       ],
-      "body": "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.",
+      "body": "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.\n\nفي FreeBSD تنشئ shell process بـ fork() وتحمل program بـ exec()، أما Arduino فتستبدل sketch القديمة عند تحميل أخرى.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تسلسل fork() وexec().",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22241,7 +22241,7 @@
         "الإجابة policy تحدد what needs to be done وmechanism تحدد how.",
         "timer هي mechanism، أما اختيار المدة فهو policy يمكن تغييرها بمرونة."
       ],
-      "body": "الإجابة policy تحدد what needs to be done وmechanism تحدد how.",
+      "body": "الإجابة policy تحدد what needs to be done وmechanism تحدد how.\n\ntimer هي mechanism، أما اختيار المدة فهو policy يمكن تغييرها بمرونة.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على تعريف policy وmechanism.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22277,7 +22277,7 @@
         "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.",
         "المقابل المحتمل هو reduced speed وزيادة storage requirements، لذلك توجد trade-off."
       ],
-      "body": "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.",
+      "body": "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.\n\nالمقابل المحتمل هو reduced speed وزيادة storage requirements، لذلك توجد trade-off.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مزايا وعيوب لغة التنفيذ.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22303,7 +22303,7 @@
         "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.",
         "الميزة speed، لكن التغيير في جزء قد يؤثر في أجزاء أخرى بسبب tight coupling."
       ],
-      "body": "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.",
+      "body": "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.\n\nالميزة speed، لكن التغيير في جزء قد يؤثر في أجزاء أخرى بسبب tight coupling.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خصائص monolithic kernel.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22354,7 +22354,7 @@
         "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.",
         "الميزة تبسّط construction وdebugging، لكن المرور عبر layers يضيف overhead."
       ],
-      "body": "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.",
+      "body": "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.\n\nالميزة تبسّط construction وdebugging، لكن المرور عبر layers يضيف overhead.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على ميزة debugging في layers.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22385,7 +22385,7 @@
         "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.",
         "message passing تزيد isolation والمرونة لكنها قد تضيف performance overhead."
       ],
-      "body": "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.",
+      "body": "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.\n\nmessage passing تزيد isolation والمرونة لكنها قد تضيف performance overhead.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على microkernel communication.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22441,7 +22441,7 @@
         "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.",
         "يستطيع Linux إدخال driver المطلوبة ديناميكيا مع استمرار النظام، وتبقى module جزءا من kernel space."
       ],
-      "body": "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.",
+      "body": "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.\n\nيستطيع Linux إدخال driver المطلوبة ديناميكيا مع استمرار النظام، وتبقى module جزءا من kernel space.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على دور LKM في Linux.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22507,7 +22507,7 @@
         "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.",
         "أما user goals فتتعلق أكثر بالسهولة والسرعة والأمان من منظور الاستخدام."
       ],
-      "body": "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.",
+      "body": "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.\n\nأما user goals فتتعلق أكثر بالسهولة والسرعة والأمان من منظور الاستخدام.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على what مقابل how.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22533,7 +22533,7 @@
         "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.",
         "system programs هي الجزء الآخر المنفصل عن kernel في هذا الوصف."
       ],
-      "body": "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.",
+      "body": "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.\n\nsystem programs هي الجزء الآخر المنفصل عن kernel في هذا الوصف.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على حدود original UNIX kernel.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22559,7 +22559,7 @@
         "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.",
         "فشل service لا يعني بالضرورة crash لباقي النظام، بعكس وجود وظائف أكثر داخل kernel."
       ],
-      "body": "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.",
+      "body": "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.\n\nفشل service لا يعني بالضرورة crash لباقي النظام، بعكس وجود وظائف أكثر داخل kernel.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على خدمات microkernel.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
@@ -22585,7 +22585,7 @@
         "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.",
         "كما توفر دعما أفضل لـ 64-bit systems وlarger disks."
       ],
-      "body": "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.",
+      "body": "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.\n\nكما توفر دعما أفضل لـ 64-bit systems وlarger disks.",
       "note": "ملاحظة مراجعة مولدة: ركّز في الامتحان على مقارنة UEFI وBIOS.",
       "contentVersion": "1.0.0",
       "sourceRefs": [

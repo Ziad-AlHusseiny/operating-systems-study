@@ -15582,7 +15582,7 @@
       "origin": "generated",
       "type": "true-false",
       "prompt": "After P4 completes first and equal-priority P2 and P3 alternate with q equal to 2, the combined schedule reports average waiting of 13.8 ms.",
-      "topic": "Feedback trace",
+      "topic": "Priority and round-robin scheduling trace",
       "difficulty": "hard",
       "bloomLevel": "analyze",
       "cognitiveLevel": "analyze",
@@ -19077,7 +19077,7 @@
         "حساب فترات الانتظار من هذا التسلسل يعطي المتوسط المذكور وهو ثلاثة عشر فاصلة ثمانية ملي ثانية."
       ],
       "body": "العبارة صحيحة، فتتبع الجدول يكمل العملية الرابعة أولا ثم يبادل الثانية والثالثة المتساويتين كل وحدتين.\n\nحساب فترات الانتظار من هذا التسلسل يعطي المتوسط المذكور وهو ثلاثة عشر فاصلة ثمانية ملي ثانية.",
-      "note": "ملاحظة مراجعة مولدة: في الامتحان اربط موضوع «Feedback trace» بسبب الحكم والدليل المحدد لهذا السؤال.",
+      "note": "ملاحظة مراجعة مولدة: في الامتحان ركّز على تتبع الجدولة بالأولوية وبالدوران الدوري وحساب زمن الانتظار.",
       "contentVersion": "1.0.0",
       "sourceRefs": [
         {

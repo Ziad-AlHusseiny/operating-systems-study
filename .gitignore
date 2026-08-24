@@ -3,3 +3,6 @@ tmp/
 extraction/source-pages/
 .playwright-cli/
 .superpowers/
+scripts/__pycache__/
+__pycache__/
+*.py[cod]

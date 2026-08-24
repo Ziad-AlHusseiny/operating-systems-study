@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { filterLessons, loadCourseData } from "../js/data.js";
@@ -6,6 +7,10 @@ import { filterQuestions, scoreResponse } from "../js/questions.js";
 
 const projectId = "operating-systems-study";
 const clone = (value) => structuredClone(value);
+const root = new URL("../", import.meta.url);
+const publicPayloads = Object.fromEntries(await Promise.all([
+  "course.json", "lessons.json", "questions.json", "explanations-ar.json",
+].map(async (name) => [name, JSON.parse(await readFile(new URL(`data/${name}`, root), "utf8"))])));
 
 function evidenceFor(type, correctAnswer) {
   const targets = type === "mcq"
@@ -25,12 +30,7 @@ function eligibleFields(type = "mcq", correctAnswer) {
 }
 
 function payloads() {
-  return {
-    "course.json": { projectId, project: { slug: projectId }, contentPolicy: { generatedQuestionsRequireHumanReviewForExam: false }, exam: { defaultCount: 2, defaultMinutes: 5 }, modules: [{ id: "module-memory", title: "Memory", order: 1 }], objectives: [{ id: "objective-paging", moduleId: "module-memory", text: "Page memory" }] },
-    "lessons.json": { projectId, lessons: [{ id: "lesson-paging", moduleId: "module-memory", objectiveIds: ["objective-paging"], title: "Caf\u00e9 paging", materialSections: [{ sourceRefs: [{ sourceId: "os-lec-01" }] }] }] },
-    "questions.json": { projectId, questions: [{ id: "gq-paging-1", origin: "generated", type: "mcq", prompt: "Which paging fact is true?", options: ["A", "B", "C", "D"], correctAnswer: 1, topic: "PAGING", learningObjectiveId: "objective-paging", needsReview: false, review: { status: "validated" }, qualityState: "validated", reviewState: "unreviewed", duplicateDisposition: "retain", sourceRefs: [{ sourceId: "os-lec-01" }], difficulty: "easy", bloomLevel: "remember", generatedExplanationId: "explanation-paging-1", ...eligibleFields() }] },
-    "explanations-ar.json": { projectId, explanations: [{ id: "explanation-paging-1", questionId: "gq-paging-1", language: "ar", contentVersion: "1.0.0", translation: "\u0645\u0627 \u0647\u064a \u0627\u0644\u0635\u0641\u062d\u0627\u062a\u061f", explanation: ["\u0634\u0631\u062d \u0623\u0648\u0644", "\u0634\u0631\u062d \u062b\u0627\u0646"], note: "\u0630\u0627\u0643\u0631 \u0627\u0644\u0635\u0641\u062d\u0627\u062a" }] },
-  };
+  return clone(publicPayloads);
 }
 
 function response(body, { ok = true, status = 200 } = {}) { return { ok, status, json: async () => clone(body) }; }
@@ -40,14 +40,14 @@ test("loads all four payloads in parallel, builds links, and isolates returned d
   const calls = [];
   const data = await loadCourseData({ baseUrl: "/os-data/", fetchImpl: async (url) => { calls.push(url); return response(fixture[url.replace("/os-data/", "")]); } });
   assert.deepEqual(calls.sort(), ["/os-data/course.json", "/os-data/explanations-ar.json", "/os-data/lessons.json", "/os-data/questions.json"]);
-  assert.equal(data.moduleById["module-memory"].title, "Memory");
-  assert.equal(data.objectiveToLesson["objective-paging"], "lesson-paging");
-  assert.equal(data.lessonToModule["lesson-paging"], "module-memory");
-  assert.equal(data.questionById["gq-paging-1"].id, "gq-paging-1");
-  assert.equal(data.explanationByQuestionId["gq-paging-1"].id, "explanation-paging-1");
+  assert.equal(data.moduleById["module-os-ch01"].title, "Chapter 1: Introduction");
+  assert.equal(data.objectiveToLesson["objective-os-ch01-part1-1"], "lesson-os-ch01-part1");
+  assert.equal(data.lessonToModule["lesson-os-ch01-part1"], "module-os-ch01");
+  assert.equal(data.questionById["gq-os-ch01-part1-001"].id, "gq-os-ch01-part1-001");
+  assert.equal(data.explanationByQuestionId["gq-os-ch01-part1-001"].id, "explanation-gq-os-ch01-part1-001-ar");
   assert.throws(() => { data.questions[0].topic = "changed"; }, TypeError);
   const next = await loadCourseData({ fetchImpl: async (url) => response(fixture[url.replace("./data/", "")]) });
-  assert.equal(next.questions[0].topic, "PAGING");
+  assert.equal(next.questions[0].topic, "Operating-system goals");
 });
 
 test("rejects failed responses, malformed roots, and mismatched or broken links", async () => {
@@ -62,8 +62,28 @@ test("rejects failed responses, malformed roots, and mismatched or broken links"
   await assert.rejects(loadCourseData({ fetchImpl: async (url) => response(missingExplanation[url.replace("./data/", "")]) }), /explanation/i);
  const mismatchedExplanation = payloads(); mismatchedExplanation["explanations-ar.json"].explanations[0].contentVersion = "2.0.0";
  await assert.rejects(loadCourseData({ fetchImpl: async (url) => response(mismatchedExplanation[url.replace("./data/", "")]) }), /version|explanation/i);
-  const nonArabicExplanation = payloads(); nonArabicExplanation["explanations-ar.json"].explanations[0].language = "en";
-  await assert.rejects(loadCourseData({ fetchImpl: async (url) => response(nonArabicExplanation[url.replace("./data/", "")]) }), /Arabic|explanation/i);
+ const nonArabicExplanation = payloads(); nonArabicExplanation["explanations-ar.json"].explanations[0].language = "en";
+ await assert.rejects(loadCourseData({ fetchImpl: async (url) => response(nonArabicExplanation[url.replace("./data/", "")]) }), /Arabic|explanation/i);
+});
+
+test("rejects malformed public record contracts before the application can render", async () => {
+  const load = async (fixture) => loadCourseData({ fetchImpl: async (url) => response(fixture[url.replace("./data/", "")]) });
+  const cases = [
+    ["unknown public root key", (fixture) => { fixture["course.json"].extra = true; }, /unexpected|contract/i],
+    ["duplicate module ID", (fixture) => { fixture["course.json"].modules[1].id = fixture["course.json"].modules[0].id; }, /duplicate module/i],
+    ["short MCQ options", (fixture) => { fixture["questions.json"].questions.find((item) => item.type === "mcq").options.pop(); }, /MCQ|option/i],
+    ["out of bounds MCQ answer", (fixture) => { fixture["questions.json"].questions.find((item) => item.type === "mcq").correctAnswer = 4; }, /MCQ|answer/i],
+    ["invalid true false type", (fixture) => { fixture["questions.json"].questions.find((item) => item.type === "true-false").type = "boolean"; }, /type/i],
+    ["malformed section learner field", (fixture) => { fixture["lessons.json"].lessons[0].materialSections[0].terms[0].definition = ""; }, /term|section/i],
+    ["incomplete explanation paragraphs", (fixture) => { fixture["explanations-ar.json"].explanations[0].explanation = ["فقرة واحدة"]; }, /paragraph|explanation/i],
+    ["missing explanation source references", (fixture) => { fixture["explanations-ar.json"].explanations[0].sourceRefs = []; }, /source|explanation/i],
+    ["invalid explanation review", (fixture) => { fixture["explanations-ar.json"].explanations[0].review = { status: "draft" }; }, /review|explanation/i],
+  ];
+  for (const [label, mutate, expected] of cases) {
+    const fixture = payloads();
+    mutate(fixture);
+    await assert.rejects(load(fixture), expected, label);
+  }
 });
 
 test("filters lessons by module, source, normalized search, and external completion state", () => {
@@ -77,6 +97,28 @@ test("filters lessons by module, source, normalized search, and external complet
   assert.deepEqual(filterLessons(lessons, { search: "CAFE\u0301" }).map((item) => item.id), ["lesson-one"]);
   assert.deepEqual(filterLessons(lessons, { completion: "in-progress", lessonProgress: progress }).map((item) => item.id), ["lesson-two"]);
   assert.deepEqual(filterLessons(lessons, { moduleId: "all", search: "" }).map((item) => item.id), ["lesson-one", "lesson-two"]);
+});
+
+test("material search covers learner-facing objectives and nested section study text with stable AND filtering", () => {
+  const lessons = [
+    {
+      id: "lesson-one", moduleId: "module-a", title: "Overview", objectiveIds: ["objective-one"],
+      learningObjectives: [{ text: "Trace a Unicode Caf\u00e9 objective" }],
+      materialSections: [{ title: "Scheduling section", summaries: [{ body: "Summary only" }], terms: [{ term: "Ready queue", definition: "A queue of ready processes" }], examples: [{ title: "Short trace", body: "Example text" }], mistakes: [{ misconception: "Wrong order", correction: "Use the ready queue" }], examTips: [{ body: "Tip only" }], recaps: [{ body: "Recap only" }], sourceRefs: [{ sourceId: "os-lec-01" }] }],
+    },
+    {
+      id: "lesson-two", moduleId: "module-a", title: "Other", objectiveIds: ["objective-two"],
+      learningObjectives: [{ text: "Different objective" }],
+      materialSections: [{ title: "Other section", summaries: [], terms: [], examples: [], mistakes: [], examTips: [], recaps: [{ body: "Recap only" }], sourceRefs: [{ sourceId: "os-lec-02" }] }],
+    },
+  ];
+  assert.deepEqual(filterLessons(lessons, { search: "CAFE\u0301" }).map((item) => item.id), ["lesson-one"]);
+  assert.deepEqual(filterLessons(lessons, { search: "ready queue" }).map((item) => item.id), ["lesson-one"]);
+  assert.deepEqual(filterLessons(lessons, { search: "recap only", moduleId: "module-a", sourceId: "os-lec-02" }).map((item) => item.id), ["lesson-two"]);
+  assert.deepEqual(filterLessons(lessons, { search: "recap only", moduleId: "module-a" }).map((item) => item.id), ["lesson-one", "lesson-two"]);
+  const searchContext = { modules: [{ id: "module-a", title: "OS Foundations" }], sources: [{ id: "os-lec-01", label: "Professor scheduling slides" }, { id: "os-lec-02", label: "Memory lecture" }] };
+  assert.deepEqual(filterLessons(lessons, { search: "PROFESSOR SCHEDULING" }, searchContext).map((item) => item.id), ["lesson-one"]);
+  assert.deepEqual(filterLessons(lessons, { search: "os foundations" }, searchContext).map((item) => item.id), ["lesson-one", "lesson-two"]);
 });
 
 test("filters questions with AND semantics, state IDs, normalized search, stable order, and injected ordering", () => {

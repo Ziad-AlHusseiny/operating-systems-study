@@ -1,7 +1,7 @@
 {
   "explanations": [
     {
-      "body": "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.",
+      "body": "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.\n\nالاختيارات الأخرى إمّا تضيف شرطا غير موجود أو تخالف دور OS كوسيط بين المستخدم وhardware.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة الصحيحة هي استخدام مكوّنات الحاسوب بكفاءة، لأنه أحد الأهداف الثلاثة المذكورة لنظام التشغيل.",
@@ -27,7 +27,7 @@
       "translation": "أي هدف من أهداف نظام التشغيل ذُكر صراحة في المحاضرة؟"
     },
     {
-      "body": "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.",
+      "body": "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.\n\nلا تخلط بين kernel وبين system programs التي قد تأتي مع النظام لكنها ليست جزءا من kernel.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة هي kernel؛ فهو البرنامج الذي تصفه المحاضرة بأنه يعمل دائما على الحاسوب.",
@@ -58,7 +58,7 @@
       "translation": "حسب التعريف الشائع في المحاضرة، أي برنامج يعمل طوال الوقت؟"
     },
     {
-      "body": "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.",
+      "body": "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.\n\nقاعدة سريعة: PC للتعليمة التالية، وAR للعنوان، وBR للبيانات المنقولة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة PC ثم MBR؛ يحتفظ PC بعنوان التعليمة التالية، بينما يستقبل MBR البيانات المقروءة من الذاكرة.",
@@ -89,7 +89,7 @@
       "translation": "المعالج سيجلب التعليمة التالية ثم يقرأ بيانات من الذاكرة. ما الزوج الصحيح لسجل عنوان التعليمة وسجل استقبال البيانات؟"
     },
     {
-      "body": "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.",
+      "body": "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.\n\nإذا كان المعالج ينفذ فحصا دوريا للحالة فهذه polling، أما interrupt فيسمح له بتنفيذ عمل آخر.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن CPU يدخل في busy waiting وتنخفض نسبة الاستفادة منه بسبب الفحص المتكرر.",
@@ -120,7 +120,7 @@
       "translation": "يقرأ CPU سجل حالة الجهاز بشكل متكرر حتى تنتهي عملية I/O. ما المشكلة المرتبطة بهذا الأسلوب؟"
     },
     {
-      "body": "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.",
+      "body": "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.\n\nاربط كلمة uniform interface بطبقة device-driver، ولا تربطها بسجلات CPU أو application.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة هي device driver؛ فهو يدير التعامل مع controller ويخفي اختلافاته عن kernel.",
@@ -166,7 +166,7 @@
       "translation": "يحتاج kernel إلى طريقة موحدة للتعامل مع وحدات تحكم I/O مختلفة. أي مكوّن يوفّر هذه الواجهة؟"
     },
     {
-      "body": "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.",
+      "body": "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.\n\nبعد انتهاء ISR يستعيد CPU الحالة المحفوظة ويستكمل البرنامج من نقطة المقاطعة، وليس من بدايته.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة الصحيحة تبدأ بإكمال التعليمة وحفظ PC وregisters، ثم استخدام interrupt number داخل vector وتشغيل ISR.",
@@ -217,7 +217,7 @@
       "translation": "بعد انتهاء جهاز من I/O أثناء تشغيل user program، أي تسلسل يتتبع التحكم بصورة صحيحة حتى استكمال البرنامج؟"
     },
     {
-      "body": "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.",
+      "body": "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.\n\nhardware يوفر الموارد، وOS ينسقها، وapplications تستخدمها لحل مشكلات users.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ هذا هو دور OS بين hardware وapplications داخل نموذج المكونات الأربع.",
@@ -243,7 +243,7 @@
       "translation": "يتحكم OS في hardware وينسق استخدامه بين application programs لمستخدمين مختلفين."
     },
     {
-      "body": "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.",
+      "body": "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.\n\nاحفظ الوظيفتين معا: next address ثم increment بعد الجلب.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ يزداد PC بعد كل fetch حتى يشير إلى التعليمة التالية.",
@@ -269,7 +269,7 @@
       "translation": "أثناء instruction cycle يحتفظ PC بعنوان التعليمة التالية لكنه لا يزداد بعد fetch."
     },
     {
-      "body": "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.",
+      "body": "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.\n\nيعمل interrupt number كفهرس داخل vector للوصول إلى عنوان ISR المناسب.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ يفحص CPU الإشارة في interrupt stage بعد تنفيذ التعليمة.",
@@ -305,7 +305,7 @@
       "translation": "بعد كل تعليمة يمكن لـ CPU فحص interrupt-request line واستخدام interrupt number لاختيار handler عبر vector table."
     },
     {
-      "body": "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.",
+      "body": "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.\n\nتسمح interrupts بعمل مفيد أثناء I/O، لكنها لا تلغي الاعتماد عندما تصل program إلى طلب لاحق قبل اكتمال السابق.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ في حالة long I/O wait تتوقف user program عند WRITE الثانية إذا لم تكتمل العملية الأولى.",
@@ -336,7 +336,7 @@
       "translation": "رغم أن interrupt-driven I/O تسمح لـ CPU بتنفيذ تعليمات أخرى، يمكن لـ user program الاستمرار بلا انتظار إذا وصلت إلى WRITE ثانية قبل اكتمال الأولى."
     },
     {
-      "body": "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.",
+      "body": "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.\n\nأما تعطيل interrupts فيجعل الطلب الجديد pending حتى يعاد تفعيلها ويؤدي إلى ترتيب تسلسلي.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة هي priority-based nested processing لأن المقاطعة الأعلى أولوية يمكنها preempt المعالج الأقل أولوية.",
@@ -372,7 +372,7 @@
       "translation": "أي أسلوب يسمح لمقاطعة أعلى أولوية بأن تقاطع handler أقل أولوية؟"
     },
     {
-      "body": "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.",
+      "body": "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.\n\nفرّق بين واجهة المستخدم التي تخدم التفاعل وبين إدارة الموارد التي تصف رؤية النظام.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة هي resource allocator؛ فهو يدير الطلبات المتعارضة ويوزع الموارد بكفاءة وعدل.",
@@ -408,7 +408,7 @@
       "translation": "من system view، أي دور لنظام التشغيل يوزع CPU time وmemory وstorage وI/O؟"
     },
     {
-      "body": "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.",
+      "body": "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.\n\nوفي الاتجاه نفسه يقل cost per bit وتقل frequency of access من المعالج.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن capacity تزيد وaccess time يزيد عند النزول في الهرم.",
@@ -449,7 +449,7 @@
       "translation": "عند نقل البيانات من cache إلى مستويات أدنى في storage hierarchy، ما الاتجاه المتوقع؟"
     },
     {
-      "body": "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.",
+      "body": "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.\n\nProgrammed I/O وpolling يستهلكان CPU، وinterrupt per byte يزيد overhead الذي تعالجه DMA.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة DMA؛ ينقل controller البيانات مباشرة ويولّد interrupt واحدة لكل block.",
@@ -495,7 +495,7 @@
       "translation": "جهاز سريع يحتاج نقل block كبير إلى main memory بأقل تدخل من CPU. ما الأسلوب الأنسب؟"
     },
     {
-      "body": "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.",
+      "body": "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.\n\nوجود master يصف asymmetric multiprocessing، ووجود hot standby يصف asymmetric clustering.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Symmetric Multiprocessing لأن كل processors peers وتؤدي كل المهام.",
@@ -546,7 +546,7 @@
       "translation": "نظام به processors متساوية تنفذ OS functions وuser processes وتشترك في physical memory. ما البنية؟"
     },
     {
-      "body": "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.",
+      "body": "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.\n\nالهدف هو تشغيل العملية قرب local memory الخاصة بها لتقليل NUMA penalty، وليس تجاهل فرق الوصول.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن remote memory تضيف latency عبر interconnect، لذلك يجب تنسيق CPU scheduling مع memory placement.",
@@ -577,7 +577,7 @@
       "translation": "يعرض NUMA monitor عملية تعمل بعيدا عن memory المخصصة لها بينما تسيطر remote accesses. ما التشخيص والاستجابة الأنسب؟"
     },
     {
-      "body": "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.",
+      "body": "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.\n\nلهذا لا تُستخدم main memory وحدها لحفظ كل البرامج والبيانات بشكل دائم.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة وتجمع الخصائص المذكورة للذاكرة الرئيسية.",
@@ -603,7 +603,7 @@
       "translation": "Main memory يمكن الوصول إليها مباشرة من CPU، وهي random access وعادة volatile."
     },
     {
-      "body": "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.",
+      "body": "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.\n\nتنفيذ عمل آخر أثناء انتظار الجهاز يميّز interrupt-driven I/O أو DMA حسب طريقة النقل.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ هذا الأسلوب يجعل CPU يفحص status register بشكل متكرر وينتظر.",
@@ -629,7 +629,7 @@
       "translation": "Programmed I/O يحرر CPU لتنفيذ عمل آخر أثناء إكمال controller للعملية."
     },
     {
-      "body": "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.",
+      "body": "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.\n\nالتصنيف يعتمد على general-purpose processors وليس عدد وحدات التحكم.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ وحدات التحكم ذات instruction set المحدودة لا تغيّر التصنيف.",
@@ -655,7 +655,7 @@
       "translation": "يمكن أن يحتوي single-processor system على processors خاصة بالأجهزة لا تنفذ processes عامة."
     },
     {
-      "body": "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.",
+      "body": "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.\n\nasymmetric clustering تستخدم active server واحدا وhot-standby host يراقبه ويتولى العمل عند الفشل.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ عدة active hosts تعني symmetric clustering.",
@@ -681,7 +681,7 @@
       "translation": "عند مقارنة cluster failover، يُصنف تصميم به عدة active hosts تراقب بعضها كـ asymmetric clustering مع hot standby واحدة."
     },
     {
-      "body": "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.",
+      "body": "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.\n\nيعمل bootstrap من firmware قبل تشغيل daemons أو user processes.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة هي تهيئة مكونات النظام وتحميل kernel وبدء تنفيذه.",
@@ -707,7 +707,7 @@
       "translation": "ما المسؤولية الأساسية لـ bootstrap program عند بدء التشغيل؟"
     },
     {
-      "body": "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.",
+      "body": "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.\n\nsystem call أيضا software-generated لكنها طلب خدمة مقصود، بينما controller signal مقاطعة hardware.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة division by zero لأنها software exception ناتجة عن تنفيذ التعليمة.",
@@ -733,7 +733,7 @@
       "translation": "أي software-generated event ينتج تحديدا عن arithmetic error أثناء تنفيذ تعليمة؟"
     },
     {
-      "body": "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.",
+      "body": "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.\n\nلا تستخدم وقت الانتظار كبسط؛ البسط هو وقت تنفيذ CPU الفعلي.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة نحو 3.2% لأن النسبة تساوي 1 مقسوما على إجمالي 31 microseconds.",
@@ -759,7 +759,7 @@
       "translation": "دورة uniprogramming تنفذ 1 microsecond وتنتظر I/O لمدة 30. ما CPU utilization؟"
     },
     {
-      "body": "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.",
+      "body": "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.\n\nهذه الآلية ترفع utilization من غير أن تعيد تشغيل العمليات من البداية.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن OS يحوّل CPU إلى Process B حتى لا يبقى المعالج idle.",
@@ -800,7 +800,7 @@
       "translation": "Process A ينتظر I/O وProcess B جاهزة في memory. ماذا يفعل multiprogramming OS؟"
     },
     {
-      "body": "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.",
+      "body": "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.\n\nهذا الانتقال المنضبط يمنع user code من تعيين kernel mode بنفسه.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة من user mode إلى kernel mode أثناء الخدمة ثم العودة إلى user mode.",
@@ -831,7 +831,7 @@
       "translation": "يطلب application خدمة OS عن طريق system call. ما انتقال mode؟"
     },
     {
-      "body": "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.",
+      "body": "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.\n\nعندما يصل counter إلى zero يولد interrupt يعيد التحكم إلى OS حتى من دون تعاون العملية.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن يضبط OS timer في kernel mode قبل تشغيل process في user mode.",
@@ -867,7 +867,7 @@
       "translation": "قبل dispatch لعملية غير موثوقة يجب أن يستعيد OS التحكم حتى لو دخلت infinite loop ولم تستدع system call. أي تسلسل يعمل؟"
     },
     {
-      "body": "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.",
+      "body": "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.\n\nترتبط هذه الآلية بإدارة الذاكرة والحفاظ على response time في multitasking.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة وهي الفائدة الأساسية المذكورة للـ virtual memory.",
@@ -893,7 +893,7 @@
       "translation": "تسمح virtual memory بتنفيذ processes غير الموجودة بالكامل في physical memory."
     },
     {
-      "body": "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.",
+      "body": "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.\n\nsystem call أو interrupt أو trap ينقل التحكم إلى kernel mode بقيمة 0.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة، ويجب حفظ القيمتين كما وردتا.",
@@ -919,7 +919,7 @@
       "translation": "في mode-bit convention بالمحاضرة، القيمة 1 تعني user mode و0 تعني kernel mode."
     },
     {
-      "body": "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.",
+      "body": "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.\n\nوجود CPU وmemory وI/O resources مع التنفيذ يدل على process.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ program passive وprocess active لأنها program in execution.",
@@ -945,7 +945,7 @@
       "translation": "الـ program كيان active بينما process مجرد code ساكن."
     },
     {
-      "body": "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.",
+      "body": "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.\n\nPC واحدة تناسب single-threaded process، أما multithreaded process فلها PC لكل thread.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ تحتاج كل thread إلى program counter منفصل لحفظ موضع تنفيذها.",
@@ -971,7 +971,7 @@
       "translation": "عندما تتوقف ثلاث threads عند instruction positions مختلفة يكفي PC واحد لاستكمال كل thread من موضعها."
     },
     {
-      "body": "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.",
+      "body": "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.\n\nوتشمل المسؤوليات أيضا allocation وdeallocation وتحديد ما يدخل ويخرج من memory.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة تتبع أجزاء memory المستخدمة وأي process تستخدمها.",
@@ -1012,7 +1012,7 @@
       "translation": "أي نشاط ينتمي إلى memory management في OS؟"
     },
     {
-      "body": "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.",
+      "body": "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.\n\nfile-system ينظم files في directories ويدير access وmapping إلى secondary storage.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة file؛ فهي abstraction منطقية فوق وسائط تخزين ذات خصائص مختلفة.",
@@ -1048,7 +1048,7 @@
       "translation": "ما وحدة التخزين المنطقية التي تستخدمها OS لإخفاء خصائص الوسط الفيزيائي؟"
     },
     {
-      "body": "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.",
+      "body": "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.\n\nالانتقال إلى hard disk يحدث فقط إذا لم توجد القيمة في cache ولا main memory.",
       "contentVersion": "1.0.0",
       "explanation": [
         "تُنسخ القيمة من main memory إلى cache ثم تُستخدم من cache.",
@@ -1079,7 +1079,7 @@
       "translation": "القيمة غير موجودة في cache لكنها موجودة في main memory. ما الخطوة التالية؟"
     },
     {
-      "body": "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.",
+      "body": "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.\n\nالحماية تضبط الصلاحيات، لكن الأمن يدافع ضد إساءة استخدام الهوية والهجمات.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة security لأن stolen credentials تسمح بوصول غير مناسب رغم أن protection تعمل.",
@@ -1115,7 +1115,7 @@
       "translation": "سُرقت كلمة مرور مستخدم وقرأ مهاجم الملفات رغم عمل memory protection. ما المشكلة الأساسية؟"
     },
     {
-      "body": "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.",
+      "body": "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.\n\nفرّق بين host OS وVMM الذي يقدم virtualization services وguest OS.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة VMM لأنه يدير تشغيل guests ومواردهم ويحمي كل guest من الآخر.",
@@ -1151,7 +1151,7 @@
       "translation": "Laptop يشغّل guest OS وتطبيقاته ويعزله عن guest آخر. أي مكوّن يقوم بذلك؟"
     },
     {
-      "body": "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.",
+      "body": "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.\n\nclient-server يفصل الأدوار، وdistributed OS يركز على illusion لنظام واحد، وcloud يعتمد virtualization services.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Peer-to-Peer لأن كل node يمكن أن تكون client أوserver أو الاثنين من دون central service.",
@@ -1192,7 +1192,7 @@
       "translation": "أثناء مقارنة network models لاحظ architect عدم وجود central service وأن كل node تطلب وتقدم resources. ما التشخيص الأفضل؟"
     },
     {
-      "body": "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.",
+      "body": "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.\n\ncache coherency تمنع CPU أخرى من الاستمرار في استخدام نسخة قديمة بعد التحديث.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ قد توجد نسخ في disk وmemory وcache وregister في الوقت نفسه.",
@@ -1218,7 +1218,7 @@
       "translation": "بعد تحديث shared value في register لأحد CPUs يحتاج multiprocessor إلى cache coherency كي ترى باقي caches أحدث قيمة."
     },
     {
-      "body": "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.",
+      "body": "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.\n\nهذا القيد يحمي integrity للأجهزة، مثلما تحمي address hardware مساحة كل process.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ device-control registers غير متاحة للمستخدمين.",
@@ -1244,7 +1244,7 @@
       "translation": "تسمح protection لـ user programs بالوصول المباشر إلى device-control registers ما دامت حصلت على CPU time."
     },
     {
-      "body": "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.",
+      "body": "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.\n\nتضيف البيئة أيضا cloud management tools وfirewalls وload balancers.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ cloud امتداد منطقي لـ virtualization وتضم VMMs.",
@@ -1270,7 +1270,7 @@
       "translation": "تعمل cloud computing باستقلال عن virtualization ولا تستخدم VMMs."
     },
     {
-      "body": "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.",
+      "body": "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.\n\nالوصول إلى نتيجة صحيحة بعد deadline لا يحقق شرط النظام ولذلك يُعد failure.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ real-time correctness تجمع بين صحة result واحترام الوقت المحدد.",
@@ -1296,7 +1296,7 @@
       "translation": "عندما يحسب engine controller نتيجة fuel-injection صحيحة لكنه يعيدها بعد fixed deadline يجب اعتبار real-time system فاشلا."
     },
     {
-      "body": "الإجابة program execution لأنها تشمل load وrun وtermination.",
+      "body": "الإجابة program execution لأنها تشمل load وrun وtermination.\n\nلا تخلط بينها وبين I/O أوfile manipulation أوlogging.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة program execution لأنها تشمل load وrun وtermination.",
@@ -1332,7 +1332,7 @@
       "translation": "أي OS service تحمل program إلى memory وتشغله وتنهيه طبيعيا أو بسبب error؟"
     },
     {
-      "body": "الإجابة shared memory وmessage passing.",
+      "body": "الإجابة shared memory وmessage passing.\n\nالأولى تشارك memory region والثانية تنقل OS packets بين processes.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة shared memory وmessage passing.",
@@ -1373,7 +1373,7 @@
       "translation": "ما الطريقتان المذكورتان لاتصال processes؟"
     },
     {
-      "body": "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.",
+      "body": "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.\n\nأما built-in command فتتطلب تعديل shell عند إضافة feature جديدة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة تنفيذ command كـ system program تقوم shell بتحميله وتشغيله.",
@@ -1409,7 +1409,7 @@
       "translation": "نريد إضافة command جديدة من دون تغيير shell code. أي تنفيذ يناسب؟"
     },
     {
-      "body": "الإجابة gestures وvirtual keyboard وvoice commands.",
+      "body": "الإجابة gestures وvirtual keyboard وvoice commands.\n\ntouch-screen replaces mouse actions على mobile systems وتدعم pressing وswiping.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة gestures وvirtual keyboard وvoice commands.",
@@ -1455,7 +1455,7 @@
       "translation": "هاتف لا يناسبه mouse input. ما عناصر الواجهة المرتبطة به؟"
     },
     {
-      "body": "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.",
+      "body": "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.\n\nيوضح المثال أن API function قد لا تحمل اسم system call التي تنفذ العمل.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن C library تستدعي write() ثم تعيد result إلى البرنامج.",
@@ -1496,7 +1496,7 @@
       "translation": "يستدعي C program الدالة printf(). ما المسار المعروض؟"
     },
     {
-      "body": "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.",
+      "body": "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.\n\nينفذ kernel call المطلوبة ثم يعيد status، بينما تبقى تفاصيل التنفيذ مخفية عن application programmer.",
       "contentVersion": "1.0.0",
       "explanation": [
         "يمر API call عبر RTE وsystem-call interface، ثم تمرر Linux عنوان memory block داخل register لأن العدد أكبر من خمسة.",
@@ -1532,7 +1532,7 @@
       "translation": "أثناء تتبع portable API call على Linux ظهرت ثماني parameters وreturned status. أي تسلسل يجمع API abstraction مع Linux parameter passing؟"
     },
     {
-      "body": "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.",
+      "body": "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.\n\nصحيح أن كثيرا من commands تتعامل مع files، لكن external system programs تسمح بعمليات أخرى أيضا.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ الوظيفة العامة لـ CLI هي fetch وexecute للـ command التالية.",
@@ -1563,7 +1563,7 @@
       "translation": "لا تستطيع command-line interpreter تنفيذ إلا file-manipulation commands ولا يمكنها تشغيل programs لعمليات أخرى."
     },
     {
-      "body": "العبارة خاطئة؛ parameters وreturn values جزء من API contract.",
+      "body": "العبارة خاطئة؛ parameters وreturn values جزء من API contract.\n\nتفاصيل تنفيذ system call داخل kernel يمكن أن تبقى مخفية خلف هذه الواجهة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ parameters وreturn values جزء من API contract.",
@@ -1589,7 +1589,7 @@
       "translation": "تحدد API الدوال المتاحة لكنها لا تحدد parameters أوreturn values."
     },
     {
-      "body": "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.",
+      "body": "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.\n\nيمكن حفظ الخطوات في file ثم تشغيلها بدلا من إدخال كل command يدويا في كل مرة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ programmability تجعل CLI مناسبة للمهام المتكررة.",
@@ -1615,7 +1615,7 @@
       "translation": "لأن CLI قابلة للبرمجة يستطيع administrator تسجيل command sequence متكررة في file وتشغيلها كبرنامج interpreted."
     },
     {
-      "body": "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.",
+      "body": "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.\n\nsystem-call interface تعترض API function وتستدعي kernel call اللازمة ثم تعيد status.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ يكتب programmer حسب API المشتركة بينما تخفي RTE تفاصيل calls الخاصة بكل OS.",
@@ -1646,7 +1646,7 @@
       "translation": "أثناء porting لتطبيق بين systems تدعم نفس API لكن system-call details مختلفة، تستطيع RTE الحفاظ على API-level program وعمل mapping لكل OS."
     },
     {
-      "body": "الإجابة Process control وهو أول تصنيف في القائمة.",
+      "body": "الإجابة Process control وهو أول تصنيف في القائمة.\n\nالتصنيفات الأخرى تشمل file وdevice وinformation وcommunications وprotection.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Process control وهو أول تصنيف في القائمة.",
@@ -1692,7 +1692,7 @@
       "translation": "أي عنصر من التصنيفات الستة لـ system calls؟"
     },
     {
-      "body": "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.",
+      "body": "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.\n\nالغرض هو الحفاظ على integrity عندما توجد عدة processes.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة lock؛ تمنع الوصول إلى البيانات المشتركة حتى تحريرها.",
@@ -1718,7 +1718,7 @@
       "translation": "أي وسيلة process control تحمي shared data بمنع processes الأخرى حتى release؟"
     },
     {
-      "body": "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.",
+      "body": "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.\n\nshared-memory model يتطلب إنشاء والوصول إلى memory region مشتركة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Message passing لأن send وreceive ينقلان messages بين processes.",
@@ -1744,7 +1744,7 @@
       "translation": "تتبادل processان packets عبر OS بدلا من mapping لمنطقة مشتركة. ما النموذج؟"
     },
     {
-      "body": "يقرأ input ويكتب output ويتحقق من status لكل عملية.",
+      "body": "يقرأ input ويكتب output ويتحقق من status لكل عملية.\n\nقد تكشف status عن EOF أوparity error أوعدم وجود disk space.",
       "contentVersion": "1.0.0",
       "explanation": [
         "يقرأ input ويكتب output ويتحقق من status لكل عملية.",
@@ -1780,7 +1780,7 @@
       "translation": "بعد فتح source وdestination files، ماذا يفعل copy program داخل loop؟"
     },
     {
-      "body": "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.",
+      "body": "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.\n\nتعمل background services في user context رغم أنها تخدم النظام.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة print server يبدأ عند boot وقد يستمر حتى shutdown.",
@@ -1821,7 +1821,7 @@
       "translation": "أي program تعد background service وليست application معتادة؟"
     },
     {
-      "body": "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.",
+      "body": "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.\n\nيقوم loader بعملية relocation للعناوين، ويمكن أن تستدعي shell هذا المسار باستخدام fork() ثم exec().",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أن linker يجمع objects وlibraries في executable واحدة، ثم ينقلها loader إلى process address space.",
@@ -1852,7 +1852,7 @@
       "translation": "بعد أن ينتج compilation ملفات relocatable object، أي تسلسل يتتبع linking وloading حتى تشغيل البرنامج داخل process address space؟"
     },
     {
-      "body": "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.",
+      "body": "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.\n\nحتى supplied programs يجب تصنيفها حسب الدور لا حسب وجودها في الحزمة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ applications تحل مشكلات المستخدم وتختلف عن system utilities.",
@@ -1878,7 +1878,7 @@
       "translation": "لا تُعد application programs مثل browsers وspreadsheets وgames جزءا من OS عادة."
     },
     {
-      "body": "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.",
+      "body": "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.\n\nتُحمّل عند الحاجة ويمكن لكل processes التي تستخدم نفس version مشاركة النسخة الموجودة في memory.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ dynamic library لا يلزم ربطها كاملة داخل كل executable.",
@@ -1904,7 +1904,7 @@
       "translation": "عندما تحتاج عدة processes نفس version من dynamically linked library يمكن تحميلها عند الحاجة ومشاركة memory copy واحدة."
     },
     {
-      "body": "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.",
+      "body": "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.\n\nلهذا تُعد Arduino single-tasking في المثال.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ لا توجد OS وتوجد sketch واحدة فقط في كل مرة.",
@@ -1935,7 +1935,7 @@
       "translation": "تستخدم Arduino القياسية OS لجدولة عدة sketches في memory في الوقت نفسه."
     },
     {
-      "body": "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.",
+      "body": "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.\n\nفي FreeBSD تنشئ shell process بـ fork() وتحمل program بـ exec()، أما Arduino فتستبدل sketch القديمة عند تحميل أخرى.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ FreeBSD multitasking بينما Arduino القياسية single-tasking.",
@@ -1966,7 +1966,7 @@
       "translation": "لأن FreeBSD تستخدم fork() وexec() وتستمر shell في العمل فهي تملك نفس one-program model الموجودة في Arduino القياسية."
     },
     {
-      "body": "الإجابة policy تحدد what needs to be done وmechanism تحدد how.",
+      "body": "الإجابة policy تحدد what needs to be done وmechanism تحدد how.\n\ntimer هي mechanism، أما اختيار المدة فهو policy يمكن تغييرها بمرونة.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة policy تحدد what needs to be done وmechanism تحدد how.",
@@ -2002,7 +2002,7 @@
       "translation": "أي عبارة تفرق بصورة صحيحة بين policy وmechanism؟"
     },
     {
-      "body": "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.",
+      "body": "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.\n\nالمقابل المحتمل هو reduced speed وزيادة storage requirements، لذلك توجد trade-off.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة أنها تجعل code أكثر compact وأسهل في الفهم وdebugging وporting.",
@@ -2028,7 +2028,7 @@
       "translation": "ما الميزة المذكورة لاستخدام higher-level languages في تنفيذ OS؟"
     },
     {
-      "body": "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.",
+      "body": "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.\n\nالميزة speed، لكن التغيير في جزء قد يؤثر في أجزاء أخرى بسبب tight coupling.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Monolithic لأن الوظائف تعمل معا في kernel address space واحدة.",
@@ -2079,7 +2079,7 @@
       "translation": "Kernel يحتفظ بمعظم الوظائف في address space واحدة ويعطي أولوية للاتصال السريع. ما structure؟"
     },
     {
-      "body": "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.",
+      "body": "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.\n\nالميزة تبسّط construction وdebugging، لكن المرور عبر layers يضيف overhead.",
       "contentVersion": "1.0.0",
       "explanation": [
         "يمكن حصر الخطأ في layer 4 لأن lower layers سبق التحقق منها.",
@@ -2110,7 +2110,7 @@
       "translation": "ظهر error في layer 4 بعد debugging للطبقات 0 إلى 3. لماذا تساعد layered approach؟"
     },
     {
-      "body": "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.",
+      "body": "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.\n\nmessage passing تزيد isolation والمرونة لكنها قد تضيف performance overhead.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة Microkernel لأنه ينقل nonessential services إلى user space.",
@@ -2166,7 +2166,7 @@
       "translation": "تُضاف OS service كـ user-space process وتتواصل مع clients بالرسائل. ما structure؟"
     },
     {
-      "body": "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.",
+      "body": "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.\n\nيستطيع Linux إدخال driver المطلوبة ديناميكيا مع استمرار النظام، وتبقى module جزءا من kernel space.",
       "contentVersion": "1.0.0",
       "explanation": [
         "الإجابة LKM لأنها تُحمّل داخل kernel عند boot أوruntime وتتواصل عبر known interfaces.",
@@ -2232,7 +2232,7 @@
       "translation": "أثناء عمل Linux system يحتاج administrator إضافة USB driver مفقودة داخل kernel من دون rebuild أوreboot. أي extension behavior يناسب؟"
     },
     {
-      "body": "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.",
+      "body": "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.\n\nأما user goals فتتعلق أكثر بالسهولة والسرعة والأمان من منظور الاستخدام.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ هذه هي goals الموجهة إلى بناء النظام وصيانته.",
@@ -2258,7 +2258,7 @@
       "translation": "تشمل system goals جعل OS flexible وreliable وerror-free وefficient وأسهل في design وimplementation وmaintenance."
     },
     {
-      "body": "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.",
+      "body": "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.\n\nsystem programs هي الجزء الآخر المنفصل عن kernel في هذا الوصف.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ kernel أسفل interface وفوق physical hardware.",
@@ -2284,7 +2284,7 @@
       "translation": "في original UNIX تقع kernel فوق system-call interface وليست بينه وبين hardware."
     },
     {
-      "body": "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.",
+      "body": "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.\n\nفشل service لا يعني بالضرورة crash لباقي النظام، بعكس وجود وظائف أكثر داخل kernel.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة صحيحة؛ نقل services إلى user space يحسن reliability وsecurity.",
@@ -2310,7 +2310,7 @@
       "translation": "عندما تفشل nonessential microkernel service في user space يمكن أن يبقى باقي OS سليما لأن code أقل يعمل في kernel mode."
     },
     {
-      "body": "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.",
+      "body": "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.\n\nكما توفر دعما أفضل لـ 64-bit systems وlarger disks.",
       "contentVersion": "1.0.0",
       "explanation": [
         "العبارة خاطئة؛ UEFI boot manager كاملة ومفردة وأسرع من multistage BIOS.",
@@ -4010,7 +4010,7 @@
       "id": "explanation-gq-os-ch05-part3-010-ar",
       "language": "ar",
       "needsReview": false,
-      "note": "ملاحظة مراجعة مولدة: في الامتحان اربط موضوع «Feedback trace» بسبب الحكم والدليل المحدد لهذا السؤال.",
+      "note": "ملاحظة مراجعة مولدة: في الامتحان ركّز على تتبع الجدولة بالأولوية وبالدوران الدوري وحساب زمن الانتظار.",
       "questionId": "gq-os-ch05-part3-010",
       "review": {
         "status": "validated"
@@ -4774,11 +4774,11 @@
       "translation": "هل يهيأ counting semaphore الذي يسيطر على مجموعة محدودة من الموارد بعدد النسخ المتاحة من الموارد؟"
     },
     {
-      "body": "العبارة خاطئة؛ الانعكاس يحدث عندما تحتجز العملية الأقل أولوية قفلًا تحتاجه عملية أعلى أولوية. أولوية العملية الأقل تمنعها من العمل عندما تمسك العملية الأقل أولوية موردًا تحتاجه العملية الأعلى.\n\nعكس اتجاه الأولوية في الوصف هو الذي يقلب التشخيص ويجعل العبارة غير صحيحة. رفع أولوية حامل المورد أو تحريره يعالج سبب الانتظار، بينما ترتيب semaphore الخاطئ لا يصف المشكلة وحده.",
+      "body": "العبارة خاطئة؛ يحدث انعكاس الأولوية عندما تحتجز عملية أقل أولوية قفلًا تحتاجه عملية أعلى أولوية.\n\nتعرض الشريحة بروتوكول توريث الأولوية حلًا لهذه المشكلة. لذلك لا يطابق الوصف الحالة لأن اتجاه الأولوية فيه معكوس.",
       "contentVersion": "1.0.0",
       "explanation": [
-        "العبارة خاطئة؛ الانعكاس يحدث عندما تحتجز العملية الأقل أولوية قفلًا تحتاجه عملية أعلى أولوية. أولوية العملية الأقل تمنعها من العمل عندما تمسك العملية الأقل أولوية موردًا تحتاجه العملية الأعلى.",
-        "عكس اتجاه الأولوية في الوصف هو الذي يقلب التشخيص ويجعل العبارة غير صحيحة. رفع أولوية حامل المورد أو تحريره يعالج سبب الانتظار، بينما ترتيب semaphore الخاطئ لا يصف المشكلة وحده."
+        "العبارة خاطئة؛ يحدث انعكاس الأولوية عندما تحتجز عملية أقل أولوية قفلًا تحتاجه عملية أعلى أولوية.",
+        "تعرض الشريحة بروتوكول توريث الأولوية حلًا لهذه المشكلة. لذلك لا يطابق الوصف الحالة لأن اتجاه الأولوية فيه معكوس."
       ],
       "generatedStudyGuidance": true,
       "id": "explanation-gq-os-ch06-part2-009-ar",

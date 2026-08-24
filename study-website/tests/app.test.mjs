@@ -21,6 +21,8 @@ const {
   getDashboardCoverage,
   trapDialogFocus,
   shortcutAnswerDecision,
+  questionRecordRoute,
+  navigationCurrentState,
 } = loaded;
 
 async function payload(name) {
@@ -59,6 +61,18 @@ test("route parser normalizes lesson IDs and safely rejects invalid hashes", () 
   for (const hash of ["", "#", "#/unknown", "#/lesson", "#/lesson/%3Cbad%3E", "#/lesson/a?x=1"]) {
     assert.equal(routeFromHash(hash).name, "not-found");
   }
+});
+
+test("route parser and record-route helper preserve canonical Question Bank and Explanation targets", () => {
+  if (!assertHelper(questionRecordRoute, "questionRecordRoute") || !assertHelper(navigationCurrentState, "navigationCurrentState")) return;
+  const id = "gq-os-ch05-part3-010";
+  assert.equal(questionRecordRoute("questions", id), "#/questions/gq-os-ch05-part3-010");
+  assert.equal(questionRecordRoute("explanations", id), "#/explanations/gq-os-ch05-part3-010");
+  assert.deepEqual(routeFromHash(questionRecordRoute("questions", id)), { name: "questions", id });
+  assert.deepEqual(routeFromHash(questionRecordRoute("explanations", id)), { name: "explanations", id });
+  assert.equal(routeFromHash("#/questions/not-a-question").name, "not-found");
+  assert.deepEqual(navigationCurrentState({ name: "lesson", id: "lesson-os-ch01-part1" }), { desktop: "material", mobile: "material", more: false });
+  assert.deepEqual(navigationCurrentState({ name: "explanations", id }), { desktop: "explanations", mobile: null, more: true });
 });
 
 test("HTML escaping protects all dangerous characters and safely stringifies values", () => {
@@ -205,6 +219,7 @@ test("static shell contains desktop, mobile, and More navigation routes", async 
   }
   assert.match(html, /id="mobile-navigation"/);
   assert.match(html, /More/);
+  assert.match(html, /class="more-menu"[^>]*data-more-menu/);
 });
 
 test("visual CSS carries the approved responsive, accessible, bilingual token system", async () => {
@@ -215,9 +230,11 @@ test("visual CSS carries the approved responsive, accessible, bilingual token sy
   assert.match(css, /@media \(max-width: 600px\)/);
   assert.match(css, /\[data-theme="dark"\]/);
   assert.match(css, /:focus-visible/);
+  assert.match(css, /\.theme-switch input:focus-visible/);
   assert.match(css, /\.answer-row:has\(input:focus-visible\)[^{]*\{[^}]*outline:/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /min-height:\s*44px/);
+  assert.match(css, /@media \(max-width: 1024px\)[\s\S]*?\.navigator button\s*\{[^}]*min-height:\s*44px/);
   assert.match(css, /\[dir="rtl"\]/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.doesNotMatch(css, /@import|fonts\.googleapis|linear-gradient|radial-gradient/i);

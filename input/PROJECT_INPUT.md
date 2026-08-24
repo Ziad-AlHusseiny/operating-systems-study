@@ -28,20 +28,21 @@
 
 - Official answer key availability: Missing
 - When an official answer key is missing, the user supplies: a list of items marked `needs-review` with their source references; those items remain unscored and never enter Mock Exams as official questions.
-- Human approval owner for generated questions in Mock Exam: Course content reviewer
+- Human approval owner for high-stakes or policy-required generated-question review: Course content reviewer
 
 ## Question and exam settings
 
 - MCQs per lesson: 6
 - True/False questions per lesson: 4
 - Default Practice question count: 10
-- Generated-question review policy for Mock Exam: Human review required
+- Generated-question review policy for Mock Exam: Human review is not required only for source-backed, validated, low-stakes study questions.
+- High-stakes, credentialing, admissions, employment, compliance, and externally reported assessment remain prohibited without complete current human approval.
 - Default exam question count: 25
 - Default exam minutes: 30
 
 ## Deployment
 
 - Hosting provider: GitHub Pages
-- GitHub repository: Ziad-AlHusseiny/its-device-configuration-study
-- GitHub branch: master
-- Public URL: https://ziad-alhusseiny.github.io/its-device-configuration-study/
+- GitHub repository: Ziad-AlHusseiny/operating-systems-study
+- GitHub branch: main
+- Public URL: https://ziad-alhusseiny.github.io/operating-systems-study/

@@ -33,6 +33,7 @@ Open [http://127.0.0.1:8000/#/dashboard](http://127.0.0.1:8000/#/dashboard). On 
 - `#/dashboard` — measured coverage, completion, accuracy, sessions, and priorities.
 - `#/material` and `#/lesson/:canonicalLessonId` — search/filter lessons, source material, generated Arabic guidance, citations, and linked Practice.
 - `#/questions` and `#/explanations` — searchable question records, explicit non-exam answer reveal, citations, and full Arabic guidance.
+- `#/questions/:gq-id` and `#/explanations/:gq-id` — canonical exact-record routes used by lesson links and Arabic-guidance links; unavailable IDs show a safe not-found state.
 - `#/practice` — scoped immediate-feedback sessions.
 - `#/exam` — scoped timed answer-only Mock Exam until final submission/expiry; review appears only afterwards.
 - `#/revision`, `#/mistakes`, and `#/bookmarks` — scoreable performance, focused review, and separate saved lesson/question collections.
