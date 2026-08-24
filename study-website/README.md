@@ -81,4 +81,6 @@ The browser QA script uses a clean temporary Playwright context, starts the loca
 
 The deployment target is `Ziad-AlHusseiny/operating-systems-study` on `main`. The Pages workflow validates checked-in artifacts and tests before configuring Pages, uploads exactly `study-website`, then deploys with the official GitHub Pages actions.
 
-Pending final review/push: [https://ziad-alhusseiny.github.io/operating-systems-study/](https://ziad-alhusseiny.github.io/operating-systems-study/). No repository has been created, pushed, or verified publicly by this project.
+Live website: [https://ziad-alhusseiny.github.io/operating-systems-study/](https://ziad-alhusseiny.github.io/operating-systems-study/).
+
+The public repository is [Ziad-AlHusseiny/operating-systems-study](https://github.com/Ziad-AlHusseiny/operating-systems-study). GitHub Pages uses the validated `main` branch workflow; the homepage and generated course, question, and Arabic-explanation payloads were verified with HTTP 200 responses after deployment.
