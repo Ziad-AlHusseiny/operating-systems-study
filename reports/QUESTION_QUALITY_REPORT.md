@@ -8,7 +8,7 @@ Generated from canonical payload data; no timestamp is used.
 - Review/quality state: validated 210; all retained and validated.
 - True/false answer balance: true 42, false 42.
 - Eligible scored Practice: 210; eligible low-stakes Mock Exam: 210.
-- Evidence/source references: complete; Arabic records: exactly one per question; duplicate normalized prompts: none.
+- Evidence/source references: complete; Arabic records: complete; duplicate normalized prompts: none.
 
 ## Counts by module
 

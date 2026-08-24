@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import hashlib
 import json
 import re
 import sys
@@ -45,6 +44,14 @@ TF_KEYS = BASE_QUESTION_KEYS | {"correctedStatement"}
 EXPLANATION_KEYS = {"id", "questionId", "language", "generatedStudyGuidance", "translation", "explanation", "body", "note", "contentVersion", "sourceRefs", "needsReview", "reviewNotes", "review"}
 SOURCE_REF_KEYS = {"sourceId", "locationType", "location", "context", "confidence"}
 ARABIC_RE = re.compile(r"[\u0600-\u06ff]")
+SEMVER_RE = re.compile(r"^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
+PROHIBITED_GENERATED_CLAIMS = re.compile(r"\b(?:official exam question|official question|from the exam|past[- ]paper question|certified|guaranteed to appear)\b", re.IGNORECASE)
+PROVENANCE_KEYS = {"sourceRefs", "modelVersion", "promptVersion"}
+DUPLICATE_KEYS = {"algorithmVersion", "normalizedPrompt", "candidateIds", "matchClass"}
+EVIDENCE_KEYS = {"claimId", "target", "sourceRefs", "support"}
+VALIDATED_REVIEW_KEYS = {"status"}
+HUMAN_REVIEW_KEYS = {"status", "approval"}
+APPROVAL_KEYS = {"reviewedRecordId", "reviewedContentVersion", "status", "decision", "reviewer", "reviewedAt", "reason", "notes"}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -183,9 +190,53 @@ def _non_empty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _list(value: Any, label: str, errors: list[str]) -> list:
+    if not isinstance(value, list):
+        errors.append(f"{label} must be an array")
+        return []
+    return value
+
+
+def _is_json_safe(value: Any) -> bool:
+    if value is None or isinstance(value, (str, bool, int)):
+        return True
+    if isinstance(value, float):
+        return value == value and value not in {float("inf"), float("-inf")}
+    if isinstance(value, list):
+        return all(_is_json_safe(item) for item in value)
+    if isinstance(value, dict):
+        return all(isinstance(key, str) and _is_json_safe(item) for key, item in value.items())
+    return False
+
+
+def _check_json_safe(value: Any, label: str, errors: list[str]) -> None:
+    if not _is_json_safe(value):
+        errors.append(f"{label} contains a non-JSON value")
+
+
+def _valid_content_version(value: Any) -> bool:
+    return _non_empty(value) and bool(SEMVER_RE.fullmatch(value))
+
+
+def _question_lesson_id(question_id: str) -> str | None:
+    match = re.fullmatch(r"gq-(os-ch\d\d-part\d)-\d{3}", question_id)
+    return f"lesson-{match.group(1)}" if match else None
+
+
+def _review_valid(question: dict) -> bool:
+    review = question.get("review")
+    status = review.get("status") if isinstance(review, dict) else None
+    if status == "validated":
+        return set(review) == VALIDATED_REVIEW_KEYS and question.get("qualityState") == "validated" and question.get("reviewState") == "unreviewed" and question.get("needsReview") is False
+    if status != "human-reviewed" or set(review) != HUMAN_REVIEW_KEYS or question.get("qualityState") != "approved" or question.get("reviewState") != "approved" or question.get("needsReview") is not False:
+        return False
+    approval = review.get("approval")
+    return isinstance(approval, dict) and set(approval) == APPROVAL_KEYS and approval.get("reviewedRecordId") == question.get("id") and approval.get("reviewedContentVersion") == question.get("contentVersion") and approval.get("status") == "completed" and approval.get("decision") == "approved" and _non_empty(approval.get("reviewer")) and isinstance(approval.get("reviewedAt"), str) and approval["reviewedAt"].endswith("Z") and _non_empty(approval.get("reason")) and _non_empty(approval.get("notes"))
+
+
 def _source_index(course: dict, extraction: dict) -> tuple[dict[str, dict], dict[tuple[str, int], str]]:
-    sources = {source["id"]: source for source in course["sources"]}
-    classifications = {(page["sourceId"], page["page"]): page["classification"] for page in extraction["pages"]}
+    sources = {source["id"]: source for source in course.get("sources", []) if isinstance(source, dict) and isinstance(source.get("id"), str)}
+    classifications = {(page["sourceId"], page["page"]): page["classification"] for page in extraction.get("pages", []) if isinstance(page, dict) and isinstance(page.get("sourceId"), str) and isinstance(page.get("page"), int) and isinstance(page.get("classification"), str)}
     return sources, classifications
 
 
@@ -230,11 +281,6 @@ def _reference_pages(lessons: Iterable[dict]) -> set[str]:
     return pages
 
 
-def _review_valid(question: dict) -> bool:
-    review = question.get("review", {})
-    return review.get("status") == "validated" and question.get("qualityState") == "validated" and question.get("reviewState") == "unreviewed" and question.get("needsReview") is False
-
-
 def eligible_question_ids(payloads: dict[str, dict], mode: str) -> list[str]:
     questions = payloads["questions"]["questions"]
     policy = payloads["course"]["contentPolicy"]
@@ -256,9 +302,17 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
         return ["payload set must contain course, lessons, questions, and explanations-ar"]
     for name, allowed in ROOT_KEYS.items():
         _exact_keys(payloads[name], allowed, name, errors)
+        _check_json_safe(payloads[name], name, errors)
     course = payloads["course"]
     if not isinstance(course, dict):
         return errors
+    if course.get("project") != config.get("project"):
+        errors.append("course project metadata is incompatible with project configuration")
+    for key in ("contentPolicy", "questionGeneration", "exam"):
+        if course.get(key) != config.get(key):
+            errors.append(f"course {key} is incompatible with project configuration")
+    if course.get("sources") != _inputs()[1].get("sources"):
+        errors.append("course sources are incompatible with source manifest")
     project_id = course.get("projectId")
     if project_id != config["project"]["slug"]:
         errors.append("course project ID does not match project configuration")
@@ -266,11 +320,22 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
         if payloads[name].get("projectId") != project_id:
             errors.append(f"{name} project ID does not match course")
     sources, classifications = _source_index(course, extraction)
-    modules = course.get("modules", [])
-    objectives = course.get("objectives", [])
-    lessons = payloads["lessons"].get("lessons", [])
-    questions = payloads["questions"].get("questions", [])
-    explanations = payloads["explanations-ar"].get("explanations", [])
+    public_sources = _list(course.get("sources"), "sources", errors)
+    if len(sources) != len(public_sources):
+        errors.append("duplicate source ID")
+    modules = _list(course.get("modules"), "modules", errors)
+    objectives = _list(course.get("objectives"), "objectives", errors)
+    lessons = _list(payloads["lessons"].get("lessons"), "lessons", errors)
+    questions = _list(payloads["questions"].get("questions"), "questions", errors)
+    explanations = _list(payloads["explanations-ar"].get("explanations"), "Arabic explanations", errors)
+    if len(modules) != 7:
+        errors.append("module total must be exactly 7")
+    if len(lessons) != 21:
+        errors.append("lesson total must be exactly 21")
+    if len(questions) != 210:
+        errors.append("question total must be exactly 210")
+    if len(explanations) != 210:
+        errors.append("Arabic explanation total must be exactly 210")
     ids: set[str] = set()
     for label, records, keys, prefix in (("module", modules, MODULE_KEYS, "module-"), ("objective", objectives, OBJECTIVE_KEYS, "objective-"), ("lesson", lessons, LESSON_KEYS, "lesson-")):
         if not isinstance(records, list):
@@ -285,50 +350,89 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
                 errors.append(f"duplicate id {record_id}")
             else:
                 ids.add(record_id)
-    if [module.get("order") for module in modules] != sorted(module.get("order") for module in modules):
+    if all(isinstance(module, dict) and isinstance(module.get("order"), int) for module in modules) and [module.get("order") for module in modules] != sorted(module.get("order") for module in modules):
         errors.append("modules are not ordered")
-    module_ids = {module.get("id") for module in modules}
-    objective_ids = {objective.get("id") for objective in objectives}
+    module_ids = {module.get("id") for module in modules if isinstance(module, dict)}
+    objective_ids = {objective.get("id") for objective in objectives if isinstance(objective, dict)}
+    objectives_by_module = Counter(objective.get("moduleId") for objective in objectives if isinstance(objective, dict))
     for module in modules:
+        if not isinstance(module, dict):
+            continue
         if not _non_empty(module.get("title")) or not isinstance(module.get("order"), int):
             errors.append(f"module {module.get('id')} has invalid fields")
         _validate_refs(module.get("sourceRefs"), sources, classifications, f"module {module.get('id')}", errors)
-        if len(module.get("objectiveIds", [])) != len(set(module.get("objectiveIds", []))):
+        module_objectives = module.get("objectiveIds")
+        if not isinstance(module_objectives, list):
+            errors.append(f"module {module.get('id')} objective IDs must be an array")
+        elif len(module_objectives) != len(set(module_objectives)):
             errors.append(f"module {module.get('id')} has duplicate objective IDs")
+        elif any(objective_id not in objective_ids for objective_id in module_objectives) or any(next((objective for objective in objectives if isinstance(objective, dict) and objective.get("id") == objective_id), {}).get("moduleId") != module.get("id") for objective_id in module_objectives):
+            errors.append(f"module objective linkage is unresolved for {module.get('id')}")
+        elif len(module_objectives) != objectives_by_module[module.get("id")]:
+            errors.append(f"module objective linkage is incomplete for {module.get('id')}")
     for objective in objectives:
+        if not isinstance(objective, dict):
+            continue
         if objective.get("moduleId") not in module_ids or not _non_empty(objective.get("text")):
             errors.append(f"objective {objective.get('id')} has unresolved module or empty text")
         _validate_refs(objective.get("sourceRefs"), sources, classifications, f"objective {objective.get('id')}", errors)
+    lesson_order = {lesson.get("id"): (next((module.get("order") for module in modules if isinstance(module, dict) and module.get("id") == lesson.get("moduleId")), 999), lesson.get("id")) for lesson in lessons if isinstance(lesson, dict)}
+    if all(isinstance(lesson, dict) for lesson in lessons) and [lesson.get("id") for lesson in lessons] != sorted(lesson_order, key=lesson_order.get):
+        errors.append("lessons are not ordered")
     question_ids = {question.get("id") for question in questions if isinstance(question, dict)}
     non_teaching: set[str] = set()
+    section_ids: set[str] = set()
     for lesson in lessons:
+        if not isinstance(lesson, dict):
+            continue
         if lesson.get("moduleId") not in module_ids or not _non_empty(lesson.get("title")):
             errors.append(f"lesson {lesson.get('id')} has unresolved module or empty title")
+        if not _valid_content_version(lesson.get("contentVersion")):
+            errors.append(f"lesson {lesson.get('id')} has invalid content version")
         if not all(identifier in objective_ids for identifier in lesson.get("objectiveIds", [])):
             errors.append(f"lesson {lesson.get('id')} has unresolved objective")
-        sections = lesson.get("materialSections", [])
+        sections = _list(lesson.get("materialSections"), f"lesson {lesson.get('id')} material sections", errors)
         if lesson.get("materialSectionIds") != [section.get("id") for section in sections]:
             errors.append(f"lesson {lesson.get('id')} material section IDs do not match")
         for section in sections:
+            if not isinstance(section, dict):
+                errors.append("section must be an object")
+                continue
             _exact_keys(section, SECTION_KEYS, f"section {section.get('id') if isinstance(section, dict) else ''}", errors)
+            if section.get("id") in section_ids:
+                errors.append(f"duplicate section ID {section.get('id')}")
+            section_ids.add(section.get("id"))
             if section.get("lessonId") != lesson.get("id") or not str(section.get("id", "")).startswith("material-section-"):
                 errors.append(f"section has unresolved lesson or invalid ID")
             if section.get("origin") not in {"source", "generated"} or section.get("generatedStudyGuidance") != (section.get("origin") == "generated"):
                 errors.append(f"section {section.get('id')} has incompatible origin label")
+            if not isinstance(section.get("generatedStudyGuidance"), bool):
+                errors.append(f"section {section.get('id')} has non-Boolean guidance flag")
+            if section.get("contentVersion") != lesson.get("contentVersion") or not _valid_content_version(section.get("contentVersion")):
+                errors.append(f"section {section.get('id')} has incompatible content version")
             _validate_refs(section.get("sourceRefs"), sources, classifications, f"section {section.get('id')}", errors, non_teaching)
             if not all(question_id in question_ids for question_id in section.get("linkedQuestionIds", [])):
                 errors.append(f"section {section.get('id')} has unresolved linked question")
             for claim in section.get("summaries", []) + section.get("examTips", []) + section.get("recaps", []):
+                _exact_keys(claim, {"body", "sourceRefs"}, f"section {section.get('id')} claim", errors)
+                if not isinstance(claim, dict):
+                    continue
                 if not _non_empty(claim.get("body")):
                     errors.append(f"section {section.get('id')} has an empty claim")
                 _validate_refs(claim.get("sourceRefs"), sources, classifications, f"section {section.get('id')} claim", errors, non_teaching)
             for field, text_fields in (("terms", ("term", "definition")), ("examples", ("title", "body")), ("mistakes", ("misconception", "correction"))):
                 for item in section.get(field, []):
+                    _exact_keys(item, set(text_fields) | {"sourceRefs"}, f"section {section.get('id')} {field}", errors)
+                    if not isinstance(item, dict):
+                        continue
                     if not all(_non_empty(item.get(key)) for key in text_fields):
                         errors.append(f"section {section.get('id')} has an empty {field} claim")
                     _validate_refs(item.get("sourceRefs"), sources, classifications, f"section {section.get('id')} {field}", errors, non_teaching)
     normalized: dict[tuple[str, str], str] = {}
     for question in questions:
+        if not isinstance(question, dict):
+            errors.append("question must be an object")
+            continue
         type_name = question.get("type") if isinstance(question, dict) else None
         _exact_keys(question, MCQ_KEYS if type_name == "mcq" else TF_KEYS, f"question {question.get('id') if isinstance(question, dict) else ''}", errors)
         question_id = question.get("id") if isinstance(question, dict) else None
@@ -342,6 +446,8 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
             errors.append(f"question {question_id} has invalid type")
         if not _non_empty(question.get("prompt")) or not _non_empty(question.get("topic")):
             errors.append(f"question {question_id} has an empty prompt or topic")
+        if PROHIBITED_GENERATED_CLAIMS.search(" ".join(str(value) for value in (question.get("prompt"), question.get("rationale"), *question.get("options", [])))):
+            errors.append(f"question {question_id} contains prohibited official/exam wording")
         normalized_key = (str(type_name), _normalize_prompt(str(question.get("prompt", ""))))
         if normalized_key in normalized:
             errors.append(f"duplicate normalized prompt: {question_id} and {normalized[normalized_key]}")
@@ -350,9 +456,24 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
             errors.append(f"question {question_id} has invalid difficulty or Bloom level")
         if question.get("learningObjectiveId") not in objective_ids:
             errors.append(f"question {question_id} has unresolved objective")
+        owning_lesson = _question_lesson_id(question_id)
+        if owning_lesson not in lesson_order or question.get("learningObjectiveId") not in next((lesson.get("objectiveIds", []) for lesson in lessons if isinstance(lesson, dict) and lesson.get("id") == owning_lesson), []):
+            errors.append(f"question {question_id} objective does not belong to its owning lesson")
+        if not _valid_content_version(question.get("contentVersion")):
+            errors.append(f"question {question_id} has invalid content version")
+        _exact_keys(question.get("provenance"), PROVENANCE_KEYS, f"question {question_id} provenance", errors)
+        if isinstance(question.get("provenance"), dict) and (not _non_empty(question["provenance"].get("modelVersion")) or not _non_empty(question["provenance"].get("promptVersion"))):
+            errors.append(f"question {question_id} has invalid provenance values")
+        _exact_keys(question.get("duplicateComparison"), DUPLICATE_KEYS, f"question {question_id} duplicate comparison", errors)
+        if isinstance(question.get("duplicateComparison"), dict) and question["duplicateComparison"].get("matchClass") not in {"none", "exact", "near", "conflict"}:
+            errors.append(f"question {question_id} has invalid duplicate comparison")
         _validate_refs(question.get("sourceRefs"), sources, classifications, f"question {question_id}", errors, non_teaching)
-        _validate_refs(question.get("provenance", {}).get("sourceRefs"), sources, classifications, f"question {question_id} provenance", errors, non_teaching)
-        if question.get("qualityState") != "validated" or question.get("reviewState") != "unreviewed" or question.get("duplicateDisposition") != "retain" or not _review_valid(question):
+        _validate_refs(question.get("provenance", {}).get("sourceRefs") if isinstance(question.get("provenance"), dict) else None, sources, classifications, f"question {question_id} provenance", errors, non_teaching)
+        review = question.get("review")
+        _exact_keys(review, VALIDATED_REVIEW_KEYS if isinstance(review, dict) and review.get("status") == "validated" else HUMAN_REVIEW_KEYS if isinstance(review, dict) and review.get("status") == "human-reviewed" else set(), f"question {question_id} review", errors)
+        if isinstance(review, dict) and review.get("status") == "human-reviewed":
+            _exact_keys(review.get("approval"), APPROVAL_KEYS, f"question {question_id} approval", errors)
+        if question.get("duplicateDisposition") != "retain" or not _review_valid(question):
             errors.append(f"question {question_id} has incompatible review state")
         if type_name == "mcq":
             options = question.get("options")
@@ -379,29 +500,45 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
             errors.append(f"question {question_id} has incomplete evidence map")
         else:
             for entry in evidence:
+                _exact_keys(entry, EVIDENCE_KEYS, f"question {question_id} evidence", errors)
+                if not isinstance(entry, dict):
+                    continue
                 if not _non_empty(entry.get("claimId")) or entry.get("support") not in {"direct", "derived"}:
                     errors.append(f"question {question_id} has invalid evidence entry")
                 _validate_refs(entry.get("sourceRefs"), sources, classifications, f"question {question_id} evidence", errors, non_teaching)
     if [question.get("id") for question in questions] != sorted(question.get("id") for question in questions):
         errors.append("questions are not in deterministic ID order")
-    answer_counts = Counter(question.get("correctAnswer") for question in questions if question.get("type") == "true-false")
-    if Counter(question.get("type") for question in questions) != Counter({"mcq": 126, "true-false": 84}):
+    answer_counts = Counter(question.get("correctAnswer") for question in questions if isinstance(question, dict) and question.get("type") == "true-false")
+    if Counter(question.get("type") for question in questions if isinstance(question, dict)) != Counter({"mcq": 126, "true-false": 84}):
         errors.append("question type distribution is incorrect")
-    if Counter(question.get("difficulty") for question in questions) != Counter({"easy": 63, "medium": 105, "hard": 42}):
+    if Counter(question.get("difficulty") for question in questions if isinstance(question, dict)) != Counter({"easy": 63, "medium": 105, "hard": 42}):
         errors.append("difficulty distribution is incorrect")
-    if Counter(question.get("bloomLevel") for question in questions) != Counter({"remember": 63, "apply": 105, "analyze": 42}):
+    if Counter(question.get("bloomLevel") for question in questions if isinstance(question, dict)) != Counter({"remember": 63, "apply": 105, "analyze": 42}):
         errors.append("Bloom distribution is incorrect")
     if answer_counts != Counter({True: 42, False: 42}):
         errors.append("true/false answer balance is incorrect")
     explanation_ids: set[str] = set()
     for explanation in explanations:
+        if not isinstance(explanation, dict):
+            errors.append("Arabic explanation must be an object")
+            continue
         _exact_keys(explanation, EXPLANATION_KEYS, f"Arabic explanation {explanation.get('id') if isinstance(explanation, dict) else ''}", errors)
         explanation_id = explanation.get("id") if isinstance(explanation, dict) else None
         if not isinstance(explanation_id, str) or not explanation_id.startswith("explanation-") or explanation_id in explanation_ids:
             errors.append("Arabic explanation has invalid or duplicate ID")
         explanation_ids.add(explanation_id)
-        if explanation.get("questionId") not in question_ids or explanation.get("language") != "ar" or not explanation.get("generatedStudyGuidance"):
+        if explanation.get("questionId") not in question_ids or explanation.get("language") != "ar" or explanation.get("generatedStudyGuidance") is not True:
             errors.append("Arabic explanation has unresolved linkage")
+        if not isinstance(explanation.get("generatedStudyGuidance"), bool):
+            errors.append("Arabic explanation has non-Boolean guidance flag")
+        if not _valid_content_version(explanation.get("contentVersion")):
+            errors.append("Arabic explanation has invalid content version")
+        _exact_keys(explanation.get("review"), VALIDATED_REVIEW_KEYS, f"Arabic explanation {explanation_id} review", errors)
+        question = next((item for item in questions if isinstance(item, dict) and item.get("id") == explanation.get("questionId")), None)
+        if question is not None and (explanation.get("id") != f"explanation-{question['id']}-ar" or explanation.get("contentVersion") != question.get("contentVersion") or explanation.get("sourceRefs") != question.get("sourceRefs")):
+            errors.append("Arabic explanation is incompatible with its linked question")
+        if PROHIBITED_GENERATED_CLAIMS.search(" ".join(str(value) for value in (explanation.get("translation"), explanation.get("body"), explanation.get("note")))):
+            errors.append("Arabic explanation contains prohibited official/exam wording")
         if not _non_empty(explanation.get("translation")) or not ARABIC_RE.search(str(explanation.get("translation", ""))):
             errors.append("Arabic explanation needs non-empty Arabic translation")
         paragraphs = explanation.get("explanation")
@@ -410,8 +547,14 @@ def validate_payloads(payloads: dict[str, dict]) -> list[str]:
         if not _non_empty(explanation.get("body")) or not _non_empty(explanation.get("note")):
             errors.append("Arabic explanation has empty body or note")
         _validate_refs(explanation.get("sourceRefs"), sources, classifications, f"Arabic explanation {explanation_id}", errors, non_teaching)
-    if len(explanations) != len(questions) or Counter(item.get("questionId") for item in explanations) != Counter(question.get("id") for question in questions):
+    if len(explanations) != len(questions) or Counter(item.get("questionId") for item in explanations if isinstance(item, dict)) != Counter(question.get("id") for question in questions if isinstance(question, dict)):
         errors.append("Arabic explanations must map exactly once to every question")
+    explanations_by_id = {item.get("id"): item for item in explanations if isinstance(item, dict)}
+    for question in questions:
+        if isinstance(question, dict) and (question.get("generatedExplanationId") not in explanations_by_id or explanations_by_id[question.get("generatedExplanationId")].get("questionId") != question.get("id")):
+            errors.append(f"question {question.get('id')} has unresolved generatedExplanationId")
+    if all(isinstance(explanation, dict) and isinstance(explanation.get("id"), str) for explanation in explanations) and [explanation["id"] for explanation in explanations] != sorted(explanation["id"] for explanation in explanations):
+        errors.append("Arabic explanations are not ordered")
     if non_teaching:
         errors.append(f"non-teaching referenced pages: {', '.join(sorted(non_teaching))}")
     coverage = course.get("coverage", {})
@@ -442,11 +585,39 @@ def _counts(payloads: dict[str, dict]) -> dict[str, Any]:
     }
 
 
+def measure_payloads(payloads: dict[str, dict]) -> dict[str, Any]:
+    """Measure report values from payload records and source extraction data."""
+    _, _, extraction = _inputs()
+    course = payloads["course"]
+    lessons = payloads["lessons"]["lessons"]
+    classifications = {(page["sourceId"], page["page"]): page["classification"] for page in extraction["pages"]}
+    expected = {f"{source}:{page}" for (source, page), classification in classifications.items() if classification == "teaching"}
+    reported = set(course.get("coverage", {}).get("referencedTeachingPages", []))
+    actual = _reference_pages(lessons)
+    non_teaching = {page_id for page_id in actual if tuple([page_id.rsplit(":", 1)[0], int(page_id.rsplit(":", 1)[1])]) in classifications and classifications[tuple([page_id.rsplit(":", 1)[0], int(page_id.rsplit(":", 1)[1])])] != "teaching"}
+    errors = validate_payloads(payloads)
+    return {
+        "classificationCounts": Counter(page["classification"] for page in extraction["pages"]),
+        "totalPages": len(extraction["pages"]),
+        "expectedTeaching": expected,
+        "reportedTeaching": reported,
+        "actualTeaching": actual,
+        "missing": expected - reported,
+        "unexpected": reported - expected,
+        "nonTeaching": non_teaching,
+        "errors": errors,
+        "evidenceOk": not any("evidence" in error.lower() for error in errors),
+        "arabicOk": not any("arabic" in error.lower() for error in errors),
+        "duplicatesOk": not any("duplicate" in error.lower() for error in errors),
+    }
+
+
 def build_reports(payloads: dict[str, dict]) -> dict[str, str]:
     course = payloads["course"]
     lessons = payloads["lessons"]["lessons"]
     counts = _counts(payloads)
     coverage = course["coverage"]
+    measured = measure_payloads(payloads)
     lesson_pages = {lesson["id"]: _reference_pages([lesson]) for lesson in lessons}
     lesson_to_module = {lesson["id"]: lesson["moduleId"] for lesson in lessons}
     module_pages = {module["id"]: set().union(*(lesson_pages[lesson["id"]] for lesson in lessons if lesson["moduleId"] == module["id"])) for module in course["modules"]}
@@ -456,8 +627,8 @@ def build_reports(payloads: dict[str, dict]) -> dict[str, str]:
     coverage_report = "\n".join([
         "# Content Coverage Report", "", "Generated from canonical payload data; no timestamp is used.", "",
         f"- Sources: {counts['sources']} PDFs", f"- Extracted pages: {coverage['totalPages']}",
-        f"- Teaching pages: {coverage['teachingPages']}; cover {coverage['classificationCounts']['cover']}, divider {coverage['classificationCounts']['divider']}, closing {coverage['classificationCounts']['closing']}, reference 0.",
-        f"- Teaching-page coverage: {len(coverage['referencedTeachingPages'])}/{len(coverage['teachingPageIds'])}; missing 0, unexpected 0, non-teaching references 0.",
+        f"- Teaching pages: {measured['classificationCounts']['teaching']}; cover {measured['classificationCounts']['cover']}, divider {measured['classificationCounts']['divider']}, closing {measured['classificationCounts']['closing']}, reference {measured['classificationCounts']['reference']}.",
+        f"- Teaching-page coverage: {len(measured['reportedTeaching'])}/{len(measured['expectedTeaching'])}; missing {len(measured['missing'])}, unexpected {len(measured['unexpected'])}, non-teaching references {len(measured['nonTeaching'])}.",
         f"- Modules: {counts['modules']}; lessons: {counts['lessons']}; questions: {counts['questions']}; Arabic explanations: {counts['explanations']}.", "", "## Module coverage", "", *module_lines, "", "## Lesson teaching-page coverage", "", *lesson_lines, "", "## Omissions", "", "- None (0).",
     ]) + "\n"
     def rendered(counter: Counter) -> str:
@@ -466,7 +637,7 @@ def build_reports(payloads: dict[str, dict]) -> dict[str, str]:
         "# Question Quality Report", "", "Generated from canonical payload data; no timestamp is used.", "",
         f"- Questions: {counts['questions']} ({rendered(counts['types'])}).", f"- Difficulty: {rendered(counts['difficulty'])}.", f"- Bloom: {rendered(counts['bloom'])}.", f"- Review/quality state: {rendered(counts['review'])}; all retained and validated.", f"- True/false answer balance: true {counts['answers'][True]}, false {counts['answers'][False]}.",
         f"- Eligible scored Practice: {counts['practice']}; eligible low-stakes Mock Exam: {counts['mock']}.",
-        "- Evidence/source references: complete; Arabic records: exactly one per question; duplicate normalized prompts: none.", "", "## Counts by module", "", *[f"- `{module['id']}`: {question_modules[module['id']]} questions" for module in course['modules']], "", "## Counts by lesson", "", *[f"- `{lesson_id}`: {counts['lesson'][lesson_id]} questions" for lesson_id in sorted(counts['lesson'])], "", "## Assessment boundary", "", "- Generated questions are source-backed, validated practice material. The human-review gate is disabled only for this low-stakes Mock Exam pool.", "- This does not authorize high-stakes, credentialing, admissions, employment, compliance, or externally reported assessment use; those uses require complete current human approval.",
+        f"- Evidence/source references: {'complete' if measured['evidenceOk'] else 'failed'}; Arabic records: {'complete' if measured['arabicOk'] else 'failed'}; duplicate normalized prompts: {'none' if measured['duplicatesOk'] else 'failed'}.", "", "## Counts by module", "", *[f"- `{module['id']}`: {question_modules[module['id']]} questions" for module in course['modules']], "", "## Counts by lesson", "", *[f"- `{lesson_id}`: {counts['lesson'][lesson_id]} questions" for lesson_id in sorted(counts['lesson'])], "", "## Assessment boundary", "", "- Generated questions are source-backed, validated practice material. The human-review gate is disabled only for this low-stakes Mock Exam pool.", "- This does not authorize high-stakes, credentialing, admissions, employment, compliance, or externally reported assessment use; those uses require complete current human approval.",
     ]) + "\n"
     return {"coverage": coverage_report, "quality": quality_report}
 
