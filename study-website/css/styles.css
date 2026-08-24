@@ -93,7 +93,7 @@ h3 { font-size: 16px; line-height: 1.35; }
 .metric-help { margin: 10px 0 0; color: var(--muted); }
 .progress-track { height: 10px; margin-top: 12px; overflow: hidden; border-radius: 999px; background: var(--border); }
 .progress-track > span { display: block; width: var(--value, 0%); height: 100%; border-radius: inherit; background: var(--primary); transition: width 150ms ease; }
-.metric-strip { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--border); }
+.metric-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border-top: 1px solid var(--border); }
 .metric-strip > div { min-width: 0; padding: 18px 24px; text-align: center; }
 .metric-strip > div + div { border-left: 1px solid var(--border); }
 .metric-strip strong { font-size: 28px; line-height: 1.1; }
@@ -151,6 +151,7 @@ h3 { font-size: 16px; line-height: 1.35; }
 .answer-form { display: grid; gap: 10px; }
 .answer-row { position: relative; display: grid; grid-template-columns: 42px 1fr; align-items: stretch; min-height: 58px; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); }
 .answer-row:has(input:checked) { border: 2px solid var(--primary); }
+.answer-row:has(input:focus-visible) { outline: 3px solid var(--primary); outline-offset: 3px; }
 .answer-row input { position: absolute; opacity: 0; }
 .answer-marker { display: grid; place-items: center; border-right: 1px solid var(--border); font-weight: 700; }
 .answer-copy { display: flex; align-items: center; padding: 12px 14px; cursor: pointer; }

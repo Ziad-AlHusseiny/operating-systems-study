@@ -1,5 +1,5 @@
 import { filterLessons, loadCourseData } from "./data.js";
-import { filterQuestions, isScoreable } from "./questions.js";
+import { filterQuestions, isExamEligible, isScoreable } from "./questions.js";
 import { answerPracticeQuestion, createPracticeSession, goToPracticeQuestion, movePracticeQuestion } from "./quiz.js";
 import { answerExamQuestion, createExam, getExamRemainingSeconds, goToExamQuestion, hydrateExam, moveExamQuestion, submitExam, toggleExamBookmark, toggleExamFlag } from "./exam.js";
 import { BACKUP_STORAGE_KEY, clearActiveExam, exportState, importState, loadState, markLessonComplete, recordAttempt, recordSessionSummary, resetState, saveState, setActiveExam, toggleBookmark } from "./storage.js";
@@ -51,17 +51,93 @@ export function shouldHandleShortcut(event) {
   return ["1", "2", "3", "4", "t", "T", "f", "F", "ArrowLeft", "ArrowRight", "b", "B", "s", "S"].includes(event.key);
 }
 
+export function navigationRenderDecision(currentHash, targetHash) {
+  const current = typeof currentHash === "string" ? currentHash : "";
+  const target = typeof targetHash === "string" ? targetHash : "";
+  return { setHash: current !== target, renderNow: current === target };
+}
+
+export function getDashboardCoverage(data) {
+  return { modules: Array.isArray(data?.modules) ? data.modules.length : 0, lessons: Array.isArray(data?.lessons) ? data.lessons.length : 0 };
+}
+
+export function lessonSectionLanguage(section) {
+  return section?.origin === "generated" && section?.generatedStudyGuidance === true
+    ? { lang: "ar", dir: "rtl", className: "material-section arabic" }
+    : { lang: "en", dir: "ltr", className: "material-section" };
+}
+
+export function renderLessonGroup(title, entries, renderCitation) {
+  if (!Array.isArray(entries) || !entries.length) return "";
+  const cite = typeof renderCitation === "function" ? renderCitation : function () { return ""; };
+  const items = entries.map(function (entry) {
+    if (!entry || typeof entry !== "object") return "";
+    if (Object.hasOwn(entry, "misconception") || Object.hasOwn(entry, "correction")) {
+      if (!entry.misconception || !entry.correction) return "";
+      return "<li><strong>Misconception:</strong> " + escapeHtml(entry.misconception) + "<br><strong>Correction:</strong> " + escapeHtml(entry.correction) + " " + cite(entry.sourceRefs) + "</li>";
+    }
+    if (!entry.body) return "";
+    return "<li>" + escapeHtml(entry.body) + " " + cite(entry.sourceRefs) + "</li>";
+  }).filter(Boolean).join("");
+  return items ? "<section><h3>" + escapeHtml(title) + '</h3><ul class="content-list">' + items + "</ul></section>" : "";
+}
+
+export function getPracticeQuestionView(session, question, explanation) {
+  const answer = session?.answers?.[question?.id];
+  if (!answer) return { locked: false, response: undefined, feedback: null };
+  return {
+    locked: true,
+    response: answer.response,
+    feedback: {
+      questionId: question.id,
+      ...answer,
+      rationale: question.rationale ?? null,
+      sourceRefs: question.sourceRefs ?? [],
+      explanation: explanation ?? null,
+    },
+  };
+}
+
+export function getSetupSummary(mode, questions, setup = {}, course = {}, indexes = {}) {
+  const scoped = filterQuestions(questions, setup, indexes);
+  const eligible = scoped.filter(function (question) { return mode === "exam" ? isExamEligible(question, course) : isScoreable(question); });
+  const fallbackCount = mode === "exam" ? Number(course?.exam?.defaultCount) || 25 : 10;
+  const count = Number(setup.count);
+  const validCount = Number.isInteger(count) && count > 0;
+  const requestedCount = validCount ? count : fallbackCount;
+  const fallbackMinutes = Number(course?.exam?.defaultMinutes) || 30;
+  const rawMinutes = Number(setup.minutes);
+  const validMinutes = Number.isInteger(rawMinutes) && rawMinutes > 0;
+  const minutes = mode === "exam" ? (validMinutes ? rawMinutes : fallbackMinutes) : null;
+  let message = "Ready to start.";
+  if (!validCount) message = "Enter a positive question count.";
+  else if (mode === "exam" && !validMinutes) message = "Enter a positive number of minutes for the Mock Exam.";
+  else if (!eligible.length) message = "No eligible questions match the selected scope.";
+  else if (requestedCount > eligible.length) message = "Only " + eligible.length + " eligible questions match this scope.";
+  return { scopeCount: scoped.length, eligibleCount: eligible.length, requestedCount: requestedCount, minutes: minutes, canStart: validCount && eligible.length > 0 && requestedCount <= eligible.length && (mode !== "exam" || validMinutes), message: message };
+}
+
+export function trapDialogFocus(event, controls) {
+  if (!event || event.key !== "Tab" || !Array.isArray(controls) || !controls.length) return false;
+  const index = controls.indexOf(event.target);
+  const target = event.shiftKey ? (index <= 0 ? controls[controls.length - 1] : null) : (index === controls.length - 1 || index < 0 ? controls[0] : null);
+  if (!target) return false;
+  event.preventDefault();
+  target.focus();
+  return true;
+}
+
 function html() { return Array.from(arguments).join(""); }
 function icon(name) { return '<svg aria-hidden="true" viewBox="0 0 24 24">' + (ICONS[name] || "") + "</svg>"; }
 function emptyFilters() { return { search: "", moduleId: "all", sourceId: "all", completion: "all", lessonId: "all", topic: "all", type: "all", difficulty: "all", bloomLevel: "all", status: "all" }; }
-const app = { data: null, state: null, practice: null, exam: null, practiceResult: null, examResult: null, timer: null, revealed: new Set(), pages: { questions: 1, explanations: 1 }, filters: { material: emptyFilters(), questions: emptyFilters(), explanations: emptyFilters() }, focusReturn: null };
+const app = { data: null, state: null, practice: null, exam: null, practiceResult: null, examResult: null, timer: null, revealed: new Set(), pages: { questions: 1, explanations: 1 }, filters: { material: emptyFilters(), questions: emptyFilters(), explanations: emptyFilters() }, setups: {}, focusReturn: null };
 
 function canonical() { return app.data ? { lessons: app.data.lessons, questions: app.data.questions } : undefined; }
 function moduleFor(id) { return app.data.moduleById[id]; }
 function sourceFor(id) { return app.data.course.sources.find(function (source) { return source.id === id; }); }
 function citation(refs) {
   if (!refs || !refs.length) return "";
-  return '<span class="citation">' + refs.map(function (ref) { return escapeHtml((sourceFor(ref.sourceId) || {}).label || ref.sourceId) + ", p. " + escapeHtml(ref.location); }).join(" · ") + "</span>";
+  return '<span class="citation" lang="en" dir="ltr">' + refs.map(function (ref) { return escapeHtml((sourceFor(ref.sourceId) || {}).label || ref.sourceId) + ", p. " + escapeHtml(ref.location); }).join(" · ") + "</span>";
 }
 function heading(title, copy, actions) {
   return '<header class="page-header"><div><h1 tabindex="-1">' + escapeHtml(title) + "</h1>" + (copy ? "<p>" + escapeHtml(copy) + "</p>" : "") + "</div>" + (actions ? '<div class="page-actions">' + actions + "</div>" : "") + "</header>";
@@ -104,10 +180,7 @@ function filteredQuestions(filters) {
     mistakeIds: filters.status === "mistakes" ? Object.keys(app.state.mistakes) : undefined
   }), app.data);
 }
-function contentGroup(title, entries) {
-  if (!entries || !entries.length) return "";
-  return "<section><h3>" + escapeHtml(title) + '</h3><ul class="content-list">' + entries.map(function (entry) { return "<li>" + escapeHtml(entry.body) + " " + citation(entry.sourceRefs) + "</li>"; }).join("") + "</ul></section>";
-}
+function contentGroup(title, entries) { return renderLessonGroup(title, entries, citation); }
 function questionMeta(question) {
   return '<div class="question-meta">' + tag(question.type === "mcq" ? "Multiple choice" : "True / False") + tag(question.topic) + tag(question.difficulty) + tag(question.bloomLevel) + tag("Generated practice question", "generated") + citation(question.sourceRefs) + "</div>";
 }
@@ -122,13 +195,14 @@ function formatSeconds(seconds) {
 
 export function renderDashboard() {
   const summary = getRevisionSummary(app.data, app.state);
+  const coverage = getDashboardCoverage(app.data);
   const completion = summary.lessons.total ? Math.round(summary.lessons.completed * 100 / summary.lessons.total) : 0;
   const recents = summary.recentSessions.length ? '<div class="recent-list">' + summary.recentSessions.map(function (item) {
     return '<div class="recent-row"><span><strong>' + escapeHtml(item.mode === "exam" ? "Mock Exam" : "Practice") + "</strong><small>" + escapeHtml(new Date(item.finishedAt).toLocaleString()) + "</small></span><strong>" + escapeHtml(item.scoreable ? item.percentage + "%" : "Unscored") + "</strong></div>";
   }).join("") + "</div>" : '<div class="empty-state"><strong>No recent activity yet.</strong><p>Start Practice or Mock Exam to see finalized sessions here.</p></div>';
   const weak = summary.weakModules.concat(summary.weakTopics);
   return heading("Dashboard", "Your source-backed Operating Systems study workspace.") +
-    '<section class="panel metric-panel"><div class="metric-primary"><div class="metric-block"><span class="metric-label">Lesson completion</span><strong class="metric-number primary">' + completion + '%</strong><div class="progress-track"><span style="--value:' + completion + '%"></span></div><p class="metric-help">' + summary.lessons.completed + " of " + summary.lessons.total + ' lessons completed.</p></div><div class="metric-block"><span class="metric-label">Scoreable accuracy</span><strong class="metric-number">' + (summary.attempts.answered ? summary.attempts.accuracy + "%" : "—") + "</strong><p class=\"metric-help\">" + (summary.attempts.answered ? "Based on scoreable submitted responses." : "Answer a practice question to build an accuracy score.") + '</p></div></div><div class="metric-strip"><div><span class="metric-label">Sources</span><strong>' + app.data.course.sources.length + '</strong></div><div><span class="metric-label">Teaching pages</span><strong>' + escapeHtml(app.data.course.coverage.teachingPages) + '</strong></div><div><span class="metric-label">Questions</span><strong>' + app.data.questions.length + '</strong></div><div><span class="metric-label">Correct</span><strong class="success">' + summary.attempts.correct + '</strong></div><div><span class="metric-label">Wrong</span><strong class="error">' + summary.attempts.incorrect + "</strong></div></div></section>" +
+    '<section class="panel metric-panel"><div class="metric-primary"><div class="metric-block"><span class="metric-label">Lesson completion</span><strong class="metric-number primary">' + completion + '%</strong><div class="progress-track"><span style="--value:' + completion + '%"></span></div><p class="metric-help">' + summary.lessons.completed + " of " + summary.lessons.total + ' lessons completed.</p></div><div class="metric-block"><span class="metric-label">Scoreable accuracy</span><strong class="metric-number">' + (summary.attempts.answered ? summary.attempts.accuracy + "%" : "—") + "</strong><p class=\"metric-help\">" + (summary.attempts.answered ? "Based on scoreable submitted responses." : "Answer a practice question to build an accuracy score.") + '</p></div></div><div class="metric-strip"><div><span class="metric-label">Modules</span><strong>' + coverage.modules + '</strong></div><div><span class="metric-label">Lessons</span><strong>' + coverage.lessons + '</strong></div><div><span class="metric-label">Sources</span><strong>' + app.data.course.sources.length + '</strong></div><div><span class="metric-label">Teaching pages</span><strong>' + escapeHtml(app.data.course.coverage.teachingPages) + '</strong></div><div><span class="metric-label">Questions</span><strong>' + app.data.questions.length + '</strong></div><div><span class="metric-label">Correct</span><strong class="success">' + summary.attempts.correct + '</strong></div><div><span class="metric-label">Wrong</span><strong class="error">' + summary.attempts.incorrect + "</strong></div></div></section>" +
     '<div class="action-row"><a class="btn btn--primary" href="#/practice">' + icon("play") + 'Start Practice</a><a class="btn btn--primary" href="#/exam">' + icon("file") + 'Start Mock Exam</a><a class="btn" href="#/material">Browse Material</a><a class="btn" href="#/mistakes">Review Mistakes</a><a class="btn" href="#/bookmarks">Review Bookmarks</a>' + (app.practice || app.state.activeExam ? '<a class="btn" href="#/' + (app.practice ? "practice" : "exam") + '">Resume active session</a>' : "") + "</div>" +
     '<section class="panel"><div class="section-title"><h2>Recent finalized sessions</h2></div>' + recents + '</section><section class="panel"><div class="section-title"><h2>Revision priorities</h2><a class="btn btn--quiet" href="#/revision">Open revision</a></div>' + (weak.length ? '<div class="revision-grid">' + weak.slice(0, 6).map(function (item) { return '<div><span class="metric-label">Needs review</span><strong>' + escapeHtml(item.title) + '</strong><span class="muted">' + escapeHtml(item.accuracy) + "% accuracy</span></div>"; }).join("") + "</div>" : '<div class="empty-state"><strong>No weak areas yet.</strong><p>Scoreable attempts will identify modules and topics that need another pass.</p></div>') + "</section>";
 }
@@ -151,9 +225,10 @@ export function renderLesson(route) {
   const bookmarked = app.state.bookmarks.lessonIds.includes(lesson.id);
   const actions = '<button class="btn" data-action="toggle-complete" data-lesson="' + escapeHtml(lesson.id) + '">' + (progress === "completed" ? "Mark in progress" : "Mark completed") + '</button><button class="btn" data-action="bookmark-lesson" data-lesson="' + escapeHtml(lesson.id) + '">' + (bookmarked ? "Remove bookmark" : "Bookmark lesson") + '</button><button class="btn btn--primary" data-action="practice-lesson" data-lesson="' + escapeHtml(lesson.id) + '">Start lesson Practice</button>';
   const sections = lesson.materialSections.map(function (section) {
+    const language = lessonSectionLanguage(section);
     const terms = section.terms && section.terms.length ? '<dl class="term-list">' + section.terms.map(function (term) { return "<div><dt>" + escapeHtml(term.term) + "</dt><dd>" + escapeHtml(term.definition) + " " + citation(term.sourceRefs) + "</dd></div>"; }).join("") + "</dl>" : "";
     const links = section.linkedQuestionIds && section.linkedQuestionIds.length ? '<p><a href="#/questions">Open ' + section.linkedQuestionIds.length + ' linked Question Bank record' + (section.linkedQuestionIds.length === 1 ? "" : "s") + '</a> · <a href="#/explanations">Read bilingual explanations</a></p>' : "";
-    return '<article class="material-section"><span class="origin-label">' + escapeHtml(section.label || (section.generatedStudyGuidance ? "Generated study guidance" : "Source material")) + "</span><h2>" + escapeHtml(section.title) + "</h2>" + section.summaries.map(function (entry) { return "<p>" + escapeHtml(entry.body) + " " + citation(entry.sourceRefs) + "</p>"; }).join("") + terms + contentGroup("Worked examples", section.examples) + contentGroup("Common mistakes", section.mistakes) + contentGroup("Exam tips", section.examTips) + contentGroup("Recap", section.recaps) + links + "</article>";
+    return '<article class="' + language.className + '" lang="' + language.lang + '" dir="' + language.dir + '"><span class="origin-label" lang="en" dir="ltr">' + escapeHtml(section.label || (section.generatedStudyGuidance ? "Generated study guidance" : "Source material")) + "</span><h2>" + escapeHtml(section.title) + "</h2>" + section.summaries.map(function (entry) { return "<p>" + escapeHtml(entry.body) + " " + citation(entry.sourceRefs) + "</p>"; }).join("") + terms + contentGroup("Worked examples", section.examples) + contentGroup("Common mistakes", section.mistakes) + contentGroup("Exam tips", section.examTips) + contentGroup("Recap", section.recaps) + links + "</article>";
   }).join("");
   return heading(lesson.title, (moduleFor(lesson.moduleId) || {}).title || lesson.moduleId, actions) + '<section class="panel lesson-intro"><div>' + status(progress) + "</div><h2>Learning objectives</h2><ol class=\"objective-list\">" + lesson.learningObjectives.map(function (objective) { return "<li>" + escapeHtml(objective.text) + " " + citation(objective.sourceRefs) + "</li>"; }).join("") + '</ol></section><section class="panel">' + sections + "</section>";
 }
@@ -185,14 +260,26 @@ export function renderExplanations() {
   return heading("Question Explanations", "Read the original English prompt alongside the complete Arabic study guidance.") + routeFilters("explanations", app.filters.explanations, true) + '<p class="filter-result">' + rows.length + " bilingual explanation record" + (rows.length === 1 ? "" : "s") + '.</p><section class="panel">' + (records || '<div class="empty-state"><strong>No explanations match these filters.</strong><p>Reset filters to return to the complete bilingual guidance set.</p></div>') + "</section>" + navPages("explanations", page, pages);
 }
 
+function setupDefaults(mode) {
+  return { moduleId: "all", lessonId: "all", topic: "all", type: "all", difficulty: "all", bloomLevel: "all", order: "original", count: String(mode === "exam" ? app.data.course.exam.defaultCount : 10), minutes: String(app.data.course.exam.defaultMinutes) };
+}
+function setupValues(mode) {
+  if (!app.setups[mode]) app.setups[mode] = setupDefaults(mode);
+  return app.setups[mode];
+}
 function setupScope(mode) {
   const topics = Array.from(new Set(app.data.questions.map(function (question) { return question.topic; }))).sort();
   const exam = mode === "exam";
-  return heading(exam ? "Mock Exam" : "Practice", exam ? "The active exam stays answer-only until you submit or time expires." : "Practice reveals feedback and Arabic guidance after each submitted response.") + '<section class="panel"><form data-setup="' + mode + '"><div class="setup-grid"><label class="field"><span>Module</span><select name="moduleId">' + select(app.data.modules, "all", "modules") + '</select></label><label class="field"><span>Lesson</span><select name="lessonId">' + select(app.data.lessons, "all", "lessons") + '</select></label><label class="field"><span>Topic</span><select name="topic"><option value="all">All topics</option>' + topics.map(function (topic) { return '<option value="' + escapeHtml(topic) + '">' + escapeHtml(topic) + "</option>"; }).join("") + '</select></label><label class="field"><span>Type</span><select name="type"><option value="all">All types</option><option value="mcq">Multiple choice</option><option value="true-false">True / False</option></select></label><label class="field"><span>Difficulty</span><select name="difficulty"><option value="all">All difficulty</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label><label class="field"><span>Bloom</span><select name="bloomLevel"><option value="all">All levels</option><option value="remember">Remember</option><option value="apply">Apply</option><option value="analyze">Analyze</option></select></label><label class="field"><span>Question count</span><input name="count" type="number" min="1" max="' + app.data.questions.length + '" value="' + (exam ? app.data.course.exam.defaultCount : 10) + '" /></label>' + (exam ? '<label class="field"><span>Minutes</span><input name="minutes" type="number" min="1" max="180" value="' + app.data.course.exam.defaultMinutes + '" /></label>' : "") + '<label class="field"><span>Order</span><select name="order"><option value="original">Original order</option><option value="random">Random order</option></select></label></div><p class="setup-note">Eligible count updates when you start from the selected scope. Starts are blocked if no eligible question matches.</p><div class="action-row"><button class="btn btn--primary" type="submit">Start ' + (exam ? "Mock Exam" : "Practice") + "</button></div></form></section>";
+  const values = setupValues(mode);
+  const summary = getSetupSummary(mode, app.data.questions, values, app.data.course, app.data);
+  const selected = function (value, expected) { return value === expected ? " selected" : ""; };
+  const summaryText = '<p class="setup-summary" role="status"><strong>Selected scope:</strong> ' + summary.scopeCount + ' questions · <strong>Eligible:</strong> ' + summary.eligibleCount + ' · <strong>Requested:</strong> ' + summary.requestedCount + ' · <strong>Minutes:</strong> ' + (summary.minutes === null ? "No time limit" : summary.minutes) + ". " + escapeHtml(summary.message) + "</p>";
+  return heading(exam ? "Mock Exam" : "Practice", exam ? "The active exam stays answer-only until you submit or time expires." : "Practice reveals feedback and Arabic guidance after each submitted response.") + '<section class="panel"><form data-setup="' + mode + '"><div class="setup-grid"><label class="field"><span>Module</span><select name="moduleId">' + select(app.data.modules, values.moduleId, "modules") + '</select></label><label class="field"><span>Lesson</span><select name="lessonId">' + select(app.data.lessons, values.lessonId, "lessons") + '</select></label><label class="field"><span>Topic</span><select name="topic"><option value="all">All topics</option>' + topics.map(function (topic) { return '<option value="' + escapeHtml(topic) + '"' + selected(values.topic, topic) + '>' + escapeHtml(topic) + "</option>"; }).join("") + '</select></label><label class="field"><span>Type</span><select name="type"><option value="all">All types</option><option value="mcq"' + selected(values.type, "mcq") + '>Multiple choice</option><option value="true-false"' + selected(values.type, "true-false") + '>True / False</option></select></label><label class="field"><span>Difficulty</span><select name="difficulty"><option value="all">All difficulty</option><option value="easy"' + selected(values.difficulty, "easy") + '>Easy</option><option value="medium"' + selected(values.difficulty, "medium") + '>Medium</option><option value="hard"' + selected(values.difficulty, "hard") + '>Hard</option></select></label><label class="field"><span>Bloom</span><select name="bloomLevel"><option value="all">All levels</option><option value="remember"' + selected(values.bloomLevel, "remember") + '>Remember</option><option value="apply"' + selected(values.bloomLevel, "apply") + '>Apply</option><option value="analyze"' + selected(values.bloomLevel, "analyze") + '>Analyze</option></select></label><label class="field"><span>Question count</span><input name="count" type="number" min="1" max="' + app.data.questions.length + '" value="' + escapeHtml(values.count) + '" /></label>' + (exam ? '<label class="field"><span>Minutes</span><input name="minutes" type="number" min="1" max="180" value="' + escapeHtml(values.minutes) + '" /></label>' : "") + '<label class="field"><span>Order</span><select name="order"><option value="original"' + selected(values.order, "original") + '>Original order</option><option value="random"' + selected(values.order, "random") + '>Random order</option></select></label></div>' + summaryText + '<div class="action-row"><button class="btn btn--primary" type="submit"' + (summary.canStart ? "" : " disabled") + '>Start ' + (exam ? "Mock Exam" : "Practice") + "</button></div></form></section>";
 }
-function practiceOptions(question) {
+function practiceOptions(question, selected, locked) {
+  const selectedValue = selected === true ? "true" : selected === false ? "false" : selected === undefined ? "" : String(selected);
   const choices = question.type === "mcq" ? question.options.map(function (text, index) { return { value: String(index), marker: index + 1, text: text }; }) : [{ value: "true", marker: "T", text: "True" }, { value: "false", marker: "F", text: "False" }];
-  return choices.map(function (choice) { return '<label class="answer-row"><input type="radio" name="response" value="' + escapeHtml(choice.value) + '" required /><span class="answer-marker">' + escapeHtml(choice.marker) + '</span><span class="answer-copy">' + escapeHtml(choice.text) + "</span></label>"; }).join("");
+  return choices.map(function (choice) { return '<label class="answer-row"><input type="radio" name="response" value="' + escapeHtml(choice.value) + '"' + (choice.value === selectedValue ? " checked" : "") + (locked ? " disabled" : " required") + ' /><span class="answer-marker">' + escapeHtml(choice.marker) + '</span><span class="answer-copy">' + escapeHtml(choice.text) + "</span></label>"; }).join("");
 }
 function practiceFeedback(feedback) {
   const explanation = feedback.explanation;
@@ -203,9 +290,10 @@ export function renderPractice() {
   if (!app.practice || app.practice.status !== "active") return setupScope("practice");
   const question = app.data.questionById[app.practice.questionIds[app.practice.index]];
   if (!question) return renderNotFound("The active practice question is unavailable.");
-  const feedback = app.practice.feedbackVisible && app.practice.feedback && app.practice.feedback.questionId === question.id ? app.practice.feedback : null;
+  const view = getPracticeQuestionView(app.practice, question, app.data.explanationByQuestionId[question.id]);
+  const feedback = view.feedback;
   const navigator = app.practice.questionIds.map(function (id, index) { return '<button class="' + (index === app.practice.index ? "current " : "") + (app.practice.answers[id] ? "answered" : "") + '" data-action="practice-index" data-index="' + index + '" aria-label="Question ' + (index + 1) + '">' + (index + 1) + "</button>"; }).join("");
-  return heading("Practice", "Immediate feedback is available after you submit an answer.") + '<section class="session-layout"><div class="question-workspace"><div class="session-progress"><span>Question ' + (app.practice.index + 1) + " of " + app.practice.questionIds.length + "</span><strong>" + Math.round((app.practice.index + 1) * 100 / app.practice.questionIds.length) + '%</strong></div><div class="progress-track"><span style="--value:' + ((app.practice.index + 1) * 100 / app.practice.questionIds.length) + '%"></span></div>' + questionMeta(question) + '<p class="session-prompt" lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</p><form class="answer-form" data-answer="practice">' + practiceOptions(question) + '<button class="btn btn--primary" type="submit"' + (feedback ? " disabled" : "") + ">" + (feedback ? "Answer checked" : "Check answer") + "</button></form>" + (feedback ? practiceFeedback(feedback) : "") + '<p class="keyboard-hint">Keyboard: 1–4 select · T/F true or false · B bookmark · S skip · ←/→ navigate.</p><div class="session-actions"><button class="btn" data-action="practice-prev">Previous</button><button class="btn" data-action="practice-skip">Skip</button><button class="btn" data-action="bookmark-current">Bookmark</button><button class="btn btn--primary" data-action="practice-next">Next</button><button class="btn" data-action="finish-practice">Finish</button></div></div><aside class="session-rail"><h2>Session overview</h2><p class="status success">Answered ' + Object.keys(app.practice.answers).length + '</p><p class="status">Current ' + (app.practice.index + 1) + '</p><h3>Question navigator</h3><div class="navigator">' + navigator + "</div></aside></section>";
+  return heading("Practice", "Immediate feedback is available after you submit an answer.") + '<section class="session-layout"><div class="question-workspace"><div class="session-progress"><span>Question ' + (app.practice.index + 1) + " of " + app.practice.questionIds.length + "</span><strong>" + Math.round((app.practice.index + 1) * 100 / app.practice.questionIds.length) + '%</strong></div><div class="progress-track"><span style="--value:' + ((app.practice.index + 1) * 100 / app.practice.questionIds.length) + '%"></span></div>' + questionMeta(question) + '<p class="session-prompt" lang="en" dir="ltr">' + escapeHtml(question.prompt) + '</p><form class="answer-form" data-answer="practice">' + practiceOptions(question, view.response, view.locked) + '<button class="btn btn--primary" type="submit"' + (view.locked ? " disabled" : "") + ">" + (view.locked ? "Answer checked" : "Check answer") + "</button></form>" + (feedback ? practiceFeedback(feedback) : "") + '<p class="keyboard-hint">Keyboard: 1–4 select · T/F true or false · B bookmark · S skip · ←/→ navigate.</p><div class="session-actions"><button class="btn" data-action="practice-prev">Previous</button><button class="btn" data-action="practice-skip">Skip</button><button class="btn" data-action="bookmark-current">Bookmark</button><button class="btn btn--primary" data-action="practice-next">Next</button><button class="btn" data-action="finish-practice">Finish</button></div></div><aside class="session-rail"><h2>Session overview</h2><p class="status success">Answered ' + Object.keys(app.practice.answers).length + '</p><p class="status">Current ' + (app.practice.index + 1) + '</p><h3>Question navigator</h3><div class="navigator">' + navigator + "</div></aside></section>";
 }
 function renderPracticeResult() {
   const result = app.practiceResult;
@@ -284,6 +372,11 @@ function render(options) {
   updateNav(route);
   if (config.focus !== false) queueMicrotask(function () { const focus = main.querySelector("h1"); if (focus) focus.focus({ preventScroll: true }); });
 }
+function navigateTo(targetHash) {
+  const decision = navigationRenderDecision(location.hash, targetHash);
+  if (decision.setHash) location.hash = targetHash;
+  if (decision.renderNow) render();
+}
 function setTheme(theme) {
   const safe = theme === "dark" ? "dark" : "light";
   document.documentElement.dataset.theme = safe;
@@ -301,13 +394,13 @@ function startPractice(config) {
   if (Array.isArray(config.questionIds)) pool = pool.filter(function (question) { return config.questionIds.includes(question.id); });
   const session = createPracticeSession(pool, Object.assign({}, config, { explanations: app.data.explanations }));
   if (session.status === "empty") { notify(session.emptyReason, true); return; }
-  app.practice = session; app.practiceResult = null; location.hash = "#/practice";
+  app.practice = session; app.practiceResult = null; navigateTo("#/practice");
 }
 function startExam(config) {
   const pool = filterQuestions(app.data.questions, config, app.data);
   const exam = createExam(pool, Object.assign({}, config, { course: app.data.course, explanations: app.data.explanations }));
   if (exam.status === "empty") { notify(exam.emptyReason, true); return; }
-  app.exam = exam; app.examResult = null; save(setActiveExam(app.state, exam, Date.now(), canonical())); location.hash = "#/exam"; startTimer();
+  app.exam = exam; app.examResult = null; save(setActiveExam(app.state, exam, Date.now(), canonical())); navigateTo("#/exam"); startTimer();
 }
 function startTimer() {
   clearInterval(app.timer);
@@ -356,6 +449,10 @@ function closeDialog() {
   if (app.focusReturn && app.focusReturn.focus) app.focusReturn.focus({ preventScroll: true });
   app.focusReturn = null;
 }
+function focusableDialogControls() {
+  const dialogElement = document.querySelector("#dialog-root .dialog");
+  return dialogElement ? Array.from(dialogElement.querySelectorAll("button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])")) : [];
+}
 function bookmark(kind, id) { save(toggleBookmark(app.state, kind, id, Date.now(), canonical())); notify("Bookmark updated."); }
 
 function handleAction(event) {
@@ -376,7 +473,7 @@ function handleAction(event) {
   if (data.action === "practice-index") { app.practice = goToPracticeQuestion(app.practice, Number(data.index)); render({ focus: false }); return; }
   if (data.action === "bookmark-current") { bookmark("question", app.practice.questionIds[app.practice.index]); render({ focus: false }); return; }
   if (data.action === "finish-practice") { finishPractice(); return; }
-  if (data.action === "new-practice") { app.practiceResult = null; return; }
+  if (data.action === "new-practice") { app.practiceResult = null; navigateTo("#/practice"); return; }
   if (data.action === "exam-prev") { app.exam = moveExamQuestion(app.exam, -1); save(setActiveExam(app.state, app.exam, Date.now(), canonical())); render({ focus: false }); return; }
   if (data.action === "exam-next") { app.exam = moveExamQuestion(app.exam, 1); save(setActiveExam(app.state, app.exam, Date.now(), canonical())); render({ focus: false }); return; }
   if (data.action === "exam-index") { app.exam = goToExamQuestion(app.exam, Number(data.index)); save(setActiveExam(app.state, app.exam, Date.now(), canonical())); render({ focus: false }); return; }
@@ -395,11 +492,28 @@ function handleSubmit(event) {
   const form = event.target;
   if (!(form instanceof HTMLFormElement)) return;
   if (form.dataset.filterForm) { event.preventDefault(); app.filters[form.dataset.filterForm] = Object.assign({}, app.filters[form.dataset.filterForm], Object.fromEntries(new FormData(form).entries())); app.pages[form.dataset.filterForm] = 1; render({ focus: false }); return; }
-  if (form.dataset.setup) { event.preventDefault(); const values = Object.fromEntries(new FormData(form).entries()); values.count = Number(values.count); values.minutes = Number(values.minutes); form.dataset.setup === "practice" ? startPractice(values) : startExam(values); return; }
-  if (form.dataset.answer === "practice" && app.practice) { event.preventDefault(); const question = app.data.questionById[app.practice.questionIds[app.practice.index]]; const response = responseFrom(form, question); if (response === undefined) { notify("Choose an answer before checking it.", true); return; } const previous = app.practice; app.practice = answerPracticeQuestion(previous, response); persistPractice(previous, app.practice); render({ focus: false }); return; }
+  if (form.dataset.setup) {
+    event.preventDefault();
+    const mode = form.dataset.setup;
+    const values = Object.assign({}, setupValues(mode), Object.fromEntries(new FormData(form).entries()));
+    app.setups[mode] = values;
+    const summary = getSetupSummary(mode, app.data.questions, values, app.data.course, app.data);
+    if (!summary.canStart) { notify(summary.message, true); render({ focus: false }); return; }
+    const config = Object.assign({}, values, { count: summary.requestedCount, minutes: summary.minutes });
+    mode === "practice" ? startPractice(config) : startExam(config);
+    return;
+  }
+  if (form.dataset.answer === "practice" && app.practice) { event.preventDefault(); const question = app.data.questionById[app.practice.questionIds[app.practice.index]]; if (app.practice.answers[question.id]) { notify("This Practice answer is already locked."); render({ focus: false }); return; } const response = responseFrom(form, question); if (response === undefined) { notify("Choose an answer before checking it.", true); return; } const previous = app.practice; app.practice = answerPracticeQuestion(previous, response); persistPractice(previous, app.practice); render({ focus: false }); return; }
   if (form.dataset.answer === "exam" && app.exam) { event.preventDefault(); const question = app.data.questionById[app.exam.questionIds[app.exam.index]]; const response = responseFrom(form, question); if (response === undefined) { notify("Choose an answer before saving it.", true); return; } app.exam = answerExamQuestion(app.exam, response); save(setActiveExam(app.state, app.exam, Date.now(), canonical())); notify("Answer saved."); render({ focus: false }); }
 }
 function handleChange(event) {
+  const setup = event.target.closest("form[data-setup]");
+  if (setup) {
+    const mode = setup.dataset.setup;
+    app.setups[mode] = Object.assign({}, setupValues(mode), Object.fromEntries(new FormData(setup).entries()));
+    render({ focus: false });
+    return;
+  }
   const form = event.target.closest("form[data-filter-form]");
   if (!form) return;
   const kind = form.dataset.filterForm;
@@ -416,7 +530,7 @@ function handleShortcut(event) {
   const question = app.data.questionById[session.questionIds[session.index]];
   const response = /^[1-4]$/.test(event.key) ? Number(event.key) - 1 : /^t$/i.test(event.key) ? true : /^f$/i.test(event.key) ? false : undefined;
   if (response !== undefined) {
-    if (mode === "practice") { const before = app.practice; app.practice = answerPracticeQuestion(before, response); persistPractice(before, app.practice); }
+    if (mode === "practice" && !app.practice.answers[question.id]) { const before = app.practice; app.practice = answerPracticeQuestion(before, response); persistPractice(before, app.practice); }
     else app.exam = answerExamQuestion(app.exam, response);
   }
   if (event.key === "ArrowLeft") mode === "practice" ? app.practice = movePracticeQuestion(app.practice, -1) : app.exam = moveExamQuestion(app.exam, -1);
@@ -436,7 +550,13 @@ async function bootstrap() {
   document.addEventListener("click", handleAction);
   document.addEventListener("submit", handleSubmit);
   document.addEventListener("change", handleChange);
-  document.addEventListener("keydown", function (event) { if (event.key === "Escape" && document.querySelector("#dialog-root").children.length) { event.preventDefault(); closeDialog(); } else handleShortcut(event); });
+  document.addEventListener("keydown", function (event) {
+    if (document.querySelector("#dialog-root").children.length) {
+      if (event.key === "Tab" && trapDialogFocus(event, focusableDialogControls())) return;
+      if (event.key === "Escape") { event.preventDefault(); closeDialog(); return; }
+    }
+    handleShortcut(event);
+  });
   document.querySelector("#progress-import").addEventListener("change", function (event) { const file = event.target.files && event.target.files[0]; if (file) importProgress(file); event.target.value = ""; });
   addEventListener("hashchange", function () { render(); });
   try {

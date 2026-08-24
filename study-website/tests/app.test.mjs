@@ -9,7 +9,27 @@ const cssUrl = new URL("css/styles.css", root);
 const read = (url) => readFile(url, "utf8");
 
 const loaded = await import(appUrl).catch((error) => ({ loadError: error }));
-const { routeFromHash, escapeHtml, shouldHandleShortcut } = loaded;
+const {
+  routeFromHash,
+  escapeHtml,
+  shouldHandleShortcut,
+  navigationRenderDecision,
+  getSetupSummary,
+  getPracticeQuestionView,
+  renderLessonGroup,
+  lessonSectionLanguage,
+  getDashboardCoverage,
+  trapDialogFocus,
+} = loaded;
+
+async function payload(name) {
+  return JSON.parse(await read(new URL(`data/${name}.json`, root)));
+}
+
+function assertHelper(value, name) {
+  assert.equal(typeof value, "function", `${name} must be exported as a testable UI decision helper`);
+  return typeof value === "function";
+}
 
 function shortcutEvent(overrides = {}) {
   return {
@@ -66,6 +86,91 @@ test("session shortcuts allow documented keys only with ordinary page focus", ()
   assert.equal(shouldHandleShortcut(shortcutEvent({ key: "q" })), false);
 });
 
+test("same-route navigation requests an immediate render for a newly active Practice or Mock Exam", () => {
+  if (!assertHelper(navigationRenderDecision, "navigationRenderDecision")) return;
+  assert.deepEqual(navigationRenderDecision("#/practice", "#/practice"), { setHash: false, renderNow: true });
+  assert.deepEqual(navigationRenderDecision("#/exam", "#/exam"), { setHash: false, renderNow: true });
+  assert.deepEqual(navigationRenderDecision("#/dashboard", "#/practice"), { setHash: true, renderNow: false });
+});
+
+test("setup eligibility summary uses Task 6 filters, states selected scope, and blocks empty or oversized starts", async () => {
+  if (!assertHelper(getSetupSummary, "getSetupSummary")) return;
+  const [course, questions] = await Promise.all([payload("course"), payload("questions")]);
+  const setup = { moduleId: "all", lessonId: "all", topic: "all", type: "all", difficulty: "all", bloomLevel: "all", order: "original", count: "1", minutes: "30" };
+  const ready = getSetupSummary("practice", questions.questions, setup, course, {});
+  assert.equal(ready.scopeCount, questions.questions.length);
+  assert.equal(ready.eligibleCount, questions.questions.filter((question) => question.origin === "generated").length);
+  assert.equal(ready.requestedCount, 1);
+  assert.equal(ready.minutes, null);
+  assert.equal(ready.canStart, true);
+  const oversized = getSetupSummary("practice", questions.questions, { ...setup, count: String(ready.eligibleCount + 1) }, course, {});
+  assert.equal(oversized.canStart, false);
+  assert.match(oversized.message, /only .* eligible/i);
+  const invalidCount = getSetupSummary("practice", questions.questions, { ...setup, count: "0" }, course, {});
+  assert.equal(invalidCount.canStart, false);
+  assert.match(invalidCount.message, /positive question count/i);
+  const empty = getSetupSummary("exam", questions.questions, { ...setup, topic: "does-not-exist" }, course, {});
+  assert.equal(empty.eligibleCount, 0);
+  assert.equal(empty.canStart, false);
+});
+
+test("revisited Practice answers are locked and reconstruct their original stored feedback without mutation", () => {
+  if (!assertHelper(getPracticeQuestionView, "getPracticeQuestionView")) return;
+  const answer = Object.freeze({ response: 1, answeredAt: 100, valid: true, scored: true, correct: false, correctAnswer: 2 });
+  const session = Object.freeze({ answers: Object.freeze({ "question-1": answer }) });
+  const question = Object.freeze({ id: "question-1", rationale: "Stored rationale", sourceRefs: Object.freeze([{ sourceId: "source-1", location: 4 }]) });
+  const before = structuredClone(session);
+  const view = getPracticeQuestionView(session, question, { translation: "إرشاد", explanation: ["تفصيل"], note: "راجع" });
+  assert.equal(view.locked, true);
+  assert.equal(view.response, 1);
+  assert.deepEqual(view.feedback, { questionId: "question-1", response: 1, answeredAt: 100, valid: true, scored: true, correct: false, correctAnswer: 2, rationale: "Stored rationale", sourceRefs: [{ sourceId: "source-1", location: 4 }], explanation: { translation: "إرشاد", explanation: ["تفصيل"], note: "راجع" } });
+  assert.deepEqual(session, before);
+});
+
+test("lesson mistake guidance renders misconception, correction, and citations while preserving ordinary body groups", async () => {
+  if (!assertHelper(renderLessonGroup, "renderLessonGroup")) return;
+  const lessons = await payload("lessons");
+  const sourceMistake = lessons.lessons.flatMap((lesson) => lesson.materialSections).flatMap((section) => section.mistakes || []).find((entry) => entry.misconception && entry.correction);
+  const mistakes = renderLessonGroup("Common mistakes", [sourceMistake], () => '<span class="citation">Source citation</span>');
+  assert.match(mistakes, new RegExp(sourceMistake.misconception));
+  assert.match(mistakes, new RegExp(sourceMistake.correction));
+  assert.match(mistakes, /Source citation/);
+  assert.doesNotMatch(mistakes, /undefined|null/);
+  const summary = renderLessonGroup("Summary", [{ body: "A source-backed summary.", sourceRefs: [] }]);
+  assert.match(summary, /A source-backed summary\./);
+});
+
+test("generated Arabic lesson guidance gets Arabic boundaries without applying them to English source sections", async () => {
+  if (!assertHelper(lessonSectionLanguage, "lessonSectionLanguage")) return;
+  const lessons = await payload("lessons");
+  const sections = lessons.lessons.flatMap((lesson) => lesson.materialSections);
+  const generated = sections.find((section) => section.origin === "generated" && section.generatedStudyGuidance === true);
+  const source = sections.find((section) => section.origin === "source" && section.generatedStudyGuidance === false);
+  assert.deepEqual(lessonSectionLanguage(generated), { lang: "ar", dir: "rtl", className: "material-section arabic" });
+  assert.deepEqual(lessonSectionLanguage(source), { lang: "en", dir: "ltr", className: "material-section" });
+});
+
+test("dashboard coverage is measured from the payload and reports the seven modules and twenty-one lessons", async () => {
+  if (!assertHelper(getDashboardCoverage, "getDashboardCoverage")) return;
+  const [course, lessons] = await Promise.all([payload("course"), payload("lessons")]);
+  assert.deepEqual(getDashboardCoverage({ modules: course.modules, lessons: lessons.lessons }), { modules: 7, lessons: 21 });
+});
+
+test("dialog focus trap cycles Tab and Shift+Tab through dialog controls", () => {
+  if (!assertHelper(trapDialogFocus, "trapDialogFocus")) return;
+  const focused = [];
+  const controls = ["first", "middle", "last"].map((id) => ({ id, focus: () => focused.push(id) }));
+  const tab = { key: "Tab", shiftKey: false, target: controls[2], prevented: false, preventDefault() { this.prevented = true; } };
+  assert.equal(trapDialogFocus(tab, controls), true);
+  assert.equal(tab.prevented, true);
+  assert.deepEqual(focused, ["first"]);
+  const shiftTab = { key: "Tab", shiftKey: true, target: controls[0], prevented: false, preventDefault() { this.prevented = true; } };
+  assert.equal(trapDialogFocus(shiftTab, controls), true);
+  assert.equal(shiftTab.prevented, true);
+  assert.deepEqual(focused, ["first", "last"]);
+  assert.equal(trapDialogFocus({ key: "Tab", shiftKey: false, target: controls[1], preventDefault() { throw new Error("should not trap middle control"); } }, controls), false);
+});
+
 test("static shell identifies Operating Systems Study and provides semantic loading and recovery hooks", async () => {
   const html = await read(htmlUrl);
   assert.match(html, /<title>Operating Systems Study<\/title>/);
@@ -98,6 +203,7 @@ test("visual CSS carries the approved responsive, accessible, bilingual token sy
   assert.match(css, /@media \(max-width: 600px\)/);
   assert.match(css, /\[data-theme="dark"\]/);
   assert.match(css, /:focus-visible/);
+  assert.match(css, /\.answer-row:has\(input:focus-visible\)[^{]*\{[^}]*outline:/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /\[dir="rtl"\]/);
